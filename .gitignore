@@ -1,4 +1,7 @@
 /.vscode
 /bin
+/lib
 .project
 .classpath
+
+*.db
