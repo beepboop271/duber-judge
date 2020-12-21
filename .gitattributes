@@ -1,0 +1,5 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Ignore violet uml files as part of the language breakdown on GitHub
+*.violet.html linguist-documentation
