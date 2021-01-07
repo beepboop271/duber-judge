@@ -1,4 +1,4 @@
-package database.entities;
+package entities;
 
 /**
  * [description]
@@ -9,9 +9,7 @@ package database.entities;
  * @version 1.0.0
  * @since 1.0.0
  */
-public enum BatchesTable {
-  id,
-  problem,
-  description,
-  score
+public enum UserType {
+  STANDARD,
+  ADMIN
 }
