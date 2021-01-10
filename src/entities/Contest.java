@@ -17,13 +17,22 @@ public class Contest {
   private String title;
   private Date startTime;
   private Date endTime;
+  private int durationMinutes;
 
-  public Contest(long creatorId, String description, String title, Date startTime, Date endTime) {
+  public Contest(
+    long creatorId,
+    String description,
+    String title,
+    Date startTime,
+    Date endTime,
+    int durationMinutes
+  ) {
     this.creatorId = creatorId;
     this.description = description;
     this.title = title;
     this.startTime = startTime;
     this.endTime = endTime;
+    this.durationMinutes = durationMinutes;
   }
 
   public long getCreatorId() {
@@ -46,6 +55,9 @@ public class Contest {
     return this.endTime;
   }
 
+  public int getDurationMinutes() {
+    return this.durationMinutes;
+  }
 
 
 }

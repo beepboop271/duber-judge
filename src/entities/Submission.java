@@ -13,13 +13,13 @@ import java.sql.Timestamp;
  */
 public class Submission {
   private long problemId;
-  private long userid;
+  private long userId;
   private String code;
   private Language language;
   private Timestamp createdAt;
   private ExecutionStatus status;
   private int score;
-  private double runDuration;
+  private long runDurationMillis;
 
 
 
@@ -31,16 +31,16 @@ public class Submission {
     Timestamp createdAt,
     ExecutionStatus status,
     int score,
-    double runDuration
+    long runDurationMillis
   ) {
     this.problemId = problemId;
-    this.userid = userid;
+    this.userId = userid;
     this.code = code;
     this.language = language;
     this.createdAt = createdAt;
     this.status = status;
     this.score = score;
-    this.runDuration = runDuration;
+    this.runDurationMillis = runDurationMillis;
   }
 
   public long getProblemId() {
@@ -48,7 +48,7 @@ public class Submission {
   }
 
   public long getUserid() {
-    return this.userid;
+    return this.userId;
   }
 
   public String getCode() {
@@ -71,8 +71,8 @@ public class Submission {
     return this.score;
   }
 
-  public double getRunDuration() {
-    return this.runDuration;
+  public long getRunDurationMillis() {
+    return this.runDurationMillis;
   }
 
 

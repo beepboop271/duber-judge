@@ -12,8 +12,8 @@ package entities;
 public class TestcaseRun {
   private long submissionId;
   private long batchId;
-  private double runDuration;
-  private double memoryUsage;
+  private long runDurationMillis;
+  private long memoryUsage;
   private ExecutionStatus status;
   private String output;
 
@@ -21,14 +21,14 @@ public class TestcaseRun {
   public TestcaseRun(
     long submissionId,
     long batchId,
-    double runDuration,
-    double memoryUsage,
+    long runDurationMillis,
+    long memoryUsage,
     ExecutionStatus status,
     String output
   ) {
     this.submissionId = submissionId;
     this.batchId = batchId;
-    this.runDuration = runDuration;
+    this.runDurationMillis = runDurationMillis;
     this.memoryUsage = memoryUsage;
     this.status = status;
     this.output = output;
@@ -42,11 +42,11 @@ public class TestcaseRun {
     return this.batchId;
   }
 
-  public double getRunDuration() {
-    return this.runDuration;
+  public long getRunDurationMillis() {
+    return this.runDurationMillis;
   }
 
-  public double getMemoryUsage() {
+  public long getMemoryUsage() {
     return this.memoryUsage;
   }
 
