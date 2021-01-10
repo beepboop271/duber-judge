@@ -12,11 +12,11 @@ import java.util.Map;
  * <p>
  * Created <b> 2021-01-01 </b>
  * 
- * @since 1.0.0
- * @version 1.0.0
+ * @since 0.0.1
+ * @version 0.0.1
  * @author Joseph Wang
  */
-abstract public class HttpMessage {
+abstract class HttpMessage {
   /** The headers of this HttpMessage. */
   protected HashMap<String, String> headers;
   /** The body of this HttpMessage, if present. */

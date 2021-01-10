@@ -12,8 +12,8 @@ import java.util.HashMap;
  * <p>
  * Created <b> 2020-12-28 </b>
  * 
- * @since 1.0.0
- * @version 1.0.0
+ * @since 0.0.1
+ * @version 0.0.1
  * @author Joseph Wang
  * @see <a href=
  *      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#HTTP_Responses">More
