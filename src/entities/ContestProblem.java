@@ -27,6 +27,7 @@ public class ContestProblem extends Problem {
     int points,
     int numSubmissions,
     int clearedSubmissions,
+    int timeLimit,
     int submissionsLimit,
     long contestId
   ) {
@@ -40,7 +41,8 @@ public class ContestProblem extends Problem {
       description,
       points,
       numSubmissions,
-      clearedSubmissions
+      clearedSubmissions,
+      timeLimit
     );
 
     this.submissionsLimit = submissionsLimit;

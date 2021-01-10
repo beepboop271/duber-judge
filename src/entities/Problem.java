@@ -22,6 +22,7 @@ public abstract class Problem {
   private int points;
   private int numSubmissions;
   private int clearedSubmissions;
+  private int timeLimit;
 
 
 
@@ -35,7 +36,8 @@ public abstract class Problem {
     String description,
     int points,
     int numSubmissions,
-    int clearedSubmissions
+    int clearedSubmissions,
+    int timeLimit
   ) {
     this.problemType = problemType;
     this.category = category;
@@ -47,6 +49,7 @@ public abstract class Problem {
     this.points = points;
     this.numSubmissions = numSubmissions;
     this.clearedSubmissions = clearedSubmissions;
+    this.timeLimit = timeLimit;
   }
 
   public ProblemType getProblemType() {
@@ -89,5 +92,8 @@ public abstract class Problem {
     return this.clearedSubmissions;
   }
 
+  public int getTimeLimit() {
+    return this.timeLimit;
+  }
 
 }
