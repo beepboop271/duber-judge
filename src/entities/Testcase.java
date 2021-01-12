@@ -11,14 +11,14 @@ package entities;
  */
 public class Testcase {
   private long batchId;
-  private int order;
+  private int sequence;
   private String input;
   private String output;
 
 
-  public Testcase(long batchId, int order, String input, String output) {
+  public Testcase(long batchId, int sequence, String input, String output) {
     this.batchId = batchId;
-    this.order = order;
+    this.sequence = sequence;
     this.input = input;
     this.output = output;
   }
@@ -27,8 +27,8 @@ public class Testcase {
     return this.batchId;
   }
 
-  public int getOrder() {
-    return this.order;
+  public int getSequence() {
+    return this.sequence;
   }
 
   public String getInput() {

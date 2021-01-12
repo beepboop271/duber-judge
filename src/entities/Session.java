@@ -14,10 +14,12 @@ import java.sql.Timestamp;
 public class Session {
   private SessionInfo sessionInfo;
   private Timestamp lastActive;
+  private String token;
 
-  public Session(Timestamp lastActive, SessionInfo sessionInfo) {
+  public Session(Timestamp lastActive, SessionInfo sessionInfo, String token) {
     this.lastActive = lastActive;
     this.sessionInfo = sessionInfo;
+    this.token = token;
   }
 
   public SessionInfo getSessionInfo() {
@@ -26,6 +28,10 @@ public class Session {
 
   public Timestamp getLastActive() {
     return this.lastActive;
+  }
+
+  public String getToken() {
+    return this.token;
   }
 
   public void updateLastActive() {

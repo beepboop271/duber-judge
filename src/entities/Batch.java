@@ -11,13 +11,13 @@ package entities;
  */
 public class Batch {
   private long problemId;
-  private int order;
+  private int sequence;
   private int points;
 
 
-  public Batch(long problemId, int order, int points) {
+  public Batch(long problemId, int sequence, int points) {
     this.problemId = problemId;
-    this.order = order;
+    this.sequence = sequence;
     this.points = points;
   }
 
@@ -25,8 +25,8 @@ public class Batch {
     return this.problemId;
   }
 
-  public int getOrder() {
-    return this.order;
+  public int getSequence() {
+    return this.sequence;
   }
 
   public int getPoints() {

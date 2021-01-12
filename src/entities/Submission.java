@@ -25,7 +25,7 @@ public class Submission {
 
   public Submission(
     long problemId,
-    long userid,
+    long userId,
     String code,
     Language language,
     Timestamp createdAt,
@@ -34,7 +34,7 @@ public class Submission {
     long runDurationMillis
   ) {
     this.problemId = problemId;
-    this.userId = userid;
+    this.userId = userId;
     this.code = code;
     this.language = language;
     this.createdAt = createdAt;

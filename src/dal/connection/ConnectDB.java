@@ -24,7 +24,7 @@ public class ConnectDB {
    * @param filePath
    * @return
    */
-  public Connection getConnection(String filePath) {
+  public static Connection getConnection(String filePath) {
     Connection connection = null;
     try {
       String url = "jdbc:sqlite:"+filePath;
@@ -33,7 +33,7 @@ public class ConnectDB {
       Properties properties = new Properties();
       properties.setProperty("foreign_keys", "ON");
       connection = DriverManager.getConnection(url, properties);
-      System.out.println("database successfully connected");
+      System.out.println("new connection established");
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -44,7 +44,7 @@ public class ConnectDB {
    *
    * @param resource
    */
-  public void close(AutoCloseable resource) {
+  public static void close(AutoCloseable resource) {
     if (resource != null) {
       try {
         resource.close();
@@ -59,7 +59,7 @@ public class ConnectDB {
    *
    * @param connection         the database connection
    */
-  public void initialize(Connection connection) {
+  public static void initialize(Connection connection) {
     String[] createTableSql = new String[] {
       "CREATE TABLE IF NOT EXISTS users ("
         +"id         INTEGER PRIMARY KEY,"
@@ -119,16 +119,18 @@ public class ConnectDB {
       "CREATE TABLE IF NOT EXISTS batches ("
         +"id            INTEGER PRIMARY KEY,"
         +"problem_id    INTEGER NOT NULL,"
-        +"order         INTEGER NOT NULL,"
+        +"sequence      INTEGER NOT NULL,"
         +"points        INTEGER NOT NULL,"
+        +"UNIQUE(problem_id, sequence),"
         +"FOREIGN KEY(problem_id) REFERENCES problems(id) ON DELETE CASCADE"
         +");",
       "CREATE TABLE IF NOT EXISTS testcases ("
         +"id          INTEGER PRIMARY KEY,"
         +"batch_id    INTEGER NOT NULL,"
-        +"order       INTEGER NOT NULL,"
+        +"sequence    INTEGER NOT NULL,"
         +"input       TEXT NOT NULL,"
         +"output      TEXT NOT NULL,"
+        +"UNIQUE(batch_id, sequence),"
         +"FOREIGN KEY(batch_id) REFERENCES batches(id) ON DELETE CASCADE"
         +");",
       "CREATE TABLE IF NOT EXISTS submissions ("
@@ -157,6 +159,7 @@ public class ConnectDB {
         +");",
       "CREATE TABLE IF NOT EXISTS sessions ("
         +"id             INTEGER PRIMARY KEY,"
+        +"token          TEXT NOT NULL,"
         +"session_info   BLOB NOT NULL,"
         +"last_active    TEXT NOT NULL"
         +");",
@@ -173,6 +176,7 @@ public class ConnectDB {
       "CREATE INDEX IF NOT EXISTS idx_user_id       ON submissions(user_id)",
       "CREATE INDEX IF NOT EXISTS idx_submissions   ON testcase_runs(submission_id, batch_id)",
       "CREATE INDEX IF NOT EXISTS idx_last_active   ON sessions(last_active)",
+      "CREATE INDEX IF NOT EXISTS idx_token         ON sessions(token)",
     };
 
     Statement statement = null;
@@ -188,7 +192,7 @@ public class ConnectDB {
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
-      this.close(statement);
+      ConnectDB.close(statement);
     }
   }
 }

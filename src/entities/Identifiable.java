@@ -9,6 +9,6 @@ package entities;
  * @version 1.0.0
  * @since 1.0.0
  */
-public interface Unique {
+public interface Identifiable {
   public long getId();
 }
