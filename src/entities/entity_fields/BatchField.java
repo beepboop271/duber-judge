@@ -1,4 +1,4 @@
-package entities;
+package entities.entity_fields;
 
 /**
  * [description]
@@ -9,7 +9,7 @@ package entities;
  * @version 1.0.0
  * @since 1.0.0
  */
-public enum UserType {
-  STANDARD,
-  ADMIN,
+public enum BatchField implements EntityField {
+  SEQUENCE,
+  POINTS,
 }

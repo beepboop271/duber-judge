@@ -16,10 +16,14 @@ public class Session {
   private Timestamp lastActive;
   private String token;
 
-  public Session(Timestamp lastActive, SessionInfo sessionInfo, String token) {
-    this.lastActive = lastActive;
-    this.sessionInfo = sessionInfo;
+  public Session(
+    String token,
+    SessionInfo sessionInfo,
+    Timestamp lastActive
+  ) {
     this.token = token;
+    this.sessionInfo = sessionInfo;
+    this.lastActive = lastActive;
   }
 
   public SessionInfo getSessionInfo() {

@@ -10,12 +10,22 @@ package entities;
  * @since 1.0.0
  */
 public enum ExecutionStatus {
-  ALL_CLEAR,
-  TIME_LIMIT_EXCEEDED,
+  PENDING,
+
+  INTERNAL_ERROR,
+
+  // illegal submission
+  UNKNOWN_LANGUAGE,
+  ILLEGAL_CODE,
+
+  COMPILE_ERROR,
+
+  // fails to provide correct output
+  INVALID_RETURN,
   WRONG_ANSWER,
+  TIME_LIMIT_EXCEEDED,
   MEMORY_LIMIT_EXCEEDED,
   RUNTIME_ERROR,
-  INVALID_RETURN,
-  INTERNAL_ERROR,
-  PENDING
+
+  ALL_CLEAR
 }

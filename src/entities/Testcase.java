@@ -16,6 +16,13 @@ public class Testcase {
   private String output;
 
 
+  /**
+   * 
+   * @param batchId
+   * @param sequence
+   * @param input
+   * @param output
+   */
   public Testcase(long batchId, int sequence, String input, String output) {
     this.batchId = batchId;
     this.sequence = sequence;
