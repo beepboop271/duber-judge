@@ -112,6 +112,7 @@ public class Judger {
     long totalDurationMills = 0;
     Problem problem = submission.getProblem();
     long timeLimitMills = problem.getTimeLimitMills();
+    long outputLimitBytes = problem.getOutputLimitBytes();
     ExecutionStatus submissionStatus = null;
     Batch[] batches = problem.getBatches();
 
@@ -133,7 +134,8 @@ public class Judger {
           t,
           launcher,
           this.pool,
-          timeLimitMills
+          timeLimitMills,
+          outputLimitBytes
         );
         batchCaseRunFutures[j] = caseRunFuture;
       }

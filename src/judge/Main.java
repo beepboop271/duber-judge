@@ -16,7 +16,7 @@ public class Main {
     // char
     // string
     // output the occurrences of char in string
-    Problem p1 = new ContestProblem(10, 0, 0, 1000*1, 5);
+    Problem p1 = new ContestProblem(10, 0, 0, 1000*1, 10, 5);
 
     Batch p1b1 = new Batch(5);
     p1b1.addTestcase(
@@ -69,6 +69,7 @@ public class Main {
     );    
     p1.addBatch(p1b3);
 
+    // should receive ALL_CLEAR
     Submission s1 = new Submission(
       p1,
       "char = input()\nstring = input()\nprint(string.count(char))",
@@ -76,6 +77,7 @@ public class Main {
       new Timestamp(System.currentTimeMillis())
     );
 
+    // should receive WRONG_ANSWER with score 0
     Submission s2 = new Submission(
       p1,
       "a = 1",
@@ -83,14 +85,36 @@ public class Main {
       new Timestamp(System.currentTimeMillis())
     );
 
+    // should receive WRONG_ANSWER, but partial points
     Submission s3 = new Submission(
+      p1,
+      "char = input()\n"
+      + "string = input()\n"
+      + "if len(string) < 10:\n"
+      + "\tprint(string.count(char))",
+      Language.PYTHON,
+      new Timestamp(System.currentTimeMillis())
+    );
+
+    // should receive OUTPUT_LIMIT_EXCEEDED
+    Submission s4 = new Submission(
+      p1,
+      "for i in range(100):"
+      + "\tprint('hello', end='')",
+      Language.PYTHON,
+      new Timestamp(System.currentTimeMillis())
+    );
+
+    // should receive TIME_LIMIT_EXCEEDED
+    Submission s5 = new Submission(
       p1,
       "while True:\n\ta = 1",
       Language.PYTHON,
       new Timestamp(System.currentTimeMillis())
     );
 
-    Submission s4 = new Submission(
+    // should receive COMPILE_ERROR
+    Submission s6 = new Submission(
       p1,
       "char = input()\nstring = input()\nprint(string.count(char))",
       Language.JAVA,
@@ -109,6 +133,8 @@ public class Main {
     judger.judge(s2);
     judger.judge(s3);
     judger.judge(s4);
+    judger.judge(s5);
+    judger.judge(s6);
     judger.shutdown();
   }
 }

@@ -27,10 +27,19 @@ public class Tester {
     Testcase testcase,
     SourceLauncher programLauncher,
     ExecutorService pool,
-    long timeLimitMills
+    long timeLimitMills,
+    long outputLimitBytes
   ) {
     CompletableFuture<TestcaseRun> f = new CompletableFuture<TestcaseRun>();
-    pool.submit(new TestcaseRunner(f, testcase, programLauncher, timeLimitMills));
+    pool.submit(
+      new TestcaseRunner(
+        f,
+        testcase,
+        programLauncher,
+        timeLimitMills,
+        outputLimitBytes
+      )
+    );
     return f;
   }
 
@@ -40,6 +49,7 @@ public class Tester {
     private final Testcase testcase;
     private final SourceLauncher programLauncher;
     private final long timeLimitMills;
+    private final long outputLimitBytes;
 
     private CompletableFuture<TestcaseRun> f;
 
@@ -47,12 +57,14 @@ public class Tester {
       CompletableFuture<TestcaseRun> f,
       Testcase testcase,
       SourceLauncher programLauncher,
-      long timeLimitMills
+      long timeLimitMills,
+      long outputLimitBytes
     ) {
       this.f = f;
       this.testcase = testcase;
       this.programLauncher = programLauncher;
       this.timeLimitMills = timeLimitMills;
+      this.outputLimitBytes = outputLimitBytes;
     }
 
     @Override
@@ -91,9 +103,15 @@ public class Tester {
 
         // read output
         int curByte = stdout.read();
+        int byteCount = 0;
         while (curByte != -1) { //TODO: check for output limit exceeded
           sb.append((char)curByte);
           curByte = stdout.read();
+          byteCount++;
+          if (byteCount > this.outputLimitBytes) {
+            status = ExecutionStatus.OUTPUT_LIMIT_EXCEEDED;
+            break;
+          }
         }
         // compare with expected output if submission hasn't received a status
         if (status == ExecutionStatus.PENDING) { 

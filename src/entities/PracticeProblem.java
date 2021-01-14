@@ -8,6 +8,7 @@ public class PracticeProblem extends Problem {
     int numSubmissions,
     int clearedSubmissions,
     long timeLimitMills,
+    long outputLimitBytes,
     String editorial
   ) {
     super(
@@ -15,7 +16,8 @@ public class PracticeProblem extends Problem {
       points,
       numSubmissions,
       clearedSubmissions,
-      timeLimitMills
+      timeLimitMills,
+      outputLimitBytes
     );
 
     this.editorial = editorial;

@@ -8,6 +8,7 @@ public abstract class Problem {
   private int numSubmissions;
   private int clearedSubmissions;
   private long timeLimitMills;
+  private long outputLimitBytes;
   private ArrayList<Batch> batches;
 
   public Problem(
@@ -15,13 +16,15 @@ public abstract class Problem {
     int points,
     int numSubmissions,
     int clearedSubmissions,
-    long timeLimitMills
+    long timeLimitMills,
+    long outputLimitBytes
   ) {
     this.problemType = problemType;
     this.points = points;
     this.numSubmissions = numSubmissions;
     this.clearedSubmissions = clearedSubmissions;
     this.timeLimitMills = timeLimitMills;
+    this.outputLimitBytes = outputLimitBytes;
     this.batches = new ArrayList<Batch>();
   }
 
@@ -52,6 +55,10 @@ public abstract class Problem {
 
   public long getTimeLimitMills() {
     return this.timeLimitMills;
+  }
+
+  public long getOutputLimitBytes() {
+    return this.outputLimitBytes;
   }
 
 }
