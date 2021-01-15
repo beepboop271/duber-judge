@@ -21,13 +21,15 @@ public class ContestProblem extends Problem {
     Category category,
     long creatorId,
     Timestamp createdAt,
-    Timestamp lastModified,
+    Timestamp lastModifiedAt,
     String title,
     String description,
     int points,
+    int timeLimitMillis,
+    int memoryLimitKb,
+    int outputLimitKb,
     int numSubmissions,
     int clearedSubmissions,
-    int timeLimit,
     int submissionsLimit,
     long contestId
   ) {
@@ -36,13 +38,15 @@ public class ContestProblem extends Problem {
       category,
       creatorId,
       createdAt,
-      lastModified,
+      lastModifiedAt,
       title,
       description,
       points,
+      timeLimitMillis,
+      memoryLimitKb,
+      outputLimitKb,
       numSubmissions,
-      clearedSubmissions,
-      timeLimit
+      clearedSubmissions
     );
 
     this.submissionsLimit = submissionsLimit;

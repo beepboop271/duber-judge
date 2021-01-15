@@ -7,22 +7,25 @@ import java.sql.Timestamp;
  * <p>
  * Created on 2021.01.07.
  *
- * @author Shari Sun
+ * @author Shari Sun, Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public abstract class Problem {
   private ProblemType problemType;
   private Category category;
   private long creatorId;
   private Timestamp createdAt;
-  private Timestamp lastModified;
+  private Timestamp lastModifiedAt;
   private String title;
   private String description;
   private int points;
+  private int timeLimitMillis;
+  private int memoryLimitKb;
+  private int outputLimitKb;
   private int numSubmissions;
   private int clearedSubmissions;
-  private long timeLimitMillis;
 
 
 
@@ -31,25 +34,29 @@ public abstract class Problem {
     Category category,
     long creatorId,
     Timestamp createdAt,
-    Timestamp lastModified,
+    Timestamp lastModifiedAt,
     String title,
     String description,
     int points,
+    int timeLimitMillis,
+    int memoryLimitKb,
+    int outputLimitKb,
     int numSubmissions,
-    int clearedSubmissions,
-    long timeLimitMillis
+    int clearedSubmissions
   ) {
     this.problemType = problemType;
     this.category = category;
     this.creatorId = creatorId;
     this.createdAt = createdAt;
-    this.lastModified = lastModified;
+    this.lastModifiedAt = lastModifiedAt;
     this.title = title;
     this.description = description;
     this.points = points;
+    this.timeLimitMillis = timeLimitMillis;
+    this.memoryLimitKb = memoryLimitKb;
+    this.outputLimitKb = outputLimitKb;
     this.numSubmissions = numSubmissions;
     this.clearedSubmissions = clearedSubmissions;
-    this.timeLimitMillis = timeLimitMillis;
   }
 
   public ProblemType getProblemType() {
@@ -68,8 +75,8 @@ public abstract class Problem {
     return this.createdAt;
   }
 
-  public Timestamp getLastModified() {
-    return this.lastModified;
+  public Timestamp getLastModifiedAt() {
+    return this.lastModifiedAt;
   }
 
   public String getTitle() {
@@ -92,8 +99,16 @@ public abstract class Problem {
     return this.clearedSubmissions;
   }
 
-  public long getTimeLimitMillis() {
+  public int getTimeLimitMillis() {
     return this.timeLimitMillis;
+  }
+
+  public int getMemoryLimitKb() {
+    return this.memoryLimitKb;
+  }
+
+  public int getOutputLimitKb() {
+    return this.outputLimitKb;
   }
 
 }

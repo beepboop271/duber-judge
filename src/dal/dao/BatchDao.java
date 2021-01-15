@@ -21,12 +21,13 @@ import entities.entity_fields.BatchField;
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
 
   @Override
   public long add(Batch batch) {
     String sql = "INSERT INTO batches(problem_id, sequence, points)"
-                +"VALUES (?, ?, ?);";
+                +" VALUES (?, ?, ?);";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -95,7 +96,7 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
   public ArrayList<Entity<Batch>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM batches WHERE id IN (%s);",
-      "?,".repeat(ids.length)
+      DaoHelper.generateWildcardString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -169,24 +170,7 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
 
   @Override
   public void delete(long id) {
-    String sql = "DELETE FROM batches WHERE id = ?;";
-
-    PreparedStatement ps = null;
-    Connection connection = null;
-    try {
-      connection = GlobalConnectionPool.pool.getConnection();
-      ps = connection.prepareStatement(sql);
-      ps.setLong(1, id);
-
-      ps.executeUpdate();
-
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      ConnectDB.close(ps);
-      GlobalConnectionPool.pool.releaseConnection(connection);
-    }
-
+    DaoHelper.deleteById("batches", id);
   }
 
   public ArrayList<Entity<Batch>> getByProblem(long problemId) {

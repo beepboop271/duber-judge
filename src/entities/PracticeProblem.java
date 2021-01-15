@@ -11,6 +11,7 @@ import java.sql.Timestamp;
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class PracticeProblem extends Problem {
   private String editorial;
 
@@ -18,13 +19,15 @@ public class PracticeProblem extends Problem {
     Category category,
     long creatorId,
     Timestamp createdAt,
-    Timestamp lastModified,
+    Timestamp lastModifiedAt,
     String title,
     String description,
     int points,
+    int timeLimitMillis,
+    int memoryLimitKb,
+    int outputLimitKb,
     int numSubmissions,
     int clearedSubmissions,
-    int timeLimit,
     String editorial
   ) {
     super(
@@ -32,13 +35,15 @@ public class PracticeProblem extends Problem {
       category,
       creatorId,
       createdAt,
-      lastModified,
+      lastModifiedAt,
       title,
       description,
       points,
+      timeLimitMillis,
+      memoryLimitKb,
+      outputLimitKb,
       numSubmissions,
-      clearedSubmissions,
-      timeLimit
+      clearedSubmissions
     );
 
     this.editorial = editorial;

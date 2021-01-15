@@ -28,7 +28,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
   @Override
   public long add(Testcase testcase) {
     String sql = "INSERT INTO testcases(batch_id, sequence, input, output)"
-                +"VALUES (?, ?, ?, ?);";
+                +" VALUES (?, ?, ?, ?);";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -99,7 +99,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
   public ArrayList<Entity<Testcase>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM testcases WHERE id IN (%s);",
-      "?,".repeat(ids.length)
+      DaoHelper.generateWildcardString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -186,23 +186,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
 
   @Override
   public void delete(long id) {
-    String sql = "DELETE FROM testcases WHERE id = ?;";
-
-    PreparedStatement ps = null;
-    Connection connection = null;
-    try {
-      connection = GlobalConnectionPool.pool.getConnection();
-      ps = connection.prepareStatement(sql);
-      ps.setLong(1, id);
-
-      ps.executeUpdate();
-
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      ConnectDB.close(ps);
-      GlobalConnectionPool.pool.releaseConnection(connection);
-    }
+    DaoHelper.deleteById("testcases", id);
   }
 
   public ArrayList<Entity<Testcase>> getByBatch(long batchId) {

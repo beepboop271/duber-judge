@@ -13,10 +13,11 @@ import java.util.Properties;
  * <p>
  * Created on 2021.01.07.
  *
- * @author Shari Sun
+ * @author Shari Sun, Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class ConnectDB {
 
   /**
@@ -92,18 +93,20 @@ public class ConnectDB {
         +"id                    INTEGER PRIMARY KEY,"
         +"problem_type          TEXT NOT NULL,"
         +"category              TEXT NOT NULL,"
-        +"contest_id            INTEGER,"
-        +"submissions_limit     INTEGER,"
         +"creator_id            INTEGER NOT NULL,"
         +"created_at            TEXT NOT NULL,"
-        +"last_modified         TEXT NOT NULL,"
+        +"last_modified_at      TEXT NOT NULL,"
         +"title                 TEXT NOT NULL,"
         +"description           TEXT NOT NULL,"
-        +"editorial             TEXT,"
         +"points                INTEGER NOT NULL,"
-        +"num_submissions       INTEGER NOT NULL,"
         +"time_limit_millis     INTEGER NOT NULL,"
+        +"memory_limit_kb       INTEGER NOT NULL,"
+        +"output_limit_kb       INTEGER NOT NULL,"
+        +"num_submissions       INTEGER NOT NULL,"
         +"cleared_submissions   INTEGER NOT NULL,"
+        +"contest_id            INTEGER,"
+        +"submissions_limit     INTEGER,"
+        +"editorial             TEXT,"
         +"FOREIGN KEY(contest_id) REFERENCES contests(id) ON DELETE CASCADE,"
         +"FOREIGN KEY(creator_id) REFERENCES users(id)"
         +");",

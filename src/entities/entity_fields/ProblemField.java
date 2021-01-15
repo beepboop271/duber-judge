@@ -5,18 +5,31 @@ package entities.entity_fields;
  * <p>
  * Created on 2021.01.03.
  *
- * @author Shari Sun
+ * @author Shari Sun, Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
  */
 public enum ProblemField implements EntityField {
   PROBLEM_TYPE,
   CATEGORY,
-  CONTEST_ID,
-  SUBMISSIONS_LIMIT,
+  CREATOR_ID,
+  CREATED_AT,
+  LAST_MODIFIED_AT,
   TITLE,
   DESCRIPTION,
-  EDITORIAL,
   POINTS,
-  TIME_LIMIT_MILLIS
+  TIME_LIMIT_MILLIS,
+  MEMORY_LIMIT_KB,
+  OUTPUT_LIMIT_KB,
+  NUM_SUBMISSIONS,
+  CLEARED_SUBMISSIONS,
+
+  // contest problems only
+  SUBMISSIONS_LIMIT,
+  CONTEST_ID,
+
+  // practice problems only
+  EDITORIAL,
+  
+  
 }

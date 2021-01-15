@@ -13,6 +13,7 @@ import entities.Entity;
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public interface Dao<T> {
   public long add(T data);
 

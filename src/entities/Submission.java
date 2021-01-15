@@ -47,7 +47,7 @@ public class Submission {
     return this.problemId;
   }
 
-  public long getUserid() {
+  public long getUserId() {
     return this.userId;
   }
 

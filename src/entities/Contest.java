@@ -1,6 +1,6 @@
 package entities;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * [description]
@@ -15,16 +15,16 @@ public class Contest {
   private long creatorId;
   private String description;
   private String title;
-  private Date startTime;
-  private Date endTime;
+  private Timestamp startTime;
+  private Timestamp endTime;
   private int durationMinutes;
 
   public Contest(
     long creatorId,
     String description,
     String title,
-    Date startTime,
-    Date endTime,
+    Timestamp startTime,
+    Timestamp endTime,
     int durationMinutes
   ) {
     this.creatorId = creatorId;
@@ -47,11 +47,11 @@ public class Contest {
     return this.title;
   }
 
-  public Date getStartTime() {
+  public Timestamp getStartTime() {
     return this.startTime;
   }
 
-  public Date getEndTime() {
+  public Timestamp getEndTime() {
     return this.endTime;
   }
 

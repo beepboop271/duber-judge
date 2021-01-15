@@ -25,12 +25,13 @@ import services.InvalidArguments;
  * @version 1.0.0
  * @since 1.0.0
  */
+
 public class UserDao implements Dao<User>, Updatable<UserField> {
 
   @Override
   public long add(User user) throws IllegalArgumentException {
     String sql = "INSERT INTO users(username, password, user_type, salt)"
-                +"VALUES (?, ?, ?, ?);";
+                +" VALUES (?, ?, ?, ?);";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -100,7 +101,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
   public ArrayList<Entity<User>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM users WHERE id IN (%s);",
-      "?,".repeat(ids.length)
+      DaoHelper.generateWildcardString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -170,24 +171,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
 
   @Override
   public void delete(long id) {
-    String sql = "DELETE FROM users WHERE id = ?;";
-
-    PreparedStatement ps = null;
-    Connection connection = null;
-    try {
-      connection = GlobalConnectionPool.pool.getConnection();
-      ps = connection.prepareStatement(sql);
-      ps.setLong(1, id);
-
-      ps.executeUpdate();
-
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      ConnectDB.close(ps);
-      GlobalConnectionPool.pool.releaseConnection(connection);
-    }
-
+    DaoHelper.deleteById("users", id);
   }
 
   /**

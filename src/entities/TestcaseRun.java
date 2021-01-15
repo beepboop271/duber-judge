@@ -13,7 +13,7 @@ public class TestcaseRun {
   private long submissionId;
   private long batchId;
   private long runDurationMillis;
-  private long memoryUsage;
+  private long memoryUsageKb;
   private ExecutionStatus status;
   private String output;
 
@@ -22,14 +22,14 @@ public class TestcaseRun {
     long submissionId,
     long batchId,
     long runDurationMillis,
-    long memoryUsage,
+    long memoryUsageKb,
     ExecutionStatus status,
     String output
   ) {
     this.submissionId = submissionId;
     this.batchId = batchId;
     this.runDurationMillis = runDurationMillis;
-    this.memoryUsage = memoryUsage;
+    this.memoryUsageKb = memoryUsageKb;
     this.status = status;
     this.output = output;
   }
@@ -46,8 +46,8 @@ public class TestcaseRun {
     return this.runDurationMillis;
   }
 
-  public long getMemoryUsage() {
-    return this.memoryUsage;
+  public long getMemoryUsageKb() {
+    return this.memoryUsageKb;
   }
 
   public ExecutionStatus getStatus() {

@@ -65,7 +65,7 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
   @Override
   public long add(Session session) {
     String sql = "INSERT INTO sessions(token, session_info, last_active)"
-                +"VALUES (?, ?, ?);";
+                +" VALUES (?, ?, ?);";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -132,7 +132,7 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
   public ArrayList<Entity<Session>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM sessions WHERE id IN (%s);",
-      "?,".repeat(ids.length)
+      DaoHelper.generateWildcardString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -210,23 +210,7 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
 
   @Override
   public void delete(long id) {
-    String sql = "DELETE FROM sessions WHERE id = ?;";
-
-    PreparedStatement ps = null;
-    Connection connection = null;
-    try {
-      connection = GlobalConnectionPool.pool.getConnection();
-      ps = connection.prepareStatement(sql);
-      ps.setLong(1, id);
-      ps.executeUpdate();
-
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      ConnectDB.close(ps);
-      GlobalConnectionPool.pool.releaseConnection(connection);
-    }
-
+    DaoHelper.deleteById("sessions", id);
   }
 
   public void deleteSessionFromBefore(Timestamp time) {
