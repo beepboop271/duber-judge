@@ -75,15 +75,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
         throw new RecordNotFoundException();
       }
 
-      testcase = new Entity<Testcase>(
-        result.getLong("id"),
-        new Testcase(
-          result.getLong("batch_id"),
-          result.getInt("sequence"),
-          result.getString("input"),
-          result.getString("output")
-        )
-      );
+      testcase = this.getTestcaseFromResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -115,15 +107,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        testcases.add(new Entity<Testcase>(
-          results.getLong("id"),
-          new Testcase(
-            results.getLong("batch_id"),
-            results.getInt("sequence"),
-            results.getString("input"),
-            results.getString("output")
-          ))
-        );
+        testcases.add(this.getTestcaseFromResultSet(results));
       }
 
     } catch (SQLException e) {
@@ -185,7 +169,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("testcases", id);
   }
 
@@ -243,6 +227,18 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
       ConnectDB.close(ps);
       GlobalConnectionPool.pool.releaseConnection(connection);
     }
+  }
+
+  private Entity<Testcase> getTestcaseFromResultSet(ResultSet result) throws SQLException {
+    return new Entity<Testcase>(
+      result.getLong("id"),
+      new Testcase(
+        result.getLong("batch_id"),
+        result.getInt("sequence"),
+        result.getString("input"),
+        result.getString("output")
+      )
+    );
   }
 
 }

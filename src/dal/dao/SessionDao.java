@@ -108,15 +108,7 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
         throw new RecordNotFoundException();
       }
 
-
-      user = new Entity<Session>(
-        result.getLong("id"),
-        new Session(
-          result.getString("token"),
-          this.deserialize((SerialBlob)result.getBlob("session_info")),
-          Timestamp.valueOf(result.getString("last_active"))
-        )
-      );
+      user = this.getSessionFromResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -148,17 +140,8 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        sessions.add(new Entity<Session>(
-          results.getLong("id"),
-          new Session(
-            results.getString("token"),
-            this.deserialize((SerialBlob)results.getBlob("session_info")),
-            Timestamp.valueOf(results.getString("last_active"))
-          ))
-        );
+        sessions.add(this.getSessionFromResultSet(results));
       }
-
-
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -209,7 +192,7 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("sessions", id);
   }
 
@@ -230,6 +213,17 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
       ConnectDB.close(ps);
       GlobalConnectionPool.pool.releaseConnection(connection);
     }
+  }
+
+  private Entity<Session> getSessionFromResultSet(ResultSet result) throws SQLException {
+    return new Entity<Session>(
+      result.getLong("id"),
+      new Session(
+        result.getString("token"),
+        this.deserialize((SerialBlob)result.getBlob("session_info")),
+        Timestamp.valueOf(result.getString("last_active"))
+      )
+    );
   }
 
 }

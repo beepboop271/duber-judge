@@ -73,14 +73,7 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
         throw new RecordNotFoundException();
       }
 
-      batch = new Entity<Batch>(
-        result.getLong("id"),
-        new Batch(
-          result.getLong("problem_id"),
-          result.getInt("sequence"),
-          result.getInt("points")
-        )
-      );
+      batch = this.getBatchFromResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -112,14 +105,7 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        batches.add(new Entity<Batch>(
-          results.getLong("id"),
-          new Batch(
-            results.getLong("problem_id"),
-            results.getInt("sequence"),
-            results.getInt("points")
-          )
-        ));
+        batches.add(this.getBatchFromResultSet(results));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -169,7 +155,7 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("batches", id);
   }
 
@@ -206,4 +192,14 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
     return batches;
   }
 
+  private Entity<Batch> getBatchFromResultSet(ResultSet result) throws SQLException {
+    return new Entity<Batch>(
+      result.getLong("id"),
+      new Batch(
+        result.getLong("problem_id"),
+        result.getInt("sequence"),
+        result.getInt("points")
+      )
+    );
+  }
 }

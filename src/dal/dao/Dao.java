@@ -21,5 +21,5 @@ public interface Dao<T> {
 
   public ArrayList<Entity<T>> getList(long[] ids);
 
-  public void delete(long id);
+  public void deleteById(long id);
 }

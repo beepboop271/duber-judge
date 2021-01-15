@@ -70,7 +70,7 @@ public class SubmissionDao implements Dao<Submission> {
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet result = null;
-    Entity<Submission> batch = null;
+    Entity<Submission> submission = null;
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
@@ -81,19 +81,7 @@ public class SubmissionDao implements Dao<Submission> {
         throw new RecordNotFoundException();
       }
 
-      batch = new Entity<Submission>(
-        result.getLong("id"),
-        new Submission(
-          result.getLong("problem_id"),
-          result.getLong("user_id"),
-          result.getString("code"),
-          Language.valueOf(result.getString("language")),
-          Timestamp.valueOf(result.getString("created_at")),
-          ExecutionStatus.valueOf(result.getString("status")),
-          result.getInt("score"),
-          result.getLong("run_duration")
-        )
-      );
+      submission = this.getSubmissionByResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -102,7 +90,7 @@ public class SubmissionDao implements Dao<Submission> {
       ConnectDB.close(result);
       GlobalConnectionPool.pool.releaseConnection(connection);
     }
-    return batch;
+    return submission;
   }
 
   @Override
@@ -125,19 +113,7 @@ public class SubmissionDao implements Dao<Submission> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        submissions.add(new Entity<Submission>(
-          results.getLong("id"),
-          new Submission(
-            results.getLong("problem_id"),
-            results.getLong("user_id"),
-            results.getString("code"),
-            Language.valueOf(results.getString("language")),
-            Timestamp.valueOf(results.getString("created_at")),
-            ExecutionStatus.valueOf(results.getString("status")),
-            results.getInt("score"),
-            results.getLong("run_duration")
-          )
-        ));
+        submissions.add(this.getSubmissionByResultSet(results));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -150,8 +126,23 @@ public class SubmissionDao implements Dao<Submission> {
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("submissions", id);
   }
 
+  private Entity<Submission> getSubmissionByResultSet(ResultSet result) throws SQLException {
+    return new Entity<Submission>(
+      result.getLong("id"),
+      new Submission(
+        result.getLong("problem_id"),
+        result.getLong("user_id"),
+        result.getString("code"),
+        Language.valueOf(result.getString("language")),
+        Timestamp.valueOf(result.getString("created_at")),
+        ExecutionStatus.valueOf(result.getString("status")),
+        result.getInt("score"),
+        result.getLong("run_duration")
+      )
+    );
+  }
 }

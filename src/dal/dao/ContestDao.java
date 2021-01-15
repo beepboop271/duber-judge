@@ -134,17 +134,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
         throw new RecordNotFoundException();
       }
 
-      contest = new Entity<Contest>(
-        result.getLong("id"),
-        new Contest(
-          result.getLong("creator_Id"),
-          result.getString("description"),
-          result.getString("title"),
-          Timestamp.valueOf(result.getString("start_time")),
-          Timestamp.valueOf(result.getString("end_time")),
-          result.getInt("duration")
-        )
-      );
+      contest = this.getContestFromResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -176,17 +166,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        contests.add(new Entity<Contest>(
-          results.getLong("id"),
-          new Contest(
-            results.getLong("creator_Id"),
-            results.getString("description"),
-            results.getString("title"),
-            Timestamp.valueOf(results.getString("start_time")),
-            Timestamp.valueOf(results.getString("end_time")),
-            results.getInt("duration")
-          )
-        ));
+        contests.add(this.getContestFromResultSet(results));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -199,8 +179,21 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("contests", id);
   }
 
+  private Entity<Contest> getContestFromResultSet(ResultSet result) throws SQLException {
+    return new Entity<Contest>(
+      result.getLong("id"),
+      new Contest(
+        result.getLong("creator_Id"),
+        result.getString("description"),
+        result.getString("title"),
+        Timestamp.valueOf(result.getString("start_time")),
+        Timestamp.valueOf(result.getString("end_time")),
+        result.getInt("duration")
+      )
+    );
+  }
 }

@@ -77,15 +77,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
         throw new RecordNotFoundException();
       }
 
-      user = new Entity<User>(
-        result.getLong("id"),
-        new User(
-          result.getString("username"),
-          result.getString("password"),
-          UserType.valueOf(result.getString("user_type")),
-          result.getString("salt")
-        )
-      );
+      user = this.getUserFromResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -117,15 +109,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        users.add(new Entity<User>(
-          results.getLong("id"),
-          new User(
-            results.getString("username"),
-            results.getString("password"),
-            UserType.valueOf(results.getString("user_type")),
-            results.getString("salt")
-          ))
-        );
+        users.add(this.getUserFromResultSet(results));
       }
 
     } catch (SQLException e) {
@@ -170,7 +154,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("users", id);
   }
 
@@ -278,4 +262,15 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
     return users;
   }
 
+  private Entity<User> getUserFromResultSet(ResultSet result) throws SQLException {
+    return new Entity<User>(
+      result.getLong("id"),
+      new User(
+        result.getString("username"),
+        result.getString("password"),
+        UserType.valueOf(result.getString("user_type")),
+        result.getString("salt")
+      )
+    );
+  }
 }

@@ -76,17 +76,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
         throw new RecordNotFoundException();
       }
 
-      testcaseRun = new Entity<TestcaseRun>(
-        result.getLong("id"),
-        new TestcaseRun(
-          result.getLong("submission_id"),
-          result.getLong("batch_id"),
-          result.getLong("run_duration_millis"),
-          result.getLong("memory_usage"),
-          ExecutionStatus.valueOf(result.getString("status")),
-          result.getString("output")
-        )
-      );
+      testcaseRun = this.getTestcaseRunFromResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -118,18 +108,9 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        testcaseRuns.add(new Entity<TestcaseRun>(
-          results.getLong("id"),
-          new TestcaseRun(
-            results.getLong("submission_id"),
-            results.getLong("batch_id"),
-            results.getInt("run_duration_millis"),
-            results.getInt("memory_usage"),
-            ExecutionStatus.valueOf(results.getString("status")), 
-            results.getString("output")
-          )
-        ));
+        testcaseRuns.add(this.getTestcaseRunFromResultSet(results));
       }
+      
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
@@ -141,10 +122,9 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("testcase_runs", id);
   }
-
 
   public ArrayList<Entity<TestcaseRun>> getByBatch(long submissionId, long batchId) {
     String sql = "SELECT * FROM testcase_runs WHERE submission_id = ?, batch_id = ?;";
@@ -185,8 +165,21 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
   }
 
   public void deleteBySubmission(long submissionId) {
-
+    //TODO: finish
   }
 
-
+  private Entity<TestcaseRun> getTestcaseRunFromResultSet(ResultSet result)
+    throws SQLException {
+    return new Entity<TestcaseRun>(
+      result.getLong("id"),
+      new TestcaseRun(
+        result.getLong("submission_id"),
+        result.getLong("batch_id"),
+        result.getLong("run_duration_millis"),
+        result.getLong("memory_usage"),
+        ExecutionStatus.valueOf(result.getString("status")),
+        result.getString("output")
+      )
+    );
+  }
 }

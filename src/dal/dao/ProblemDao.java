@@ -47,7 +47,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           );
         } else if ((ProblemType)value == ProblemType.PRACTICE) {
           this.add(DaoHelper.convertToPracticeProblem(problem));
-          this.delete(id);
+          this.deleteById(id);
         }
         return;
 
@@ -309,7 +309,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("problems", id);
   }
 

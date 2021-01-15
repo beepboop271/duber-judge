@@ -118,16 +118,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
       }
 
 
-      contestSession = new Entity<ContestSession>(
-        result.getLong("id"),
-        new ContestSession(
-          result.getLong("contest_id"),
-          result.getLong("user_id"),
-          Timestamp.valueOf(result.getString("started_at")),
-          ContestStatus.valueOf(result.getString("status")),
-          result.getInt("score")
-        )
-      );
+      contestSession = this.getContestSessionFromResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -159,18 +150,8 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
 
       results = ps.executeQuery();
       while (results.next()) {
-        sessions.add(new Entity<ContestSession>(
-          results.getLong("id"),
-          new ContestSession(
-          results.getLong("contest_id"),
-          results.getLong("user_id"),
-          Timestamp.valueOf(results.getString("started_at")),
-          ContestStatus.valueOf(results.getString("status")),
-          results.getInt("score")
-          ))
-        );
+        sessions.add(this.getContestSessionFromResultSet(results));
       }
-
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -183,8 +164,22 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("contest_sessions", id);
+  }
+
+  private Entity<ContestSession> getContestSessionFromResultSet(ResultSet result)
+    throws SQLException {
+    return new Entity<ContestSession>(
+      result.getLong("id"),
+      new ContestSession(
+        result.getLong("contest_id"),
+        result.getLong("user_id"),
+        Timestamp.valueOf(result.getString("started_at")),
+        ContestStatus.valueOf(result.getString("status")),
+        result.getInt("score")
+      )
+    );
   }
 
 }

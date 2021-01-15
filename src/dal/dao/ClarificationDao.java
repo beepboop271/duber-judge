@@ -106,15 +106,7 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
         throw new RecordNotFoundException();
       }
 
-      clarification = new Entity<Clarification>(
-        result.getLong("id"),
-        new Clarification(
-          result.getLong("problem_id"),
-          result.getLong("user_id"),
-          result.getString("message"),
-          result.getString("response")
-        )
-      );
+      clarification = this.getClarificationFromResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -146,15 +138,7 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
 
       results = ps.executeQuery();
       while (results.next()) {
-        clarifications.add(new Entity<Clarification>(
-          results.getLong("id"),
-          new Clarification(
-            results.getLong("problem_id"),
-            results.getLong("user_id"),
-            results.getString("message"),
-            results.getString("response")
-          )
-        ));
+        clarifications.add(this.getClarificationFromResultSet(results));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -167,8 +151,20 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
   }
 
   @Override
-  public void delete(long id) {
+  public void deleteById(long id) {
     DaoHelper.deleteById("clarifications", id);
   }
 
+  private Entity<Clarification> getClarificationFromResultSet(ResultSet result)
+    throws SQLException {
+    return new Entity<Clarification>(
+      result.getLong("id"),
+      new Clarification(
+        result.getLong("problem_id"),
+        result.getLong("user_id"),
+        result.getString("message"),
+        result.getString("response")
+      )
+    );
+  }
 }
