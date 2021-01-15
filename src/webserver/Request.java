@@ -25,31 +25,43 @@ public class Request extends HttpMessage {
   private String path;
 
   /**
-   * Constructs a new Request without any headers.
+   * Constructs a new Request without any headers or a body.
+   * <p>
+   * The body will be initialized as an empty string.
    * 
    * @param method the HTTP method for the request.
    * @param path   the path for the request.
    */
   public Request(String method, String path) {
-    this(method, path, new HashMap<String, String>());
+    this(method, path, new HashMap<String, String>(), "");
   }
 
   /**
-   * Constructs a new Request with specified headers.
+   * Constructs a new Request with a body but no headers.
+   * 
+   * @param method the HTTP method for the request.
+   * @param path   the path for the request.
+   * @param body   the body of the request.
+   */
+  public Request(String method, String path, String body) {
+    this(method, path, new HashMap<String, String>(), "");
+  }
+
+  /**
+   * Constructs a new Request with specified headers but no body.
+   * <p>
+   * The body will be initialized as an empty string.
    * 
    * @param method  the HTTP method for the request.
    * @param path    the path for the request.
    * @param headers the headers for this request.
    */
   public Request(String method, String path, HashMap<String, String> headers) {
-    super(headers);
-
-    this.method = method;
-    this.path = path;
+    this(method, path, headers, "");
   }
 
   /**
-   * Constructs a new Request with specified string array of headers.
+   * Constructs a new Request with specified string array of headers but no body.
    * <p>
    * This constructor will accept a string array of headers, seperated by a colon.
    * <p>
@@ -62,7 +74,18 @@ public class Request extends HttpMessage {
    * @param headers the headers for this request.
    */
   public Request(String method, String path, String[] headers) {
-    super(headers);
+    this(method, path, headers, "");
+  }
+
+  public Request(String method, String path, HashMap<String, String> headers, String body) {
+    super(headers, body);
+
+    this.method = method;
+    this.path = path;
+  }
+
+  public Request(String method, String path, String[] headers, String body) {
+    super(headers, body);
 
     this.method = method;
     this.path = path;

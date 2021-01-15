@@ -25,6 +25,8 @@ public class Response extends HttpMessage {
 
   /**
    * Constructs a new Response, without any body or headers.
+   * <p>
+   * The body will be initialized as an empty string.
    * 
    * @param statusCode the status code of the response (eg. 201, 404, etc)
    */

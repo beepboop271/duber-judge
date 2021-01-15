@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 
 import dubjhandlers.ProblemHandler;
 import dubjhandlers.LeaderboardHandler;
+
 public class WebServer {
   /** The port that this WebServer is hosted on. **/
   private int port;
@@ -141,6 +142,65 @@ public class WebServer {
      * Starts this ConnectionHandler and begins handling a specific client.
      */
     public void run() {
+      String statusLine = "";
+      String[] statusTokens;
+      String method;
+      String fullPath;
+      String protocol;
+
+      String headerLine = "";
+      String[] headers;
+
+      String body = "";
+
+      try {
+        while (statusLine.equals("")) {
+          if (input.ready()) {
+            statusLine = input.readLine();
+
+            // We add them to one large header line so we can split it later and have the
+            // string array be the correct size
+
+            // Since readLine() strips the \n, we can safely use \n as a delimiter for split
+            while (input.ready()) {
+              headerLine += input.readLine() + "\n";
+            }
+          }
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      // The body is simply the last string in the request that we can parse
+      body = headerLine.substring(headerLine.lastIndexOf("\n"));
+      // Everything else is a lot of headers
+      headerLine = headerLine.substring(0, headerLine.lastIndexOf("\n"));
+      headers = headerLine.split("\n");
+
+      // This should be a 3 string array
+      statusTokens = statusLine.split(" ");
+      method = statusTokens[0];
+      fullPath = statusTokens[1];
+      protocol = statusTokens[2];
+
+      Response response;
+      if (routes.containsKey(fullPath)) {
+        response = routes.get(fullPath).accept(new Request(method, fullPath, headers, body));
+      } else {
+        // Inform browser that the resource could not be found
+        response = new Response(404);
+      }
+
+      output.println(response);
+      output.flush();
+
+      try {
+        input.close();
+        output.close();
+        client.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 }
