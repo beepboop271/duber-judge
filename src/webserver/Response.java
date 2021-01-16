@@ -1,6 +1,6 @@
 package webserver;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class represents an HTTP {@code Response} object.
@@ -54,7 +54,7 @@ public class Response extends HttpMessage {
    * @param headers    a map with the headers of the response.
    * @param body       the body of the response.
    */
-  public Response(int statusCode, HashMap<String, String> headers, String body) {
+  public Response(int statusCode, Map<String, String> headers, String body) {
     super(headers);
 
     this.statusString = "HTTP/1.1 " + statusCode;
@@ -87,7 +87,7 @@ public class Response extends HttpMessage {
    * @param statusCode the status code of the response (eg. 201, 404, etc)
    * @param headers    a map with the headers of the response.
    */
-  public Response(int statusCode, HashMap<String, String> headers) {
+  public Response(int statusCode, Map<String, String> headers) {
     this(statusCode, headers, "");
   }
 

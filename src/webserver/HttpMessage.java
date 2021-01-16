@@ -18,7 +18,7 @@ import java.util.Map;
  */
 abstract class HttpMessage {
   /** The headers of this HttpMessage. */
-  protected HashMap<String, String> headers;
+  protected Map<String, String> headers;
   /** The body of this HttpMessage, if present. */
   protected String body;
 
@@ -48,7 +48,7 @@ abstract class HttpMessage {
    * 
    * @param headers a {@code HashMap<String, String>} with applicable headers.
    */
-  public HttpMessage(HashMap<String, String> headers) {
+  public HttpMessage(Map<String, String> headers) {
     this(headers, "");
   }
 
@@ -59,8 +59,8 @@ abstract class HttpMessage {
    * @param headers a {@code HashMap<String, String>} with applicable headers.
    * @param body    the body of the message, if applicable.
    */
-  public HttpMessage(HashMap<String, String> headers, String body) {
-    this.headers = new HashMap<>();
+  public HttpMessage(Map<String, String> headers, String body) {
+    this.headers = new HashMap<>(headers);
     this.body = body;
   }
 
@@ -157,14 +157,14 @@ abstract class HttpMessage {
    * @return the original {@code HashMap<String, String>} containing this
    *         message's headers.
    */
-  public HashMap<String, String> getHeaders() {
+  public Map<String, String> getHeaders() {
     return this.headers;
   }
 
   /**
    * Retrieves a specified header's value from this message's headers.
    * <p>
-   * As noted by the {@link java.util.HashMap#get(Object) get method used},
+   * As noted by the {@link java.util.Map#get(Object) get method used},
    * {@code null} will be returned if no key was found. {@code null} does not
    * necessarily mean that a key does not exist, as the key could have been mapped
    * to {@code null}. Use {@link #hasHeader(String)} to check if a key exists.

@@ -326,9 +326,9 @@ public class WebServer {
      * @return an HTTP response to return to the user.
      */
     private Response generateResponse(Request request) {
-      if (cache.checkCache(request.getPath())) {
+      if (cache.checkCache(request.getFullPath())) {
         // Retrieve the cached object
-        return new Response(200, cache.getCachedObject(request.getPath()));
+        return new Response(200, cache.getCachedObject(request.getFullPath()));
       }
 
       RouteTarget handler = getRoute(request.getPath());
