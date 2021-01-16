@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 
 import dubjhandlers.StaticHandler;
+import webserver.webcache.WebLruCache;
 import dubjhandlers.ProblemHandler;
 import dubjhandlers.LeaderboardHandler;
 import dubjhandlers.HomeHandler;
@@ -25,6 +26,9 @@ public class WebServer {
   private ServerSocket sock;
   /** The routes that this WebServer has. */
   private HashMap<String, RouteTarget> routes;
+  /** The web cache to store cached pages. */
+  private WebLruCache cache;
+
   /**
    * The thread pool, to execute connections without needing to allocate a thread
    * to each connection.
@@ -45,17 +49,36 @@ public class WebServer {
   }
 
   /**
-   * Constructs a new WebServer.
+   * Constructs a new WebServer that should run on a specified port.
    * <p>
    * To actually start running the web server after constructing it, call
    * {@link #run()}.
+   * <p>
+   * The web cache will be made with the default web cache capacity, defined by
+   * the constant {@link WebLruCache#DEFAULT_MAX_CAPACITY}.
    * 
    * @param port the port to host this web server on.
    */
   public WebServer(int port) {
+    this(port, WebLruCache.DEFAULT_MAX_CAPACITY);
+  }
+
+  /**
+   * Constructs a new WebServer with a specified cache capacity that should run on
+   * a specified port.
+   * <p>
+   * To actually start running the web server after constructing it, call
+   * {@link #run()}.
+   * 
+   * @param port             the port to host this web server on.
+   * @param maxCacheCapacity the max capacity of this web server's web cache
+   */
+  public WebServer(int port, int maxCacheCapacity) {
     this.workers = Executors.newCachedThreadPool();
     this.routes = new HashMap<>();
     this.port = port;
+
+    this.cache = new WebLruCache(maxCacheCapacity);
   }
 
   /**
@@ -263,28 +286,64 @@ public class WebServer {
       fullPath = statusTokens[1];
       protocol = statusTokens[2];
 
-      Response response;
-      RouteTarget handler = getRoute(fullPath);
+      // Generate response from request object from the parsed HTTP request
+      Request newRequest = new Request(method, fullPath, headers, body);
+      Response response = generateResponse(newRequest);
 
-      if (handler != null) {
-        response = handler.accept(new Request(method, fullPath, headers, body));
-      } else {
-        String failedBody = "<html><head><TITLE>404 Not Found.</TITLE></head><body>404 Not Found.</body></html>";
-
-        response = new Response(200, failedBody);
-        response.addHeader("Content-Type", "text/html");
-        response.addHeader("Content-Length", "82");
+      // Re-insert into cache if we need to
+      if (!cache.checkCache(fullPath)) {
+        cache.putCache(response.getBody(), fullPath, 60);
       }
 
+      // Output to user and shut down
       output.println(response);
       output.flush();
 
+      closeConnection();
+    }
+
+    /**
+     * Attempts to close the connection with the client.
+     */
+    private void closeConnection() {
       try {
         input.close();
         output.close();
         client.close();
       } catch (IOException e) {
+        System.out.println("Failed to close connection.");
         e.printStackTrace();
+      }
+    }
+
+    /**
+     * Generates a new response given an HTTP request.
+     * <p>
+     * This response can stem from the cache or a handler. If neither can handle the
+     * request, a generic fail page will be returned alonside a 404 response.
+     * 
+     * @param request the HTTP request to handle.
+     * @return an HTTP response to return to the user.
+     */
+    private Response generateResponse(Request request) {
+      if (cache.checkCache(request.getPath())) {
+        // Retrieve the cached object
+        return new Response(200, cache.getCachedObject(request.getPath()));
+      }
+
+      RouteTarget handler = getRoute(request.getPath());
+
+      if (handler != null) {
+        // Return the accepted response
+        return handler.accept(request);
+      } else {
+        // Generate the failed response
+        String failedBody = "<html><head><TITLE>404 Not Found.</TITLE></head><body>404 Not Found.</body></html>";
+
+        Response response = new Response(200, failedBody);
+        response.addHeader("Content-Type", "text/html");
+        response.addHeader("Content-Length", "82");
+        return response;
       }
     }
   }

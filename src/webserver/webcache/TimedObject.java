@@ -1,4 +1,4 @@
-package webserver;
+package webserver.webcache;
 
 /**
  * A timed class that holds an object, as well as an associated expiry time.
@@ -80,5 +80,14 @@ public class TimedObject<T> {
    */
   public T getObject() {
     return this.object;
+  }
+
+  /**
+   * Updates this object, without modifying the expiration time.
+   * 
+   * @param update the new updated object.
+   */
+  public void updateObject(T update) {
+    this.object = update;
   }
 }

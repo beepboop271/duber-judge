@@ -1,4 +1,4 @@
-package webserver;
+package webserver.webcache;
 
 /**
  * A simple node class designed to work alongside a doubly linked list
