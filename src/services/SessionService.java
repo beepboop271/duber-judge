@@ -20,9 +20,12 @@ import entities.entity_fields.SessionField;
  * @since 1.0.0
  */
 public class SessionService {
-  private SessionDao sessionDao = new SessionDao();
+  private SessionDao sessionDao;
 
-
+  public SessionService() {
+    this.sessionDao = new SessionDao();
+  }
+  
   private String generateToken() {
     SecureRandom random = new SecureRandom();
     byte[] token = new byte[32];

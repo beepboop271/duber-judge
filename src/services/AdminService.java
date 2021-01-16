@@ -39,25 +39,25 @@ import entities.entity_fields.TestcaseField;
  * @since 1.0.0
  */
 public class AdminService {
-  UserService userService = new UserService();
-  ContestDao contestDao = new ContestDao();
-  ContestSessionDao contestSessionDao = new ContestSessionDao();
-  ProblemDao problemDao = new ProblemDao();
-  BatchDao batchDao = new BatchDao();
-  TestcaseDao testcaseDao = new TestcaseDao();
-  ClarificationDao clarificationDao = new ClarificationDao();
-  UserDao userDao = new UserDao();
+  private UserService userService;
+  private ContestDao contestDao;
+  private ContestSessionDao contestSessionDao;
+  private ProblemDao problemDao;
+  private BatchDao batchDao;
+  private TestcaseDao testcaseDao;
+  private ClarificationDao clarificationDao;
+  private UserDao userDao;
 
-  private void validate(long userId) throws InsufficientPermissionException {
-    try {
-      if (!this.userService.isAdmin(userId)) {
-        throw new InsufficientPermissionException();
-      }
-    } catch (RecordNotFoundException e) {
-      e.printStackTrace();
-    }
+  public AdminService() {
+    this.userService = new UserService();
+    this.contestDao = new ContestDao();
+    this.contestSessionDao = new ContestSessionDao();
+    this.problemDao = new ProblemDao();
+    this.batchDao = new BatchDao();
+    this.testcaseDao = new TestcaseDao();
+    this.clarificationDao = new ClarificationDao();
+    this.userDao = new UserDao();
   }
-
 
   public long createContest(
     long userId,
@@ -78,17 +78,6 @@ public class AdminService {
       durationMinutes
     ));
     return id;
-  }
-
-  private void validateContest(long userId, long contestId) throws InsufficientPermissionException {
-    this.validate(userId);
-    try {
-      if (this.contestDao.get(contestId).getContent().getCreatorId() != userId) {
-        throw new InsufficientPermissionException();
-      }
-    } catch (RecordNotFoundException e) {
-      System.out.println("contest does not exist");
-    }
   }
 
   public void updateContestField(
@@ -112,8 +101,6 @@ public class AdminService {
         this.testcaseDao.deleteByBatch(batch.getId());
       }
     }
-
-
   }
 
   public void kickUserFromContest(
@@ -271,7 +258,8 @@ public class AdminService {
     this.testcaseDao.deleteByBatch(batchId);
   }
 
-  private void validateTestcase(long userId, long testcaseId) throws InsufficientPermissionException {
+  private void validateTestcase(long userId, long testcaseId)
+    throws InsufficientPermissionException {
     this.validate(userId);
     try {
       if (this.batchDao.get(testcaseId).getContent().getCreatorId() != userId) {
@@ -324,4 +312,26 @@ public class AdminService {
     this.validate(userId);
     this.clarificationDao.update(clarificationId, ClarificationField.RESPONSE, response);
   }
+
+  private void validate(long userId) throws InsufficientPermissionException {
+    try {
+      if (!this.userService.isAdmin(userId)) {
+        throw new InsufficientPermissionException();
+      }
+    } catch (RecordNotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void validateContest(long userId, long contestId) throws InsufficientPermissionException {
+    this.validate(userId);
+    try {
+      if (this.contestDao.get(contestId).getContent().getCreatorId() != userId) {
+        throw new InsufficientPermissionException();
+      }
+    } catch (RecordNotFoundException e) {
+      System.out.println("contest does not exist");
+    }
+  }
+
 }

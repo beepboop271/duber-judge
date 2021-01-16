@@ -21,7 +21,6 @@ public class ContestProblem extends Problem {
   /**
    * Constructs a new ContestProblem.
    * 
-   * @param problemType        the type of this problem.
    * @param category           the category this problem is in.
    * @param creatorId          the id of the creator of this problem.
    * @param createdAt          the time this problem was created.

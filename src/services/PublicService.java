@@ -16,6 +16,11 @@ import entities.User;
  * @since 1.0.0
  */
 public class PublicService {
+
+  public PublicService() {
+    
+  }
+  
   /**
    * Get the contests ordered from latest to earliest.
    *

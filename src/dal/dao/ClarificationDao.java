@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 
 import dal.connection.ConnectDB;
@@ -75,8 +76,12 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
       ps.setLong(1, data.getProblemId());
       ps.setLong(2, data.getUserId());
       ps.setString(3, data.getMessage());
-      ps.setString(4, data.getResponse());
-
+      if (data.getResponse() == null) {
+        ps.setNull(4, Types.VARCHAR);
+      } else {
+        ps.setString(4, data.getResponse());
+      }
+      
       ps.executeUpdate();
       key = ps.getGeneratedKeys();
       key.next();

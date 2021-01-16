@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * <p>
  * Created on 2021.01.07.
  *
- * @author Shari Sun
+ * @author Shari Sun, Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -59,6 +59,32 @@ public class Submission {
     this.status = status;
     this.score = score;
     this.runDurationMillis = runDurationMillis;
+  }
+
+  /**
+   * Constructs a new pending Submission.
+   * 
+   * @param problemId         the associated problem's id.
+   * @param userId            the id of the user who submitted.
+   * @param code              the code in the submission.
+   * @param language          the language used for submission.
+   * @param createdAt         when the submission was created.
+   */
+  public Submission(
+    long problemId,
+    long userId,
+    String code,
+    Language language,
+    Timestamp createdAt
+  ) {
+    this.problemId = problemId;
+    this.userId = userId;
+    this.code = code;
+    this.language = language;
+    this.createdAt = createdAt;
+    this.status = ExecutionStatus.PENDING;
+    this.score = 0;
+    this.runDurationMillis = 0;
   }
 
   /**

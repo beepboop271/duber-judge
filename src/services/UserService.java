@@ -21,12 +21,19 @@ import entities.entity_fields.UserField;
  * <p>
  * Created on 2021.01.11.
  *
- * @author Shari Sun
+ * @author Shari Sun, Candice Zhang
  * @version 1.0.0
  * @since 1.0.0
  */
 public class UserService {
-  private UserDao userDao = new UserDao();
+  private static String REGEX_FILTER_USERNAME = "^(?=.*[a-zA-Z_-])(?=\\S+$).{3,}$";
+  private static String REGEX_FILTER_PASSWORD = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{6,}$";
+
+  private UserDao userDao;
+
+  public UserService() {
+    this.userDao = new UserDao();
+  }
 
   private String generateSalt() {
     SecureRandom random = new SecureRandom();
@@ -50,24 +57,27 @@ public class UserService {
   /**
    * Ensures that the username meets the requirements.
    * <p>
-   * No special characters allowed in uesr name and it must be at least 3 characters.
+   * A valid username should be at least 3 characters long,
+   * and should only contain letters, numbers, underscores, and dashes.
    *
    * @param username       the username to check for
    * @return               whether or not it's valid
    */
   private boolean validateUsername(String username) {
-
+    return username.matches(UserService.REGEX_FILTER_USERNAME);
   }
 
   /**
-   * Ensures that the password is at least 6 characters long and includes
-   * a mix of letters and numbers.
+   * Ensures that the password meets the requirements.
+   * <p>
+   * A valid password should be at least 6 characters long and include
+   * a mix of letters and numbers. It should not contain any whitespace character. 
    *
    * @param password       the password to check for
    * @return               whether or not the password's valid
    */
   private boolean validatePassword(String password) {
-
+    return password.matches(UserService.REGEX_FILTER_PASSWORD);
   }
 
   private void validateUser(String username, String password) throws IllegalArgumentException {
@@ -178,7 +188,7 @@ public class UserService {
   }
 
   public ArrayList<Entity<Contest>> getActiveContests(long userId) {
-
+    
   }
 
   public ArrayList<Entity<Contest>> getParticipatedContests(long userId) {
@@ -189,4 +199,7 @@ public class UserService {
 
   }
 
+  public int getSubmissionCount(long userId, long problemId) {
+
+  }
 }

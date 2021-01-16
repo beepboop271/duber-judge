@@ -25,7 +25,7 @@ public class Clarification {
    * @param problemId the problem id this clarification is for.
    * @param userId    the user id of who requested the clarification.
    * @param message   the clarification message.
-   * @param response  the clarification response.
+   * @param response  the clarification response, null if there is no response yet.
    */
   public Clarification(long problemId, long userId, String message, String response) {
     this.problemId = problemId;
