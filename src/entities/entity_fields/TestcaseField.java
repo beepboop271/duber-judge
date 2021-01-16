@@ -10,7 +10,7 @@ package entities.entity_fields;
  * @since 1.0.0
  */
 public enum TestcaseField implements EntityField {
-  BATCH,
+  BATCH_ID,
   SEQUENCE,
   INPUT,
   OUTPUT
