@@ -70,21 +70,50 @@ public class UserService {
 
   }
 
+  private void validateUser(String username, String password) throws IllegalArgumentException {
+    if (!this.validateUsername(username)) {
+      throw new IllegalArgumentException(InvalidArguments.BAD_USERNAME.toString());
+    }
+    if (!this.validatePassword(password)) {
+      throw new IllegalArgumentException(InvalidArguments.INSECURE_PASSWORD.toString());
+    }
+  }
 
   public long createUser(String username, String password) throws IllegalArgumentException {
-
+    this.validateUser(username, password);
+    String salt = this.generateSalt();
+    String hashed = this.hashPassword(password, salt);
+    return this.userDao.add(new User(username, hashed, UserType.STANDARD, salt));
   }
 
   public long createAdmin(String username, String password) throws IllegalArgumentException {
-
+    this.validateUser(username, password);
+    String salt = this.generateSalt();
+    String hashed = this.hashPassword(password, salt);
+    return this.userDao.add(new User(username, hashed, UserType.ADMIN, salt));
   }
 
   public long login(String username, String password) throws IllegalArgumentException {
-
+    long id = 0;
+    try {
+      Entity<User> user = this.userDao.getByUsername(username);
+      String hashed = this.hashPassword(password, user.getContent().getSalt());
+      if (!hashed.equals(user.getContent().getPassword())) {
+        throw new IllegalArgumentException(InvalidArguments.INVALID_CREDENTIALS.toString());
+      }
+      id = user.getId();
+    } catch (RecordNotFoundException e) {
+      throw new IllegalArgumentException(InvalidArguments.INVALID_CREDENTIALS.toString());
+    }
+    return id;
   }
 
-  public <T> void updateUserProfile(long userId, UserField field, T value) {
-
+  public <T> void updateUserProfile(
+    long userId,
+    UserField field,
+    T value
+  ) throws RecordNotFoundException {
+    this.userDao.update(userId, field, value);
   }
 
   public void updateUserPassword(
@@ -92,7 +121,20 @@ public class UserService {
     String oldPassword,
     String newPassword
   ) throws IllegalArgumentException {
+    try {
+      Entity<User> user = this.userDao.get(userId);
+      String hashed = this.hashPassword(oldPassword, user.getContent().getSalt());
+      if (!hashed.equals(user.getContent().getPassword())) {
+        throw new IllegalArgumentException(InvalidArguments.INVALID_CREDENTIALS.toString());
+      }
 
+      String newSalt = this.generateSalt();
+      String newHashed = this.hashPassword(newPassword, newSalt);
+
+      this.userDao.updatePassword(userId, newSalt, newHashed);
+    } catch (RecordNotFoundException e) {
+      throw new IllegalArgumentException(InvalidArguments.INVALID_CREDENTIALS.toString());
+    }
   }
 
 
@@ -135,7 +177,7 @@ public class UserService {
 
   }
 
-  public ArrayList<Entity<Contest>> getACtiveContests(long userId) {
+  public ArrayList<Entity<Contest>> getActiveContests(long userId) {
 
   }
 

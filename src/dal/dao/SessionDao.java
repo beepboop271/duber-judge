@@ -120,6 +120,34 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
     return user;
   }
 
+  public Entity<Session> get(String token) throws RecordNotFoundException {
+    String sql = "SELECT * FROM sessions WHERE token = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    Entity<Session> user = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setString(1, token);
+
+      result = ps.executeQuery();
+      if (!result.next()) {
+        throw new RecordNotFoundException();
+      }
+
+      user = this.getSessionFromResultSet(result);
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return user;
+  }
+
   @Override
   public ArrayList<Entity<Session>> getList(long[] ids) {
     String sql = String.format(
@@ -187,8 +215,41 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
       ConnectDB.close(ps);
       GlobalConnectionPool.pool.releaseConnection(connection);
     }
+  }
 
+  public <V> void update(String token, SessionField field, V value) throws RecordNotFoundException {
+    String sql = null;
+    switch (field) {
+      case SESSION_INFO:
+        sql = "UPDATE sessions SET session_info = ? WHERE token = ?;";
+        break;
+      case LAST_ACTIVE:
+        sql = "UPDATE sessions SET last_active = ? WHERE token = ?;";
+        break;
+    }
 
+    PreparedStatement ps = null;
+    Connection connection = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      switch (field) {
+        case SESSION_INFO:
+          ps.setBlob(1, this.serialize((SessionInfo)value));
+          break;
+        case LAST_ACTIVE:
+          ps.setString(1, ((Timestamp)value).toString());
+          break;
+      }
+      ps.setString(2, token);
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
   }
 
   @Override
@@ -214,6 +275,8 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
       GlobalConnectionPool.pool.releaseConnection(connection);
     }
   }
+
+
 
   private Entity<Session> getSessionFromResultSet(ResultSet result) throws SQLException {
     return new Entity<Session>(

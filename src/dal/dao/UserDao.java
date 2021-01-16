@@ -153,6 +153,27 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
 
   }
 
+  public void updatePassword(long id, String salt, String password) {
+    String sql = "UPDATE users SET salt = ?, password = ? WHERE id = ?;";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setString(1, salt);
+      ps.setString(2, password);
+      ps.setLong(3, id);
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+  }
+
   @Override
   public void deleteById(long id) {
     DaoHelper.deleteById("users", id);
