@@ -27,7 +27,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
   public long add(TestcaseRun testcaseRun) {
     String sql = "INSERT INTO testcase_runs"
                 +"(submission_id, batch_id, run_duration_millis, memory_usage, status, output)"
-                +" VALUES (" + DaoHelper.generateWildcardString(6) + ");";
+                +" VALUES (" + DaoHelper.getParamString(6) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -92,7 +92,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
   public ArrayList<Entity<TestcaseRun>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM testcase_runs WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -110,7 +110,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
       while (results.next()) {
         testcaseRuns.add(this.getTestcaseRunFromResultSet(results));
       }
-      
+
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
@@ -140,17 +140,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        testcaseRuns.add(new Entity<TestcaseRun>(
-          results.getLong("id"),
-          new TestcaseRun(
-            results.getLong("submission_id"),
-            results.getLong("batch_id"),
-            results.getLong("run_duration_millis"),
-            results.getLong("memory_usage"),
-            ExecutionStatus.valueOf(results.getString("status")),
-            results.getString("output")
-          )
-        ));
+        testcaseRuns.add(this.getTestcaseRunFromResultSet(results));
       }
 
 
@@ -165,7 +155,23 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
   }
 
   public void deleteBySubmission(long submissionId) {
-    //TODO: finish
+    String sql = "DELETE FROM testcase_runs WHERE submission_id = ?;";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, submissionId);
+
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
   }
 
   private Entity<TestcaseRun> getTestcaseRunFromResultSet(ResultSet result)

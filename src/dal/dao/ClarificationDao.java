@@ -64,7 +64,7 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
   @Override
   public long add(Clarification data) {
     String sql = "INSERT INTO clarifications(problem_id, user_id, message, response)"
-                +" VALUES (?, ?, ?, ?);";
+                +"VALUES (?, ?, ?, ?);";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -91,7 +91,7 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
 
   @Override
   public Entity<Clarification> get(long id) throws RecordNotFoundException {
-    String sql = "SELECT * FROM batches WHERE id = ?;";
+    String sql = "SELECT * FROM clarifications WHERE id = ?;";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet result = null;
@@ -122,7 +122,7 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
   public ArrayList<Entity<Clarification>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM clarifications WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -167,4 +167,34 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
       )
     );
   }
+
+  public ArrayList<Entity<Clarification>> getByProblemAndUser(long problemId, long userId) {
+    String sql = "SELECT * FROM clarifications WHERE problem_id = ?, user_id = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    ArrayList<Entity<Clarification>> clarifications = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, problemId);
+      ps.setLong(2, userId);
+
+      result = ps.executeQuery();
+      while (result.next()) {
+
+        clarifications.add(this.getClarificationFromResultSet(result));
+      }
+
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return clarifications;
+  }
+
 }

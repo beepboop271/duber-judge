@@ -69,7 +69,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
   public long add(ContestSession data) {
     String sql = "INSERT INTO contest_sessions"
                 +"(contest_id, user_id, started_at, status, score)"
-                +" VALUES (" + DaoHelper.generateWildcardString(5) + ");";
+                +" VALUES (" + DaoHelper.getParamString(5) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -130,11 +130,40 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
     return contestSession;
   }
 
+  public Entity<ContestSession> get(long contestId, long userId)
+    throws RecordNotFoundException {
+    String sql = "SELECT * FROM contest_sessions WHERE contest_id = ?, user_id = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    Entity<ContestSession> contestSession = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, contestId);
+      ps.setLong(2, userId);
+
+      result = ps.executeQuery();
+      if (!result.next()) {
+        throw new RecordNotFoundException();
+      }
+      contestSession = this.getContestSessionFromResultSet(result);
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return contestSession;
+  }
+
   @Override
   public ArrayList<Entity<ContestSession>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM contest_sessions WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -181,5 +210,139 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
       )
     );
   }
+
+  public int getNumSessions(long contestId) {
+    String sql = "SELECT COUNT(*) FROM contest_sessions WHERE contest_id = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    int count = 0;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, contestId);
+
+      result = ps.executeQuery();
+      if (result.next()) {
+        count = result.getInt(1);
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return count;
+  }
+
+  public int getNumContests(long userId) {
+    String sql = "SELECT COUNT(*) FROM contest_sessions WHERE user_id = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    int count = 0;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      result = ps.executeQuery();
+      if (result.next()) {
+        count = result.getInt(1);
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return count;
+  }
+
+  /**
+   * Get all sessions of a contest ordered from latest to earliest.
+   * The index indicates the offset of the record in the database.
+   * If no results are found, it will return an empty array.
+   *
+   * @param contestId           the contest id
+   * @param index               the offset of the session in the query result
+   * @param numSessions         the number of session to fetch
+   * @return                    the list of contest sessions
+   */
+  public ArrayList<Entity<ContestSession>>
+    getByContest(long contestId, int index, int numSessions) {
+    String sql = String.format(
+                "SELECT * FROM contest_sessions"
+                +"WHERE contest_id = ?"
+                +"ORDER BY started_at DESC"
+                +"LIMIT %s OFFSET %s", numSessions, index);
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    ArrayList<Entity<ContestSession>> sessions = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, contestId);
+
+      result = ps.executeQuery();
+      while (result.next()) {
+        sessions.add(this.getContestSessionFromResultSet(result));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return sessions;
+  }
+
+  /**
+   * Get the contest sessions based on the user
+   * (get all contests the user has participated in) ordered from latest to earliest.
+   * If no results are found, it will return an empty list.
+   *
+   * @param userId          the user id
+   * @param index           the offset of the sessions
+   * @param numSessions     the number of sessions to retrieve
+   * @return
+   */
+  public ArrayList<Entity<ContestSession>>
+    getByUser(long userId, int index, int numSessions) {
+    String sql = String.format(
+                "SELECT * FROM contest_sessions"
+                +"WHERE user_id = ?"
+                +"ORDER BY started_at DESC"
+                +"LIMIT %s OFFSET %s", numSessions, index);
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    ArrayList<Entity<ContestSession>> sessions = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      result = ps.executeQuery();
+      while (result.next()) {
+        sessions.add(this.getContestSessionFromResultSet(result));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return sessions;
+  }
+
+
 
 }

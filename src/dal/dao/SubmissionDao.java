@@ -30,7 +30,7 @@ public class SubmissionDao implements Dao<Submission> {
   public long add(Submission data) {
     String sql = "INSERT INTO submissions"
                 +"(problem_id, user_id, code, language, created_at, status, score, run_duration)"
-                +" VALUES (" + DaoHelper.generateWildcardString(8) + ");";
+                +" VALUES (" + DaoHelper.getParamString(8) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -97,7 +97,7 @@ public class SubmissionDao implements Dao<Submission> {
   public ArrayList<Entity<Submission>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM submissions WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -144,5 +144,200 @@ public class SubmissionDao implements Dao<Submission> {
         result.getLong("run_duration")
       )
     );
+  }
+
+  /**
+   * Get all the submissions of a problem ordered from highest point to lowest.
+   * The index indicates the offset of the record in the database.
+   * If no results are found, it will return an empty array.
+   *
+   * @param problemId        the user id
+   * @param index            the offset of the submission in the query result
+   * @param numSubmissions   the number of submissions to retrieve
+   * @return                 the list of submissions
+   */
+  public ArrayList<Entity<Submission>> getByProblem(long problemId, int index, int numSubmissions) {
+    String sql = String.format(
+                "SELECT * FROM submissions"
+                +"WHERE problem_id = ?"
+                +"ORDER BY created_at DESC"
+                +"LIMIT %s OFFSET %s", numSubmissions, index);
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, problemId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        submissions.add(this.getSubmissionByResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return submissions;
+  }
+
+  /**
+   * Gets the unique submission of a user.
+   * Meaning that it selects the highest submission for each problem
+   * and returns only that result.
+   *
+   * @param userId           the user Id
+   * @param index            the offset of the submission in the query result
+   * @param numSubmissions   the number of submissions to retrive
+   * @return                 the list of submissions
+   */
+  public ArrayList<Entity<Submission>>
+    getUniqueSubmissions(long userId, int index, int numSubmissions) {
+    String sql = String.format(
+                "SELECT *, MAX(score) AS highest_score"
+                +"FROM submissions"
+                +"WHERE user_id = ?"
+                +"GROUP BY problem_id"
+                +"ORDER BY score DESC"
+                +"LIMIT %s OFFSET %s", numSubmissions, index);
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        submissions.add(this.getSubmissionByResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return submissions;
+  }
+
+  /**
+   * Get all the submissions made by a user ordered from latest to earliest.
+   * The index indicates the offset of the redord in the database.
+   * If no results are found, it will return an empty array.
+   *
+   * @param userId           the user id
+   * @param index            the offset of the submission in the query result
+   * @param numSubmissions   the number of submissions to retrieve
+   * @return                 the list of submissions
+   */
+  public ArrayList<Entity<Submission>> getByUser(long userId, int index, int numSubmissions) {
+    String sql = String.format(
+                "SELECT * FROM submissions"
+                +"WHERE user_id = ?"
+                +"ORDER BY created_at DESC"
+                +"LIMIT %s OFFSET %s", numSubmissions, index);
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        submissions.add(this.getSubmissionByResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return submissions;
+  }
+
+  public ArrayList<Entity<Submission>>
+    getByProblemAndStatus(long problemId, ExecutionStatus status, int index, int numProblems) {
+    String sql = "SELECT * FROM submissions WHERE problem_id = ?, status = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, problemId);
+      ps.setString(2, status.toString());
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        submissions.add(this.getSubmissionByResultSet(results));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return submissions;
+  }
+
+  public void deleteByProblem(long problemId) {
+    String sql = "DELETE FROM submissions WHERE problem_id = ?;";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, problemId);
+
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+  }
+
+  public int countByUserAndProblem(long userId, long problemId) {
+    String sql = "SELECT COUNT(*) FROM submissions WHERE user_id = ?, problem_id = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    int count = 0;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+      ps.setLong(2, problemId);
+
+      result = ps.executeQuery();
+      if (result.next()) {
+        count = result.getInt(1);
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return count;
   }
 }

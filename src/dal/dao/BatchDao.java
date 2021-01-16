@@ -89,7 +89,7 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
   public ArrayList<Entity<Batch>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM batches WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -173,14 +173,7 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        batches.add(new Entity<Batch>(
-          results.getLong("id"),
-          new Batch(
-            results.getLong("problem_id"),
-            results.getInt("sequence"),
-            results.getInt("points")
-          )
-        ));
+        batches.add(this.getBatchFromResultSet(results));
       }
     } catch (SQLException e) {
       e.printStackTrace();

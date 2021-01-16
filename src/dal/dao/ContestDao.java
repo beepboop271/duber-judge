@@ -85,7 +85,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
   public long add(Contest data) {
     String sql = "INSERT INTO contests"
                 +"(creator_id, description, title, start_time, end_time, duration)"
-                +" VALUES (" + DaoHelper.generateWildcardString(6) + ");";
+                +" VALUES (" + DaoHelper.getParamString(6) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -150,7 +150,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
   public ArrayList<Entity<Contest>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM contests WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;

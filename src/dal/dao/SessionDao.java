@@ -124,7 +124,7 @@ public class SessionDao implements Dao<Session>, Updatable<SessionField> {
   public ArrayList<Entity<Session>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM sessions WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;

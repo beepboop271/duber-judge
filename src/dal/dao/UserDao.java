@@ -93,7 +93,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
   public ArrayList<Entity<User>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM users WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -181,15 +181,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
         throw new RecordNotFoundException();
       }
 
-      user = new Entity<User>(
-        result.getLong("id"),
-        new User(
-          result.getString("username"),
-          result.getString("password"),
-          UserType.valueOf(result.getString("user_type")),
-          result.getString("salt")
-        )
-      );
+      user = this.getUserFromResultSet(result);
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -206,7 +198,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
    * Get the users within a point range ordered from highest to lowest.
    * If no results are found, it will return an empty array.
    *
-   * @param index         the beginning of the first user to get
+   * @param index         the offset of the user in query results
    * @param numUsers      the number of users to get after the index
    * @return              the list of users
    */
@@ -237,15 +229,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
       result = ps.executeQuery();
       while (result.next()) {
 
-        Entity<User> user = new Entity<User>(
-          result.getLong("id"),
-          new User(
-            result.getString("username"),
-            result.getString("password"),
-            UserType.valueOf(result.getString("user_type")),
-            result.getString("salt")
-          )
-        );
+        Entity<User> user = this.getUserFromResultSet(result);
         //TODO: flatten it so there's no 100 layers of wraps
         users.add(new UserPoints(user, result.getInt("total_score")));
       }

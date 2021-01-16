@@ -1,7 +1,13 @@
 package dal.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
+import dal.connection.ConnectDB;
+import dal.connection.GlobalConnectionPool;
 import entities.Entity;
 
 /**

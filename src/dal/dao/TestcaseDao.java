@@ -91,7 +91,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
   public ArrayList<Entity<Testcase>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM testcases WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -187,15 +187,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
 
       results = ps.executeQuery();
       while (results.next()) {
-        testcases.add(new Entity<Testcase>(
-          results.getLong("id"),
-          new Testcase(
-            results.getLong("batch_id"),
-            results.getInt("sequence"),
-            results.getString("input"),
-            results.getString("output")
-          ))
-        );
+        testcases.add(this.getTestcaseFromResultSet(results));
       }
 
     } catch (SQLException e) {

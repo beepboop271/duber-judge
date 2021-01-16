@@ -29,6 +29,24 @@ import entities.entity_fields.ProblemField;
  */
 public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
 
+  private PracticeProblem convertToPracticeProblem(Problem problem) {
+    return new PracticeProblem(
+      problem.getCategory(),
+      problem.getCreatorId(),
+      problem.getCreatedAt(),
+      problem.getLastModifiedAt(),
+      problem.getTitle(),
+      problem.getDescription(),
+      problem.getPoints(),
+      problem.getTimeLimitMillis(),
+      problem.getMemoryLimitKb(),
+      problem.getOutputLimitKb(),
+      problem.getNumSubmissions(),
+      problem.getClearedSubmissions(),
+      ""
+    );
+  }
+
   @Override
   public <V> void update(long id, ProblemField field, V value)
     throws RecordNotFoundException, IllegalArgumentException {
@@ -46,7 +64,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
             "Cannot convert a " + problemType.name() + " problem into a contest problem"
           );
         } else if ((ProblemType)value == ProblemType.PRACTICE) {
-          this.add(DaoHelper.convertToPracticeProblem(problem));
+          this.add(this.convertToPracticeProblem(problem));
           this.deleteById(id);
         }
         return;
@@ -108,7 +126,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           throw new IllegalArgumentException("UnknownField");
         }
         element = "editorial";
-        break;      
+        break;
     }
     String sql = "UPDATE contests SET " + element + " = ? WHERE id = ?;";
     PreparedStatement ps = null;
@@ -120,7 +138,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
         case PROBLEM_TYPE:
           break;
         case CATEGORY:
-          ps.setString(1, ((Category)value).name());
+          ps.setString(1, ((Category)value).toString());
           break;
         case CREATOR_ID:
           ps.setLong(1, (long)value);
@@ -155,7 +173,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
         case CLEARED_SUBMISSIONS:
           ps.setInt(1, (int)value);
           break;
-        
+
         case SUBMISSIONS_LIMIT:
           ps.setInt(1, (int)value);
           break;
@@ -187,7 +205,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
                 +" title, description, points, time_limit_millis, memory_limit_kb, output_limit_kb,"
                 +" num_submissions, cleared_submissions,"
                 +" contest_id, submissions_limit, editorial)"
-                +" VALUES (" + DaoHelper.generateWildcardString(16) + ");";
+                +" VALUES (" + DaoHelper.getParamString(16) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -210,7 +228,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
       ps.setInt(13, data.getClearedSubmissions()); // cleared_submissions
 
       // contest_id, submissions_limit
-      switch (data.getProblemType()) { 
+      switch (data.getProblemType()) {
         case CONTEST:
           ContestProblem cp = (ContestProblem)data;
           ps.setLong(14, cp.getContestId());
@@ -222,7 +240,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           break;
       }
       // editorial
-      switch (data.getProblemType()) { 
+      switch (data.getProblemType()) {
         case PRACTICE:
           PracticeProblem pp = (PracticeProblem)data;
           ps.setString(16, pp.getEditorial());
@@ -231,7 +249,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           ps.setNull(16, Types.NULL);
           break;
       }
-      
+
       ps.executeUpdate();
       key = ps.getGeneratedKeys();
       key.next();
@@ -279,7 +297,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   public ArrayList<Entity<Problem>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM contests WHERE id IN (%s);",
-      DaoHelper.generateWildcardString(ids.length)
+      DaoHelper.getParamString(ids.length)
     );
 
     PreparedStatement ps = null;
@@ -361,6 +379,34 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
         break;
     }
     return problem;
+  }
+
+  public ArrayList<Entity<Problem>> getAllByContest(long contestId) {
+
+  }
+
+  public ArrayList<Entity<Problem>> getPracticeProblems(int index, int numProblems) {
+
+  }
+
+  public ArrayList<Entity<Problem>>
+    getPracticeProblemsByCategory(Category category, int index, int numProblems) {
+
+  }
+
+  public ArrayList<Entity<Problem>>
+    getPracticeProblemsByCreator(long creatorId, int index, int numProblems) {
+
+  }
+
+  public ArrayList<Entity<Problem>>
+    getPraciticeProblemsByPoints(int min, int max, int index, int numProblems) {
+
+  }
+
+  public ArrayList<Entity<Problem>>
+    getPracticeProblemsByNumSubmissions(int min, int max, int index, int numProblems) {
+
   }
 
 }
