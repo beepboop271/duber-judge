@@ -1,9 +1,9 @@
 package templater;
 
-class FormattedContent extends Node {
+class TemplatedContent extends Node {
   private final String expression;
 
-  public FormattedContent(String expression) {
+  public TemplatedContent(String expression) {
     this.expression = expression;
   }
 

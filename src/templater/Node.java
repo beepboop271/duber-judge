@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-abstract class Node {
+class Node {
   private final List<Node> children;
 
   public Node() {
