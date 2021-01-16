@@ -1,7 +1,7 @@
 package entities;
 
 /**
- * [description]
+ * An enum containing the accepted programming languages for the judge.
  * <p>
  * Created on 2021.01.07.
  *
@@ -10,6 +10,8 @@ package entities;
  * @since 1.0.0
  */
 public enum Language {
+  /** The Java programming language. */
   JAVA,
+  /** The Python progrmaming language. */
   PYTHON
 }

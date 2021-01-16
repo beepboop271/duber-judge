@@ -1,7 +1,7 @@
 package entities;
 
 /**
- * [description]
+ * An enum containing the various types of problems.
  * <p>
  * Created on 2021.01.07.
  *
@@ -10,6 +10,8 @@ package entities;
  * @since 1.0.0
  */
 public enum ProblemType {
+  /** A contest problem type. */
   CONTEST,
+  /** A practice problem type. */
   PRACTICE
 }

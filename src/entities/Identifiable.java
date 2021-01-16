@@ -1,7 +1,7 @@
 package entities;
 
 /**
- * [description]
+ * An interface for objects that have a specific, unique indentifier.
  * <p>
  * Created on 2021.01.07.
  *
@@ -10,5 +10,9 @@ package entities;
  * @since 1.0.0
  */
 public interface Identifiable {
+  /**
+   * Retrieves this object's id.
+   * @return this object's id.
+   */
   public long getId();
 }
