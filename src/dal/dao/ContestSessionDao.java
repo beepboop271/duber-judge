@@ -65,6 +65,44 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
 
   }
 
+  public <V> void updateByUser(long userId, ContestSessionField field, V value)
+    throws RecordNotFoundException {
+    String element = "";
+    switch (field) {
+      case STATUS:
+        element = "status";
+        break;
+      case SCORE:
+        element = "score";
+        break;
+    }
+    String sql = "UPDATE contest_sessions SET " + element + " = ? WHERE user_id = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      switch (field) {
+        case STATUS:
+          ps.setString(1, ((ContestStatus)value).name());
+          break;
+        case SCORE:
+          ps.setInt(1, (Integer)value);
+          break;
+      }
+
+      ps.setLong(2, userId);
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+
+  }
+
   @Override
   public long add(ContestSession data) {
     String sql = "INSERT INTO contest_sessions"

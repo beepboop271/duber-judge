@@ -11,20 +11,22 @@ package entities;
  */
 public class Testcase {
   private long batchId;
+  private long creatorId;
   private int sequence;
   private String input;
   private String output;
 
 
   /**
-   * 
+   *
    * @param batchId
    * @param sequence
    * @param input
    * @param output
    */
-  public Testcase(long batchId, int sequence, String input, String output) {
+  public Testcase(long batchId, long creatorId, int sequence, String input, String output) {
     this.batchId = batchId;
+    this.creatorId = creatorId;
     this.sequence = sequence;
     this.input = input;
     this.output = output;
@@ -32,6 +34,10 @@ public class Testcase {
 
   public long getBatchId() {
     return this.batchId;
+  }
+
+  public long getCreatorId() {
+    return this.creatorId;
   }
 
   public int getSequence() {

@@ -26,8 +26,8 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
 
   @Override
   public long add(Batch batch) {
-    String sql = "INSERT INTO batches(problem_id, sequence, points)"
-                +" VALUES (?, ?, ?);";
+    String sql = "INSERT INTO batches(problem_id, creator_id, sequence, points)"
+                +" VALUES (?, ?, ?, ?);";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -36,8 +36,9 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
       ps.setLong(1, batch.getProblemId());
-      ps.setInt(2, batch.getSequence());
-      ps.setInt(3, batch.getPoints());
+      ps.setLong(2, batch.getCreatorId());
+      ps.setInt(3, batch.getSequence());
+      ps.setInt(4, batch.getPoints());
 
       ps.executeUpdate();
       key = ps.getGeneratedKeys();
@@ -190,6 +191,7 @@ public class BatchDao implements Dao<Batch>, Updatable<BatchField> {
       result.getLong("id"),
       new Batch(
         result.getLong("problem_id"),
+        result.getLong("creator_id"),
         result.getInt("sequence"),
         result.getInt("points")
       )

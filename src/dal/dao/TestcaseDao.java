@@ -27,8 +27,8 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
 
   @Override
   public long add(Testcase testcase) {
-    String sql = "INSERT INTO testcases(batch_id, sequence, input, output)"
-                +" VALUES (?, ?, ?, ?);";
+    String sql = "INSERT INTO testcases(batch_id, creator_id, sequence, input, output)"
+                +" VALUES (?, ?, ?, ?, ?);";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -37,9 +37,10 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
       ps.setLong(1, testcase.getBatchId());
-      ps.setInt(2, testcase.getSequence());
-      ps.setString(3, testcase.getInput());
-      ps.setString(4, testcase.getOutput());
+      ps.setLong(2, testcase.getCreatorId());
+      ps.setInt(3, testcase.getSequence());
+      ps.setString(4, testcase.getInput());
+      ps.setString(5, testcase.getOutput());
 
       ps.executeUpdate();
       key = ps.getGeneratedKeys();
@@ -226,6 +227,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
       result.getLong("id"),
       new Testcase(
         result.getLong("batch_id"),
+        result.getLong("creator_id"),
         result.getInt("sequence"),
         result.getString("input"),
         result.getString("output")

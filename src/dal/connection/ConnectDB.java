@@ -121,19 +121,23 @@ public class ConnectDB {
         +");",
       "CREATE TABLE IF NOT EXISTS batches ("
         +"id            INTEGER PRIMARY KEY,"
+        +"creator_id    INTEGER NOT NULL,"
         +"problem_id    INTEGER NOT NULL,"
         +"sequence      INTEGER NOT NULL,"
         +"points        INTEGER NOT NULL,"
         +"UNIQUE(problem_id, sequence),"
+        +"FOREIGN KEY(creator_id) REFERENCES users(id),"
         +"FOREIGN KEY(problem_id) REFERENCES problems(id) ON DELETE CASCADE"
         +");",
       "CREATE TABLE IF NOT EXISTS testcases ("
         +"id          INTEGER PRIMARY KEY,"
+        +"creator_id    INTEGER NOT NULL,"
         +"batch_id    INTEGER NOT NULL,"
         +"sequence    INTEGER NOT NULL,"
         +"input       TEXT NOT NULL,"
         +"output      TEXT NOT NULL,"
         +"UNIQUE(batch_id, sequence),"
+        +"FOREIGN KEY(creator_id) REFERENCES users(id),"
         +"FOREIGN KEY(batch_id) REFERENCES batches(id) ON DELETE CASCADE"
         +");",
       "CREATE TABLE IF NOT EXISTS submissions ("
