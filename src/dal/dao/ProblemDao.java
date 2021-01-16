@@ -382,31 +382,189 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   }
 
   public ArrayList<Entity<Problem>> getAllByContest(long contestId) {
+    String sql = "SELECT * FROM problems WHERE contest_id = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Problem>> problems = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, contestId);
 
+      results = ps.executeQuery();
+      while (results.next()) {
+        problems.add(this.getProblemFromResultSet(results));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return problems;
   }
 
   public ArrayList<Entity<Problem>> getPracticeProblems(int index, int numProblems) {
+    String sql = String.format(
+                "SELECT * FROM problems"
+                +"WHERE problem_type = %s"
+                +"ORDER BY created_at DESC"
+                +"LIMIT %s OFFSET %s",
+      ProblemType.PRACTICE.toString(), numProblems, index
+    );
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Problem>> problems = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
 
+      results = ps.executeQuery();
+      while (results.next()) {
+        problems.add(this.getProblemFromResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return problems;
   }
 
   public ArrayList<Entity<Problem>>
     getPracticeProblemsByCategory(Category category, int index, int numProblems) {
+    String sql = String.format(
+                "SELECT * FROM problems"
+                +"WHERE problem_type = %s, category = ?"
+                +"ORDER BY created_at DESC"
+                +"LIMIT %s OFFSET %s",
+      ProblemType.PRACTICE.toString(), numProblems, index
+    );
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Problem>> problems = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setString(1, category.toString());
 
+      results = ps.executeQuery();
+      while (results.next()) {
+        problems.add(this.getProblemFromResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return problems;
   }
 
   public ArrayList<Entity<Problem>>
     getPracticeProblemsByCreator(long creatorId, int index, int numProblems) {
+    String sql = String.format(
+                "SELECT * FROM problems"
+                +"WHERE problem_type = %s, creator_id = ?"
+                +"ORDER BY created_at DESC"
+                +"LIMIT %s OFFSET %s",
+      ProblemType.PRACTICE.toString(), numProblems, index
+    );
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Problem>> problems = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, creatorId);
 
+      results = ps.executeQuery();
+      while (results.next()) {
+        problems.add(this.getProblemFromResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return problems;
   }
 
   public ArrayList<Entity<Problem>>
-    getPraciticeProblemsByPoints(int min, int max, int index, int numProblems) {
+    getPracticeProblemsByPoints(int min, int max, int index, int numProblems) {
+    String sql = String.format(
+                "SELECT * FROM problems"
+                +"WHERE problem_type = %s, score > ?, score < ?"
+                +"ORDER BY created_at DESC"
+                +"LIMIT %s OFFSET %s",
+      ProblemType.PRACTICE.toString(), numProblems, index
+    );
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Problem>> problems = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setInt(1, min);
+      ps.setInt(2, max);
 
+      results = ps.executeQuery();
+      while (results.next()) {
+        problems.add(this.getProblemFromResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return problems;
   }
 
   public ArrayList<Entity<Problem>>
     getPracticeProblemsByNumSubmissions(int min, int max, int index, int numProblems) {
+    String sql = String.format(
+                "SELECT * FROM problems"
+                +"WHERE problem_type = %s, num_submissions > ?, num_submissions < ?"
+                +"ORDER BY created_at DESC"
+                +"LIMIT %s OFFSET %s",
+      ProblemType.PRACTICE.toString(), numProblems, index
+    );
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Problem>> problems = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setInt(1, min);
+      ps.setInt(2, max);
 
+      results = ps.executeQuery();
+      while (results.next()) {
+        problems.add(this.getProblemFromResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return problems;
   }
 
 }

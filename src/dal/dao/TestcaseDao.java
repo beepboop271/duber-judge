@@ -124,7 +124,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
   public <V> void update(long id, TestcaseField field, V value) throws RecordNotFoundException {
     String sql = null;
     switch (field) {
-      case BATCH:
+      case BATCH_ID:
         sql = "UPDATE testcases SET batch_id = ? WHERE id = ?;";
         break;
       case SEQUENCE:
@@ -144,7 +144,7 @@ public class TestcaseDao implements Dao<Testcase>, Updatable<TestcaseField> {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
       switch (field) {
-        case BATCH:
+        case BATCH_ID:
           ps.setLong(1, (Long)value);
           break;
         case SEQUENCE:

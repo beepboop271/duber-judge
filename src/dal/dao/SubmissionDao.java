@@ -29,8 +29,8 @@ public class SubmissionDao implements Dao<Submission> {
   @Override
   public long add(Submission data) {
     String sql = "INSERT INTO submissions"
-                +"(problem_id, user_id, code, language, created_at, status, score, run_duration)"
-                +" VALUES (" + DaoHelper.getParamString(8) + ");";
+      +"(problem_id, user_id, code, language, created_at, status, score, run_duration_millis)"
+      +" VALUES (" + DaoHelper.getParamString(8) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -141,7 +141,7 @@ public class SubmissionDao implements Dao<Submission> {
         Timestamp.valueOf(result.getString("created_at")),
         ExecutionStatus.valueOf(result.getString("status")),
         result.getInt("score"),
-        result.getLong("run_duration")
+        result.getLong("run_duration_millis")
       )
     );
   }
