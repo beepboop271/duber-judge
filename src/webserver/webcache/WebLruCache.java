@@ -121,20 +121,16 @@ public class WebLruCache {
   /**
    * Attempts to retrieve a cached object using a specified key.
    * <p>
-   * If the cached object and key does not exist, an empty string will be
+   * If the cached object and key does not exist, {@code null} will be
    * returned.
    * 
    * @param id the id of the cached object to fetch.
-   * @return the cached object, or an empty string.
+   * @return the cached object, or {@code null}.
    */
   public synchronized String getCachedObject(String id) {
     synchronized (this.lookup) {
-      if (checkCache(id)) {
         return this.lookup.get(id).data.getObject();
-      }
     }
-
-    return "";
   }
 
   /**
