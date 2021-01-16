@@ -10,8 +10,10 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 
+import dubjhandlers.StaticHandler;
 import dubjhandlers.ProblemHandler;
 import dubjhandlers.LeaderboardHandler;
+import dubjhandlers.HomeHandler;
 
 public class WebServer {
   /** The port that this WebServer is hosted on. **/
@@ -31,8 +33,14 @@ public class WebServer {
 
   public static void main(String[] args) {
     WebServer server = new WebServer(5000);
-    server.route("/problems", new ProblemHandler());
-    server.route("/leaderboard", new LeaderboardHandler());
+
+    server.route("/", new HomeHandler());
+    server.route("/static", new StaticHandler());
+    server.route("/contest/*/problems?/?*", new ProblemHandler());
+    server.route("/admin/*/problems/*", new ProblemHandler());
+    server.route("/contest/*/leaderboard", new LeaderboardHandler());
+    server.route("/admin/*/leaderboard", new LeaderboardHandler());
+
     server.run();
   }
 
@@ -89,13 +97,85 @@ public class WebServer {
 
   /**
    * Adds a new routing to a {@code RouteTarget}.
+   * <p>
+   * The characters {@code *}, {@code ?}, and {@code +} are all subsets of their
+   * regex counterparts. {@code *} and {@code +} are specifically used as
+   * wildcards matching anything 0-unlimited and 1-unlimited, respectively. the
+   * hyphen {@code -} and dot {@code .} character are interpreted literally.
+   * <p>
+   * All route will be matched as is, from start to end (akin to placing
+   * {@code ^$} symbols). To match every file under a path, use {@code /*} to
+   * indicate that everything under that path should be matched using this route
+   * handler.
+   * <p>
+   * Query strings are not included in the path and can be found in the request
+   * object.
+   * <p>
+   * Caution must be placed with routing two strings that match the same path, as
+   * non-deterministic routing resolution will occur. There will be no guarantees
+   * as to which route target will handle the request.
    * 
    * @param route  the route associated with the {@code RouteTarget}.
    * @param target the RouteTarget to handle the request.
    * @see RouteTarget
    */
   public void route(String route, RouteTarget target) {
-    this.routes.put(route, target);
+    String cleanedRoute = "^";
+    for (int i = 0; i < route.length(); i++) {
+      char charAt = route.charAt(i);
+
+      switch (charAt) {
+        // These characters would mess up the regex and should not appear
+        case '^':
+        case '[':
+        case ']':
+          break;
+        // These characters simply need to be treated as literals
+        case '$':
+          cleanedRoute += "\\$";
+          break;
+        case '.':
+          cleanedRoute += "\\.";
+          break;
+        case '-':
+          cleanedRoute += "\\-";
+          break;
+        // the * and + chars need wildcard dots
+        case '*':
+          cleanedRoute += ".*";
+          break;
+        case '+':
+          cleanedRoute += ".+";
+          break;
+        default:
+          cleanedRoute += charAt;
+          break;
+      }
+    }
+
+    cleanedRoute += "$";
+
+    this.routes.put(cleanedRoute, target);
+  }
+
+  /**
+   * Gets the appropriate route target for the specified path.
+   * <p>
+   * The worst case speed to find a matching route target is linear time compared
+   * to the amount of routes initialized.
+   * 
+   * @param path the path to find the route target for.
+   * @return the proper route target to handle the request, or {@code null} if
+   *         none exists.
+   */
+  private RouteTarget getRoute(String route) {
+    for (String possibleRoute : this.routes.keySet()) {
+      if (route.matches(possibleRoute)) {
+        return this.routes.get(possibleRoute);
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -184,11 +264,16 @@ public class WebServer {
       protocol = statusTokens[2];
 
       Response response;
-      if (routes.containsKey(fullPath)) {
-        response = routes.get(fullPath).accept(new Request(method, fullPath, headers, body));
+      RouteTarget handler = getRoute(fullPath);
+
+      if (handler != null) {
+        response = handler.accept(new Request(method, fullPath, headers, body));
       } else {
-        // Inform browser that the resource could not be found
-        response = new Response(404);
+        String failedBody = "<html><head><TITLE>404 Not Found.</TITLE></head><body>404 Not Found.</body></html>";
+
+        response = new Response(200, failedBody);
+        response.addHeader("Content-Type", "text/html");
+        response.addHeader("Content-Length", "82");
       }
 
       output.println(response);
