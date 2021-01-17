@@ -1,7 +1,6 @@
-package judge;
+package judge.entities;
 
 import java.io.File;
-import java.util.LinkedHashSet;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -14,6 +13,7 @@ import entities.Problem;
 import entities.Submission;
 import entities.Testcase;
 import entities.TestcaseRun;
+import judge.services.Tester;
 
 /**
  * [description]
@@ -37,7 +37,6 @@ public class Judger {
 
   @SuppressWarnings("unchecked")
   public void judge(Submission submission) {
-    System.out.println("Received submission: " + submission);
     // check
     try {
       if (!ProgramChecker.isClean(submission)) {
@@ -50,7 +49,6 @@ public class Judger {
       this.updateDatabase(submission);
       return;
     }
-    System.out.println("Preparing to get launcher");
     // get launcher
     CompletableFuture<SourceLauncher> launcherFuture =
       SourceLauncherService.getSourceLauncher(
@@ -73,6 +71,7 @@ public class Judger {
       if (cause instanceof UnknownLanguageException) {
         submission.setStatus(ExecutionStatus.UNKNOWN_LANGUAGE);
       } else {
+        cause.printStackTrace();
         submission.setStatus(ExecutionStatus.INTERNAL_ERROR);
       }
       this.updateDatabase(submission);
@@ -101,16 +100,17 @@ public class Judger {
         submission.setStatus(ExecutionStatus.COMPILE_ERROR);
       } else {
         submission.setStatus(ExecutionStatus.INTERNAL_ERROR);
+        userException.printStackTrace();
       }
       this.updateDatabase(submission);
       launcher.close();
       return;
     }
 
-    System.out.println("Preparing to test");
     // test
     int score = 0;
-    long totalDurationMillis = 0;
+    int totalDurationMillis = 0;
+    double maxMemoryUsageKb = 0;
     Problem problem = submission.getProblem();
     int timeLimitMillis = problem.getTimeLimitMillis();
     int memoryLimitKb = problem.getMemoryLimitKb();
@@ -120,83 +120,75 @@ public class Judger {
 
     // loop through each batch in the problem
     for (int i = 0; i < batches.length; i++) {
-      System.out.printf("Batch %d started\n", i+1);
       boolean batchPassed = true;
       Batch batch = batches[i];
-      Testcase[] testcases = batch.getTestcases();
-      CompletableFuture<TestcaseRun>[] batchCaseRunFutures =
-        (CompletableFuture<TestcaseRun>[])(new CompletableFuture[testcases.length]);
-      long start = System.currentTimeMillis();
-
+      Testcase[] testcases = batch.getTestcases();      
+      
       // loop through each testcase in the batch
       for (int j = 0; j < testcases.length; j++) {
-        System.out.printf("Testcase %d of batch %d started\n", j+1, i+1);
         Testcase t = testcases[j];
-        CompletableFuture<TestcaseRun> caseRunFuture = Tester.test(
-          t,
-          launcher,
-          this.pool,
-          timeLimitMillis,
-          memoryLimitKb,
-          outputLimitKb
-        );
-        batchCaseRunFutures[j] = caseRunFuture;
-      }
-
-      CompletableFuture.allOf(batchCaseRunFutures).join(); // wait for all runs to complete
-      long end = System.currentTimeMillis();
-      totalDurationMillis += end - start;
-      System.out.println("Batch done");
-      for (int j = 0;  j < batchCaseRunFutures.length; j++) {
-        CompletableFuture<TestcaseRun> caseRunFuture = batchCaseRunFutures[j];
         TestcaseRun run;
-        try {
-          run = caseRunFuture.get();
-          this.updateDatabase(run);
-          
-        } catch (CancellationException cancellationException) {
-          run = new TestcaseRun(testcases[j]);
-          run.setStatus(ExecutionStatus.INTERNAL_ERROR);
-          this.updateDatabase(run);
-          cancellationException.printStackTrace();
-
-        } catch (ExecutionException executionException) {
-          run = new TestcaseRun(testcases[j]);
-          run.setStatus(ExecutionStatus.INTERNAL_ERROR);
-          this.updateDatabase(run);
-          executionException.printStackTrace();
-
-        } catch (InterruptedException interruptedException) {
-          run = new TestcaseRun(testcases[j]);
-          run.setStatus(ExecutionStatus.INTERNAL_ERROR);
-          this.updateDatabase(run);
-          interruptedException.printStackTrace();
+        if (!batchPassed) {
+          run = new TestcaseRun(t);
+          run.setStatus(ExecutionStatus.SKIPPED);
+        } else {
+          long start = System.currentTimeMillis();
+          CompletableFuture<TestcaseRun> caseRunFuture = Tester.test(
+            t,
+            launcher,
+            this.pool,
+            timeLimitMillis,
+            memoryLimitKb,
+            outputLimitKb
+          );
+          try {
+            run = caseRunFuture.get();
+            long end = System.currentTimeMillis();
+            totalDurationMillis += end - start;
+            if (run.getMemoryUsageKb() > maxMemoryUsageKb) { // update max memory usage
+              maxMemoryUsageKb = run.getMemoryUsageKb();
+            }
+            if (run.getStatus() != ExecutionStatus.ALL_CLEAR) {
+              batchPassed = false; // skip the rest of the cases in the batch
+            }
+            
+          } catch (CancellationException cancellationException) {
+            run = new TestcaseRun(testcases[j]);
+            run.setStatus(ExecutionStatus.INTERNAL_ERROR);
+            cancellationException.printStackTrace();
+  
+          } catch (ExecutionException executionException) {
+            run = new TestcaseRun(testcases[j]);
+            run.setStatus(ExecutionStatus.INTERNAL_ERROR);
+            executionException.printStackTrace();
+  
+          } catch (InterruptedException interruptedException) {
+            run = new TestcaseRun(testcases[j]);
+            run.setStatus(ExecutionStatus.INTERNAL_ERROR);
+            interruptedException.printStackTrace();
+          }
         }
-
-        // update the batch's status if any of the testcase fails to clear
-        if (run.getStatus() != ExecutionStatus.ALL_CLEAR) {
-          batchPassed = false;
-        }
-
+        run.setSubmission(submission);
+        this.updateDatabase(run);
         // update the submission's status
         // if the current TestcaseRun has a status with a higher priority
         if ((submissionStatus == null) || (run.getStatus().compareTo(submissionStatus) < 0)) {
           submissionStatus = run.getStatus();
         }
       }
-
-      // end of batch test
       if (batchPassed) {
         score += batch.getPoints();
       }
+      // end of batch test
     }
 
     // end of submission test
     // - calculate score, etc.
     submission.setRunDuration(totalDurationMillis);
+    submission.setMemoryUsageKb(maxMemoryUsageKb);
     submission.setScore(score);
     submission.setStatus(submissionStatus);
-    // - update database
+    // - update submission to the database
     this.updateDatabase(submission);
     // - close resources
     launcher.close();
@@ -208,33 +200,32 @@ public class Judger {
 
   private void updateDatabase(Submission submission) {
     //TODO: write to db
-    System.out.println("Updated submission: " + submission);
-    this.display(submission);
+    display(submission);
   }
 
   private void updateDatabase(TestcaseRun testcaseRun) {
     //TODO: write to db
-    System.out.println("Updated testcase run: " + testcaseRun);
-    this.display(testcaseRun);
+    display(testcaseRun);
   }
 
   // ------temp methods
 
-  private void display(Submission submission) {
+  public static void display(Submission submission) {
     System.out.println("Submission: " + submission);
     System.out.println("Language: " + submission.getLanguage());
     System.out.println("Status: " + submission.getStatus());
     System.out.println("Score: " + submission.getScore());
     System.out.println("Run duration (milliseconds): " + submission.getRunDurationMillis());
+    System.out.println("Memory used (kilobytes): " + submission.getMemoryUsageKb());
     System.out.println("Source Code:\n" + submission.getCode());
     System.out.println();
   }
 
-  private void display(TestcaseRun run) {
-    System.out.println("Testcase: " + run.getTestcase());
+  public static void display(TestcaseRun run) {
+    System.out.println("Testcase: " + run.getTestcase() + " of submission " + run.getSubmission());
     System.out.println("Status: " + run.getStatus());
-    System.out.println("Memory Usage (kb): " + run.getMemoryUsage());
-    System.out.println("Run duration (millis): " + run.getRunDurationMillis());
+    System.out.println("Run duration (milliseconds): " + run.getRunDurationMillis());
+    System.out.println("Memory used (kilobytes): " + run.getMemoryUsageKb());
     System.out.println("Output: " + run.getOutput());
     System.out.println();
   }

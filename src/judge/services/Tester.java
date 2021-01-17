@@ -1,4 +1,4 @@
-package judge;
+package judge.services;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -10,6 +10,9 @@ import java.util.concurrent.TimeUnit;
 import entities.ExecutionStatus;
 import entities.Testcase;
 import entities.TestcaseRun;
+import judge.entities.ChildProcess;
+import judge.entities.InternalErrorException;
+import judge.entities.SourceLauncher;
 
 /**
  * [description]
@@ -74,57 +77,65 @@ public class Tester {
 
     @Override
     public void run() {
-      System.out.println("Testing testcase: " + this.testcase);
+      TestcaseRun runToReturn = new TestcaseRun(this.testcase);
+      runToReturn.setStatus(ExecutionStatus.PENDING);
+
       String input = this.testcase.getInput();
       if (!input.endsWith("\n")) {
         input += "\n";
       }
       String expectedOutput = this.testcase.getOutput();
       StringBuilder sb = new StringBuilder();
-      ExecutionStatus status = ExecutionStatus.PENDING;
-      long runDurationMillis = 0;
 
       try {
-        Process program = this.programLauncher.launch();
+        ChildProcess childProcess = GlobalChildProcessService.launchChildProcess(
+          this.programLauncher,
+          this.memoryLimitKb
+        );
+        Process program = childProcess.getProcess();
         BufferedOutputStream stdin = new BufferedOutputStream(program.getOutputStream());
         BufferedInputStream stdout = new BufferedInputStream(program.getInputStream());
-        
-        stdin.write(input.getBytes());
-        stdin.flush();
+
         long start = System.currentTimeMillis();
-  
+        stdin.write(input.getBytes());
+        stdin.flush();       
         program.waitFor(this.timeLimitMillis, TimeUnit.MILLISECONDS);
-        if (program.isAlive()) { // timed out
-          status = ExecutionStatus.TIME_LIMIT_EXCEEDED;
-          program.destroyForcibly();
-          System.out.println("timed out");
-        } else if (program.exitValue() != 0) { // returned with a nonzero exit code
-          status = ExecutionStatus.INVALID_RETURN;
-          System.out.println("exit code: " + program.exitValue());
-        }
+        runToReturn.setMemoryUsageKb(childProcess.getMemoryUsedKb());
         long end = System.currentTimeMillis();
-        runDurationMillis = end - start;
-        System.out.println("run duration: " + runDurationMillis);
+        runToReturn.setRunDurationMillis((int)(end - start)); //TODO: incorrectly 0 sometimes
+
+        // timed out
+        if (program.isAlive()) { 
+          runToReturn.setStatus(ExecutionStatus.TIME_LIMIT_EXCEEDED);
+          program.destroyForcibly();
+        // memory limit exceeded
+        } else if (runToReturn.getMemoryUsageKb() > this.memoryLimitKb) {
+          runToReturn.setStatus(ExecutionStatus.MEMORY_LIMIT_EXCEEDED);
+        // invalid return code
+        } else if (program.exitValue() != 0) {
+          runToReturn.setStatus(ExecutionStatus.INVALID_RETURN);
+        }
+        
 
         // read output
         int curByte = stdout.read();
         int byteCount = 0;
         long outputLimitBytes = this.outputLimitKb*1024;
-        while (curByte != -1) { //TODO: check for output limit exceeded
+        while (curByte != -1) {
           sb.append((char)curByte);
           curByte = stdout.read();
           byteCount++;
           if (byteCount > outputLimitBytes) {
-            status = ExecutionStatus.OUTPUT_LIMIT_EXCEEDED;
+            runToReturn.setStatus(ExecutionStatus.OUTPUT_LIMIT_EXCEEDED);
             break;
           }
         }
         // compare with expected output if submission hasn't received a status
-        if (status == ExecutionStatus.PENDING) { 
+        if (runToReturn.getStatus() == ExecutionStatus.PENDING) { 
           if (sb.toString().trim().equals(expectedOutput.trim())) { // trim whitespace
-            status = ExecutionStatus.ALL_CLEAR;
+            runToReturn.setStatus(ExecutionStatus.ALL_CLEAR);
           } else {
-            status = ExecutionStatus.WRONG_ANSWER;
+            runToReturn.setStatus(ExecutionStatus.WRONG_ANSWER);
           }
         }
     
@@ -133,28 +144,18 @@ public class Tester {
         stdin.close();
         stdout.close();
 
+      } catch (IOException ioException) {
+        //ioException.printStackTrace();
+        if (runToReturn.getStatus() == ExecutionStatus.PENDING) {
+          runToReturn.setStatus(ExecutionStatus.WRONG_ANSWER);
+        }
       } catch (InternalErrorException internalErrorException) {
         internalErrorException.printStackTrace();
-      } catch (IOException ioException) {
-        ioException.printStackTrace();
       } catch (InterruptedException interruptedException) {
         interruptedException.printStackTrace();
       }
-      
-      // if status is still PENDING (errors caught above), mark as internal error
-      if (status == ExecutionStatus.PENDING) {
-        status = ExecutionStatus.INTERNAL_ERROR;
-      }
 
-      f.complete(
-        new TestcaseRun(
-          this.testcase,
-          runDurationMillis,
-          0, //TODO: see if i can figure out memory usage tracking
-          status,
-          sb.toString()
-        )
-      );
+      f.complete(runToReturn);
     }
 
   }

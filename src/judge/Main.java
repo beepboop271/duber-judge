@@ -2,6 +2,7 @@ package judge;
 
 import java.io.File;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import entities.Batch;
 import entities.ContestProblem;
@@ -9,14 +10,22 @@ import entities.Language;
 import entities.Problem;
 import entities.Submission;
 import entities.Testcase;
+import entities.TestcaseRun;
+import judge.entities.Judger;
+import judge.services.GlobalChildProcessService;;
 
 public class Main {
+
+  public static ArrayList<TestcaseRun> runs = new ArrayList<TestcaseRun>();
+  public static ArrayList<Submission> submissions = new ArrayList<Submission>();
+
   public static void main(String[] args) {
+    GlobalChildProcessService.initialize();
     // input format:
     // char
     // string
     // output the occurrences of char in string
-    Problem p1 = new ContestProblem(10, 0, 0, 1000*1, 10, 10, 5);
+    Problem p1 = new ContestProblem(10, 0, 0, 1000*5, 1024*100, 1, 5);
 
     Batch p1b1 = new Batch(5);
     p1b1.addTestcase(
@@ -99,8 +108,10 @@ public class Main {
     // should receive OUTPUT_LIMIT_EXCEEDED
     Submission s4 = new Submission(
       p1,
-      "for i in range(100):"
-      + "\tprint('hello', end='')",
+      "input()\n"
+      +"input()\n"
+      +"for i in range(100):"
+      + "\tprint('hello im a very long string', end='')",
       Language.PYTHON,
       new Timestamp(System.currentTimeMillis())
     );
@@ -121,10 +132,19 @@ public class Main {
       new Timestamp(System.currentTimeMillis())
     );
 
+    // should receive MEMORY_LIMIT_EXCEEDED
+    Submission s7 = new Submission(
+      p1,
+      "input()\n"
+      +"input()\n"
+      +"thing = []\n"
+      +"while True:\n"
+      +"\tthing.append('aaaaaa')",
+      Language.PYTHON,
+      new Timestamp(System.currentTimeMillis())
+    );
+
     File directory = new File("cache/judge/");
-    if (!directory.exists()) {
-      directory.mkdirs();
-    } //TODO: move this to launcher or sth
     Judger judger = new Judger(
       Runtime.getRuntime().availableProcessors(),
       directory
@@ -135,6 +155,16 @@ public class Main {
     judger.judge(s4);
     judger.judge(s5);
     judger.judge(s6);
+    judger.judge(s7);
     judger.shutdown();
+    GlobalChildProcessService.shutdown();
+
+    // for (TestcaseRun run : Main.runs) {
+    //   Judger.display(run);
+    // }
+
+    for (Submission submission : Main.submissions) {
+      Judger.display(submission);
+    }
   }
 }

@@ -1,4 +1,4 @@
-package judge;
+package judge.entities;
 
 @SuppressWarnings("serial")
 public abstract class UserException extends Exception {

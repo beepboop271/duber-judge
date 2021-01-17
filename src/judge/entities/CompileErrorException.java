@@ -1,4 +1,4 @@
-package judge;
+package judge.entities;
 
 /**
  * [description]
@@ -11,8 +11,8 @@ package judge;
  */
 
 @SuppressWarnings("serial")
-public class InternalErrorException extends Exception {
-  public InternalErrorException(Throwable cause) {
-    super(cause);
+public class CompileErrorException extends UserException {
+  public CompileErrorException(String message) {
+    super(message);
   }
 }

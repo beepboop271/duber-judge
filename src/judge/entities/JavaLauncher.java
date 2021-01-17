@@ -1,4 +1,4 @@
-package judge;
+package judge.entities;
 
 import java.io.BufferedInputStream;
 import java.io.File;

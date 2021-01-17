@@ -20,6 +20,9 @@ public enum ExecutionStatus {
   INVALID_RETURN,
   WRONG_ANSWER,
 
+  // untested due to failure of previous testcases in the same batch
+  SKIPPED,
+
   ALL_CLEAR
 
 }

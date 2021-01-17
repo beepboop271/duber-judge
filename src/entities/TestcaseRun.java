@@ -2,29 +2,33 @@ package entities;
 
 public class TestcaseRun {
   private Testcase testcase;
-  private long runDurationMillis;
-  private double memoryUsage;
+  private Submission submission;
+  private int runDurationMillis;
+  private double memoryUsageKb;
   private ExecutionStatus status;
   private String output;
 
   public TestcaseRun(Testcase testcase) {
     this.testcase = testcase;
+    this.submission = null;
     this.runDurationMillis = 0;
-    this.memoryUsage = 0;
+    this.memoryUsageKb = 0;
     this.status = ExecutionStatus.PENDING;
     this.output = "";
   }
 
   public TestcaseRun(
     Testcase testcase,
-    long runDurationMillis,
-    double memoryUsage,
+    Submission submission,
+    int runDurationMillis,
+    double memoryUsageKb,
     ExecutionStatus status,
     String output
   ) {
     this.testcase = testcase;
+    this.submission = submission;
     this.runDurationMillis = runDurationMillis;
-    this.memoryUsage = memoryUsage;
+    this.memoryUsageKb = memoryUsageKb;
     this.status = status;
     this.output = output;
   }
@@ -33,20 +37,28 @@ public class TestcaseRun {
     return this.testcase;
   }
   
-  public long getRunDurationMillis() {
+  public Submission getSubmission() {
+    return this.submission;
+  }
+
+  public void setSubmission(Submission submission) {
+    this.submission = submission;
+  }
+
+  public int getRunDurationMillis() {
     return this.runDurationMillis;
   }
 
-  public void setRunDurationMillis(long runDurationMillis) {
+  public void setRunDurationMillis(int runDurationMillis) {
     this.runDurationMillis = runDurationMillis;
   }
 
-  public double getMemoryUsage() {
-    return this.memoryUsage;
+  public double getMemoryUsageKb() {
+    return this.memoryUsageKb;
   }
 
-  public void setMemoryUsage(double memoryUsage) {
-    this.memoryUsage = memoryUsage;
+  public void setMemoryUsageKb(double memoryUsageKb) {
+    this.memoryUsageKb = memoryUsageKb;
   }
 
   public ExecutionStatus getStatus() {

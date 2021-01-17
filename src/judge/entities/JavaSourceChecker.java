@@ -1,4 +1,4 @@
-package judge;
+package judge.entities;
 
 /**
  * [description]

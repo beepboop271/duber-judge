@@ -8,7 +8,8 @@ public class Submission {
   private Language language;
   private ExecutionStatus status;
   private int score;
-  private long runDurationMillis;
+  private int runDurationMillis;
+  private double memoryUsageKb;
 
   public Submission(
     Problem problem,
@@ -31,7 +32,8 @@ public class Submission {
     Timestamp createdAt,
     ExecutionStatus status,
     int score,
-    long runDurationMillis
+    int runDurationMillis,
+    int memoryUsageKb
   ) {
     this.problem = problem;
     this.code = code;
@@ -39,6 +41,7 @@ public class Submission {
     this.status = status;
     this.score = score;
     this.runDurationMillis = runDurationMillis;
+    this.memoryUsageKb = memoryUsageKb;
   }
   
   public Problem getProblem() {
@@ -69,12 +72,20 @@ public class Submission {
     this.score = score;
   }
 
-  public long getRunDurationMillis() {
+  public int getRunDurationMillis() {
     return this.runDurationMillis;
   }
 
-  public void setRunDuration(long runDurationMillis) {
+  public void setRunDuration(int runDurationMillis) {
     this.runDurationMillis = runDurationMillis;
+  }
+
+  public double getMemoryUsageKb() {
+    return this.memoryUsageKb;
+  }
+
+  public void setMemoryUsageKb(double memoryUsageKb) {
+    this.memoryUsageKb = memoryUsageKb;
   }
 
 }

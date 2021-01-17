@@ -1,4 +1,4 @@
-package judge;
+package judge.entities;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,7 +28,10 @@ public abstract class SourceLauncher implements AutoCloseable {
   
   public SourceLauncher(Submission submission, File tempFileDirectory) {
     this.submission = submission;
-    this.directory = tempFileDirectory; //TODO: invalid directory exception?
+    this.directory = tempFileDirectory;
+    if (!this.directory.exists()) {
+      this.directory.mkdirs();
+    }
   }
 
   public abstract Process launch() throws InternalErrorException;
