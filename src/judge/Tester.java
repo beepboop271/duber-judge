@@ -27,8 +27,9 @@ public class Tester {
     Testcase testcase,
     SourceLauncher programLauncher,
     ExecutorService pool,
-    long timeLimitMills,
-    long outputLimitBytes
+    int timeLimitMillis,
+    int memoryLimitKb,
+    int outputLimitKb
   ) {
     CompletableFuture<TestcaseRun> f = new CompletableFuture<TestcaseRun>();
     pool.submit(
@@ -36,8 +37,9 @@ public class Tester {
         f,
         testcase,
         programLauncher,
-        timeLimitMills,
-        outputLimitBytes
+        timeLimitMillis,
+        memoryLimitKb,
+        outputLimitKb
       )
     );
     return f;
@@ -48,8 +50,9 @@ public class Tester {
 
     private final Testcase testcase;
     private final SourceLauncher programLauncher;
-    private final long timeLimitMills;
-    private final long outputLimitBytes;
+    private final int timeLimitMillis;
+    private final int memoryLimitKb;
+    private final int outputLimitKb;
 
     private CompletableFuture<TestcaseRun> f;
 
@@ -57,14 +60,16 @@ public class Tester {
       CompletableFuture<TestcaseRun> f,
       Testcase testcase,
       SourceLauncher programLauncher,
-      long timeLimitMills,
-      long outputLimitBytes
+      int timeLimitMillis,
+      int memoryLimitKb,
+      int outputLimitKb
     ) {
       this.f = f;
       this.testcase = testcase;
       this.programLauncher = programLauncher;
-      this.timeLimitMills = timeLimitMills;
-      this.outputLimitBytes = outputLimitBytes;
+      this.timeLimitMillis = timeLimitMillis;
+      this.memoryLimitKb = memoryLimitKb;
+      this.outputLimitKb = outputLimitKb;
     }
 
     @Override
@@ -77,7 +82,7 @@ public class Tester {
       String expectedOutput = this.testcase.getOutput();
       StringBuilder sb = new StringBuilder();
       ExecutionStatus status = ExecutionStatus.PENDING;
-      long runDurationMills = 0;
+      long runDurationMillis = 0;
 
       try {
         Process program = this.programLauncher.launch();
@@ -88,7 +93,7 @@ public class Tester {
         stdin.flush();
         long start = System.currentTimeMillis();
   
-        program.waitFor(this.timeLimitMills, TimeUnit.MILLISECONDS);
+        program.waitFor(this.timeLimitMillis, TimeUnit.MILLISECONDS);
         if (program.isAlive()) { // timed out
           status = ExecutionStatus.TIME_LIMIT_EXCEEDED;
           program.destroyForcibly();
@@ -98,17 +103,18 @@ public class Tester {
           System.out.println("exit code: " + program.exitValue());
         }
         long end = System.currentTimeMillis();
-        runDurationMills = end - start;
-        System.out.println("run duration: " + runDurationMills);
+        runDurationMillis = end - start;
+        System.out.println("run duration: " + runDurationMillis);
 
         // read output
         int curByte = stdout.read();
         int byteCount = 0;
+        long outputLimitBytes = this.outputLimitKb*1024;
         while (curByte != -1) { //TODO: check for output limit exceeded
           sb.append((char)curByte);
           curByte = stdout.read();
           byteCount++;
-          if (byteCount > this.outputLimitBytes) {
+          if (byteCount > outputLimitBytes) {
             status = ExecutionStatus.OUTPUT_LIMIT_EXCEEDED;
             break;
           }
@@ -143,7 +149,7 @@ public class Tester {
       f.complete(
         new TestcaseRun(
           this.testcase,
-          runDurationMills,
+          runDurationMillis,
           0, //TODO: see if i can figure out memory usage tracking
           status,
           sb.toString()

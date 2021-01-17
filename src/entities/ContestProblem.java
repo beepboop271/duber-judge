@@ -8,8 +8,9 @@ public class ContestProblem extends Problem {
     int points,
     int numSubmissions,
     int clearedSubmissions,
-    long timeLimitMills,
-    long outputLimitBytes,
+    int timeLimitMillis,
+    int memoryLimitKb,
+    int outputLimitKb,
     int submissionsLimit
   ) {
     super(
@@ -17,8 +18,9 @@ public class ContestProblem extends Problem {
       points,
       numSubmissions,
       clearedSubmissions,
-      timeLimitMills,
-      outputLimitBytes
+      timeLimitMillis,
+      memoryLimitKb,
+      outputLimitKb
     );
 
     this.submissionsLimit = submissionsLimit;

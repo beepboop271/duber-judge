@@ -8,7 +8,7 @@ public class Submission {
   private Language language;
   private ExecutionStatus status;
   private int score;
-  private long runDurationMills;
+  private long runDurationMillis;
 
   public Submission(
     Problem problem,
@@ -21,7 +21,7 @@ public class Submission {
     this.language = language;
     this.status = ExecutionStatus.PENDING;
     this.score = 0;
-    this.runDurationMills = 0;
+    this.runDurationMillis = 0;
   }
 
   public Submission(
@@ -31,14 +31,14 @@ public class Submission {
     Timestamp createdAt,
     ExecutionStatus status,
     int score,
-    long runDurationMills
+    long runDurationMillis
   ) {
     this.problem = problem;
     this.code = code;
     this.language = language;
     this.status = status;
     this.score = score;
-    this.runDurationMills = runDurationMills;
+    this.runDurationMillis = runDurationMillis;
   }
   
   public Problem getProblem() {
@@ -69,12 +69,12 @@ public class Submission {
     this.score = score;
   }
 
-  public long getRunDurationMills() {
-    return this.runDurationMills;
+  public long getRunDurationMillis() {
+    return this.runDurationMillis;
   }
 
-  public void setRunDuration(long runDurationMills) {
-    this.runDurationMills = runDurationMills;
+  public void setRunDuration(long runDurationMillis) {
+    this.runDurationMillis = runDurationMillis;
   }
 
 }

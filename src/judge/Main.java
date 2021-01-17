@@ -16,7 +16,7 @@ public class Main {
     // char
     // string
     // output the occurrences of char in string
-    Problem p1 = new ContestProblem(10, 0, 0, 1000*1, 10, 5);
+    Problem p1 = new ContestProblem(10, 0, 0, 1000*1, 10, 10, 5);
 
     Batch p1b1 = new Batch(5);
     p1b1.addTestcase(

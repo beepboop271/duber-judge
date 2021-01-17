@@ -1,6 +1,7 @@
 package judge;
 
 import java.io.File;
+import java.util.LinkedHashSet;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -109,10 +110,11 @@ public class Judger {
     System.out.println("Preparing to test");
     // test
     int score = 0;
-    long totalDurationMills = 0;
+    long totalDurationMillis = 0;
     Problem problem = submission.getProblem();
-    long timeLimitMills = problem.getTimeLimitMills();
-    long outputLimitBytes = problem.getOutputLimitBytes();
+    int timeLimitMillis = problem.getTimeLimitMillis();
+    int memoryLimitKb = problem.getMemoryLimitKb();
+    int outputLimitKb = problem.getOutputLimitKb();
     ExecutionStatus submissionStatus = null;
     Batch[] batches = problem.getBatches();
 
@@ -134,15 +136,16 @@ public class Judger {
           t,
           launcher,
           this.pool,
-          timeLimitMills,
-          outputLimitBytes
+          timeLimitMillis,
+          memoryLimitKb,
+          outputLimitKb
         );
         batchCaseRunFutures[j] = caseRunFuture;
       }
 
       CompletableFuture.allOf(batchCaseRunFutures).join(); // wait for all runs to complete
       long end = System.currentTimeMillis();
-      totalDurationMills += end - start;
+      totalDurationMillis += end - start;
       System.out.println("Batch done");
       for (int j = 0;  j < batchCaseRunFutures.length; j++) {
         CompletableFuture<TestcaseRun> caseRunFuture = batchCaseRunFutures[j];
@@ -190,7 +193,7 @@ public class Judger {
 
     // end of submission test
     // - calculate score, etc.
-    submission.setRunDuration(totalDurationMills);
+    submission.setRunDuration(totalDurationMillis);
     submission.setScore(score);
     submission.setStatus(submissionStatus);
     // - update database
@@ -222,7 +225,7 @@ public class Judger {
     System.out.println("Language: " + submission.getLanguage());
     System.out.println("Status: " + submission.getStatus());
     System.out.println("Score: " + submission.getScore());
-    System.out.println("Run duration (milliseconds): " + submission.getRunDurationMills());
+    System.out.println("Run duration (milliseconds): " + submission.getRunDurationMillis());
     System.out.println("Source Code:\n" + submission.getCode());
     System.out.println();
   }
@@ -230,8 +233,8 @@ public class Judger {
   private void display(TestcaseRun run) {
     System.out.println("Testcase: " + run.getTestcase());
     System.out.println("Status: " + run.getStatus());
-    System.out.println("Memory Usage (bytes): " + run.getMemoryUsage());
-    System.out.println("Run duration (milliseconds): " + run.getRunDurationMills());
+    System.out.println("Memory Usage (kb): " + run.getMemoryUsage());
+    System.out.println("Run duration (millis): " + run.getRunDurationMillis());
     System.out.println("Output: " + run.getOutput());
     System.out.println();
   }
