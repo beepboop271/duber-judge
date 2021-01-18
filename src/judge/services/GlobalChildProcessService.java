@@ -17,7 +17,7 @@ import judge.entities.SourceLauncher;
 /**
  * [description]
  * <p>
- * Created on 2021.01.08.
+ * Created on 2021.01.17.
  *
  * @author Candice Zhang
  * @version 1.0.0
@@ -28,8 +28,8 @@ public class GlobalChildProcessService {
   private static final int UPDATE_INTERVAL_MILLIS = 1000*1;
   private static final JavaSysMon SYSTEM_MONITOR = new JavaSysMon();
   private static final int CURRENT_PID = SYSTEM_MONITOR.currentPid();
-  private static ChildProcessMonitor childProcessMonitor = new ChildProcessMonitor();
 
+  private static ChildProcessMonitor childProcessMonitor = new ChildProcessMonitor();
   private static ConcurrentHashMap<Integer, ChildProcess> activeChildProcesses
     = new ConcurrentHashMap<>();
   
@@ -72,11 +72,11 @@ public class GlobalChildProcessService {
     return childProcess;    
   }
 
-  private static int getNewPid(LinkedHashSet<Integer> updatedProcessIds)
+  private static int getNewPid(LinkedHashSet<Integer> updatedPids)
     throws InternalErrorException {
     int newPid = -1;
     int count = 0;
-    for (int pid : updatedProcessIds) {
+    for (int pid : updatedPids) {
       if (!activeChildProcesses.containsKey(pid)) {
         newPid = pid;
         count++;
