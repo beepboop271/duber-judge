@@ -10,10 +10,6 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 
-import dubjhandlers.StaticHandler;
-import dubjhandlers.ProblemHandler;
-import dubjhandlers.LeaderboardHandler;
-import dubjhandlers.HomeHandler;
 import webserver.webcache.WebLruCache;
 
 public class WebServer {
@@ -34,19 +30,6 @@ public class WebServer {
    * to each connection.
    */
   private ExecutorService workers;
-
-  public static void main(String[] args) {
-    WebServer server = new WebServer(5000);
-
-    server.route("/", new HomeHandler());
-    server.route("/static", new StaticHandler());
-    server.route("/contest/*/problems/?*?", new ProblemHandler());
-    server.route("/admin/*/problems/?*?", new ProblemHandler());
-    server.route("/contest/*/leaderboard", new LeaderboardHandler());
-    server.route("/admin/*/leaderboard", new LeaderboardHandler());
-
-    server.run();
-  }
 
   /**
    * Constructs a new WebServer that should run on a specified port.
@@ -131,12 +114,22 @@ public class WebServer {
    * indicate that everything under that path should be matched using this route
    * handler.
    * <p>
-   * Query strings are not included in the path and can be found in the request
-   * object.
+   * Query strings should not be included in the path as they are individually
+   * parsed separately and can be found in the request object.
    * <p>
    * Caution must be placed with routing two strings that match the same path, as
    * non-deterministic routing resolution will occur. There will be no guarantees
    * as to which route target will handle the request.
+   * <p>
+   * A brief example:
+   * 
+   * <pre>
+   * WebServer server = new WebServer(5000);
+   * // This will only match the /static path, nothing more, nothing less.
+   * server.route("/static", new StaticHandler());
+   * // This will match /problems, /problems/problem1, /problems/problem2, etc.
+   * server.route("/problems/?*", new ProblemHandler());
+   * </pre>
    * 
    * @param route  the route associated with the {@code RouteTarget}.
    * @param target the RouteTarget to handle the request.
@@ -297,7 +290,8 @@ public class WebServer {
      * failed status, depending on the invalid string.
      * 
      * @param statusLine the string with the status line of the HTML request
-     * @param othersLine the string with the headers + body, separated by {@code \n}.
+     * @param othersLine the string with the headers + body, separated by
+     *                   {@code \n}.
      * @return a Response generated from the recieved strings.
      */
     private Response processRecievedStrings(String statusLine, String othersLine) {
