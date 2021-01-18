@@ -1,5 +1,7 @@
 package judge.entities;
 
+import java.util.ArrayList;
+
 /**
  * [description]
  * <p>
@@ -16,7 +18,16 @@ public class JavaSourceChecker implements SourceChecker {
   }
 
   public boolean isClean(String source) {
-    //TODO: finish
+    //TODO: get list from db
+    String[] illegalSegments = new String[] {
+      "ProcessBuilder",
+      "Process"
+    };
+    for (String segment : illegalSegments) {
+      if (source.contains(segment)) {
+        return false;
+      }
+    }
     return true;
   }
   

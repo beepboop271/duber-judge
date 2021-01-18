@@ -1,4 +1,4 @@
-package judge;
+package judge.test;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -12,7 +12,7 @@ import entities.Submission;
 import entities.Testcase;
 import entities.TestcaseRun;
 import judge.entities.Judger;
-import judge.services.GlobalChildProcessService;;
+import judge.services.GlobalChildProcessService;
 
 public class Main {
 
@@ -144,27 +144,60 @@ public class Main {
       new Timestamp(System.currentTimeMillis())
     );
 
+    // should receive ILLEGAL_CODE
+    Submission s8 = new Submission(
+      p1,
+      "import os",
+      Language.PYTHON,
+      new Timestamp(System.currentTimeMillis())
+    );
+
     File directory = new File("cache/judge/");
     Judger judger = new Judger(
       Runtime.getRuntime().availableProcessors(),
       directory
     );
-    judger.judge(s1);
-    judger.judge(s2);
-    judger.judge(s3);
-    judger.judge(s4);
-    judger.judge(s5);
-    judger.judge(s6);
-    judger.judge(s7);
+    ArrayList<Submitter> submitters = new ArrayList<>();
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s1, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s2, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s3, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s4, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s5, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s6, judger));
+    }
+    submitters.add(new Submitter(s7, judger));
+    submitters.add(new Submitter(s8, judger));
+    System.out.println("starting to judge");
+    long start = System.currentTimeMillis();
+    for (Submitter s : submitters) {
+      s.run();
+    }
+    // judger.judge(s1);
+    // judger.judge(s2);
+    // judger.judge(s3);
+    // judger.judge(s4);
+    // judger.judge(s5);
+    // judger.judge(s6);
+    // judger.judge(s7);
+    // judger.judge(s8);
+    long end = System.currentTimeMillis();
+    System.out.println("judging done, time: " + (end-start)/1000.0 + "seconds");
     judger.shutdown();
     GlobalChildProcessService.shutdown();
 
-    // for (TestcaseRun run : Main.runs) {
-    //   Judger.display(run);
+    // for (Submission submission : Main.submissions) {
+    //   Judger.display(submission);
     // }
-
-    for (Submission submission : Main.submissions) {
-      Judger.display(submission);
-    }
   }
 }

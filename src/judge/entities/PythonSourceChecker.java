@@ -16,7 +16,15 @@ public class PythonSourceChecker implements SourceChecker {
   }
 
   public boolean isClean(String source) {
-    //TODO: finish
+    //TODO: get list from db
+    String[] illegalSegments = new String[] {
+      "import os"
+    };
+    for (String segment : illegalSegments) {
+      if (source.contains(segment)) {
+        return false;
+      }
+    }
     return true;
   }
   

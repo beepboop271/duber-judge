@@ -35,7 +35,6 @@ public class Judger {
     this.tempFileDirectory = tempFileDirectory;
   }
 
-  @SuppressWarnings("unchecked")
   public void judge(Submission submission) {
     // check
     try {
@@ -205,7 +204,7 @@ public class Judger {
 
   private void updateDatabase(TestcaseRun testcaseRun) {
     //TODO: write to db
-    display(testcaseRun);
+    //display(testcaseRun);
   }
 
   // ------temp methods
