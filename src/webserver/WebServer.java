@@ -11,10 +11,10 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 
 import dubjhandlers.StaticHandler;
-import webserver.webcache.WebLruCache;
 import dubjhandlers.ProblemHandler;
 import dubjhandlers.LeaderboardHandler;
 import dubjhandlers.HomeHandler;
+import webserver.webcache.WebLruCache;
 
 public class WebServer {
   /** The port that this WebServer is hosted on. **/
@@ -40,8 +40,8 @@ public class WebServer {
 
     server.route("/", new HomeHandler());
     server.route("/static", new StaticHandler());
-    server.route("/contest/*/problems?/?*", new ProblemHandler());
-    server.route("/admin/*/problems/*", new ProblemHandler());
+    server.route("/contest/*/problems/?*?", new ProblemHandler());
+    server.route("/admin/*/problems/?*?", new ProblemHandler());
     server.route("/contest/*/leaderboard", new LeaderboardHandler());
     server.route("/admin/*/leaderboard", new LeaderboardHandler());
 
@@ -246,15 +246,7 @@ public class WebServer {
      */
     public void run() {
       String statusLine = "";
-      String[] statusTokens;
-      String method;
-      String fullPath;
-      String protocol;
-
       String headerLine = "";
-      String[] headers;
-
-      String body = "";
 
       try {
         while (statusLine.equals("")) {
@@ -274,26 +266,7 @@ public class WebServer {
         e.printStackTrace();
       }
 
-      // The body is simply the last string in the request that we can parse
-      body = headerLine.substring(headerLine.lastIndexOf("\n"));
-      // Everything else is a lot of headers
-      headerLine = headerLine.substring(0, headerLine.lastIndexOf("\n"));
-      headers = headerLine.split("\n");
-
-      // This should be a 3 string array
-      statusTokens = statusLine.split(" ");
-      method = statusTokens[0];
-      fullPath = statusTokens[1];
-      protocol = statusTokens[2];
-
-      // Generate response from request object from the parsed HTTP request
-      Request newRequest = new Request(method, fullPath, headers, body);
-      Response response = generateResponse(newRequest);
-
-      // Re-insert into cache if we need to
-      if (!cache.checkCache(fullPath)) {
-        cache.putCache(response.getBody(), fullPath, 60);
-      }
+      Response response = processRecievedStrings(statusLine, headerLine);
 
       // Output to user and shut down
       output.println(response);
@@ -317,6 +290,59 @@ public class WebServer {
     }
 
     /**
+     * Processes any recieved strings that should be used to form a request, and
+     * generates the response based on that request, for output back to the client.
+     * <p>
+     * If invalid strings are provided, this method will return a response with a
+     * failed status, depending on the invalid string.
+     * 
+     * @param statusLine the string with the status line of the HTML request
+     * @param othersLine the string with the headers + body, separated by {@code \n}.
+     * @return a Response generated from the recieved strings.
+     */
+    private Response processRecievedStrings(String statusLine, String othersLine) {
+      String[] statusTokens;
+      String method;
+      String fullPath;
+      String protocol;
+      String[] headers;
+
+      String body = "";
+
+      // This should be a 3 string array, and if not we stop processing it
+      statusTokens = statusLine.split(" ");
+      if (statusTokens.length != 3) {
+        return generateFailedResponse(400, "400 Bad Request.");
+      }
+
+      method = statusTokens[0];
+      fullPath = statusTokens[1];
+      protocol = statusTokens[2];
+
+      if (!protocol.equals("HTTP/1.1")) {
+        return generateFailedResponse(505, "HTTP Version Not Supported.");
+      }
+
+      // The body is simply the last string in the request that we can parse
+      // Normally an empty string
+      body = othersLine.substring(othersLine.lastIndexOf("\n"));
+      // Everything else is a lot of headers
+      othersLine = othersLine.substring(0, othersLine.lastIndexOf("\n"));
+      headers = othersLine.split("\n");
+
+      // Generate response from request object from the parsed HTTP request
+      Request newRequest = new Request(method, fullPath, headers, body);
+      Response response = generateResponseFromRequest(newRequest);
+
+      // Re-insert into cache if we need to
+      if (!cache.checkCache(fullPath)) {
+        cache.putCache(response.getBody(), fullPath, 60);
+      }
+
+      return response;
+    }
+
+    /**
      * Generates a new response given an HTTP request.
      * <p>
      * This response can stem from the cache or a handler. If neither can handle the
@@ -325,7 +351,7 @@ public class WebServer {
      * @param request the HTTP request to handle.
      * @return an HTTP response to return to the user.
      */
-    private Response generateResponse(Request request) {
+    private Response generateResponseFromRequest(Request request) {
       if (cache.checkCache(request.getFullPath())) {
         // Retrieve the cached object
         return new Response(200, cache.getCachedObject(request.getFullPath()));
@@ -338,13 +364,26 @@ public class WebServer {
         return handler.accept(request);
       } else {
         // Generate the failed response
-        String failedBody = "<html><head><TITLE>404 Not Found.</TITLE></head><body>404 Not Found.</body></html>";
-
-        Response response = new Response(200, failedBody);
-        response.addHeader("Content-Type", "text/html");
-        response.addHeader("Content-Length", "82");
-        return response;
+        return generateFailedResponse(404, "404 Not Found.");
       }
+    }
+
+    /**
+     * Generates a generic failed response with an HTML file detailing the failure.
+     * 
+     * @param status      the failed status to return to the client.
+     * @param description a small description for the user.
+     * @return a failed Response.
+     */
+    private Response generateFailedResponse(int status, String description) {
+      String failedTemplate = "<html><head><title>%s</title></head><body>%s</body></html>";
+      String failedBody = String.format(failedTemplate, description, description);
+
+      Response response = new Response(status, failedBody);
+      response.addHeader("Content-Type", "text/html");
+      response.addHeader("Content-Length", Integer.toString(failedBody.length()));
+
+      return response;
     }
   }
 }
