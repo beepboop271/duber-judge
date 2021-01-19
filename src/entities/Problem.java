@@ -54,7 +54,6 @@ public abstract class Problem {
    * @param memoryLimitKb      this problem's memory limit, in kilobytes.
    * @param outputLimitKb      this problem's output limit, in kilobytes.
    * @param numSubmissions     this problem's amount of total submissions.
-   * @param clearedSubmissions this problem's amount of cleared submissions.
    */
   public Problem(
     ProblemType problemType,
@@ -68,8 +67,7 @@ public abstract class Problem {
     int timeLimitMillis,
     int memoryLimitKb,
     int outputLimitKb,
-    int numSubmissions,
-    int clearedSubmissions
+    int numSubmissions
   ) {
     this.problemType = problemType;
     this.category = category;
@@ -83,7 +81,7 @@ public abstract class Problem {
     this.memoryLimitKb = memoryLimitKb;
     this.outputLimitKb = outputLimitKb;
     this.numSubmissions = numSubmissions;
-    this.clearedSubmissions = clearedSubmissions;
+    this.clearedSubmissions = 0;
   }
 
   /**

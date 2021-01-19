@@ -63,7 +63,6 @@ public class AdminService {
     long userId,
     String title,
     String description,
-    int submissionsLimit,
     Timestamp startTime,
     Timestamp endTime,
     int durationMinutes
@@ -80,11 +79,11 @@ public class AdminService {
     return id;
   }
 
-  public void updateContestField(
+  public <T> void updateContest(
     long userId,
     long contestId,
     ContestField field,
-    String value
+    T value
   ) throws RecordNotFoundException, InsufficientPermissionException {
     this.validateContest(userId, contestId);
     this.contestDao.update(contestId, field, value);
@@ -124,7 +123,6 @@ public class AdminService {
     long userId,
     ProblemType type,
     Category category,
-    long creatorId,
     Timestamp createdAt,
     Timestamp lastModifiedAt,
     String title,
@@ -134,7 +132,6 @@ public class AdminService {
     int memoryLimitKb,
     int outputLimitKb,
     int numSubmissions,
-    int clearedSubmissions,
     int submissionsLimit,
     long contestId,
     String editorial
@@ -145,7 +142,7 @@ public class AdminService {
       case CONTEST:
         id = this.problemDao.add(new ContestProblem(
           category,
-          creatorId,
+          userId,
           createdAt,
           lastModifiedAt,
           title,
@@ -155,7 +152,6 @@ public class AdminService {
           memoryLimitKb,
           outputLimitKb,
           numSubmissions,
-          clearedSubmissions,
           submissionsLimit,
           contestId
         ));
@@ -163,7 +159,7 @@ public class AdminService {
       case PRACTICE:
         id = this.problemDao.add(new PracticeProblem(
           category,
-          creatorId,
+          userId,
           createdAt,
           lastModifiedAt,
           title,
@@ -173,7 +169,6 @@ public class AdminService {
           memoryLimitKb,
           outputLimitKb,
           numSubmissions,
-          clearedSubmissions,
           editorial
         ));
         break;
@@ -192,11 +187,11 @@ public class AdminService {
     }
   }
 
-  public void updateProblemField(
+  public <T> void updateProblem(
     long userId,
     long problemId,
     ProblemField field,
-    String value
+    T value
   ) throws RecordNotFoundException, InsufficientPermissionException {
     this.validateProblem(userId, problemId);
     this.problemDao.update(problemId, field, value);
@@ -226,7 +221,6 @@ public class AdminService {
     long userId,
     long problemId,
     int sequence,
-    int order,
     int points
   ) throws InsufficientPermissionException {
     this.validate(userId);
@@ -239,11 +233,11 @@ public class AdminService {
     return id;
   }
 
-  public void updateBatch(
+  public <T> void updateBatch(
     long userId,
     long batchId,
     BatchField field,
-    String value
+    T value
   ) throws RecordNotFoundException, InsufficientPermissionException {
     this.validateBatch(userId, batchId);
     this.batchDao.update(batchId, field, value);
@@ -274,7 +268,6 @@ public class AdminService {
     long userId,
     long batchId,
     int sequence,
-    int order,
     String input,
     String output
   ) throws InsufficientPermissionException {
@@ -289,11 +282,11 @@ public class AdminService {
     return id;
   }
 
-  public void updateTestcase(
+  public <T> void updateTestcase(
     long userId,
     long testcaseId,
     TestcaseField field,
-    String value
+    T value
   ) throws RecordNotFoundException, InsufficientPermissionException {
     this.validateTestcase(userId, testcaseId);
     this.testcaseDao.update(userId, field, value);

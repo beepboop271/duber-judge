@@ -32,7 +32,6 @@ public class PracticeProblem extends Problem {
    * @param memoryLimitKb      this problem's memory limit, in kilobytes.
    * @param outputLimitKb      this problem's output limit, in kilobytes.
    * @param numSubmissions     this problem's amount of total submissions.
-   * @param clearedSubmissions this problem's amount of cleared submissions.
    * @param editorial          the editorial for this problem.
    */
   public PracticeProblem(
@@ -47,7 +46,6 @@ public class PracticeProblem extends Problem {
     int memoryLimitKb,
     int outputLimitKb,
     int numSubmissions,
-    int clearedSubmissions,
     String editorial
   ) {
     super(
@@ -62,8 +60,7 @@ public class PracticeProblem extends Problem {
       timeLimitMillis,
       memoryLimitKb,
       outputLimitKb,
-      numSubmissions,
-      clearedSubmissions
+      numSubmissions
     );
 
     this.editorial = editorial;

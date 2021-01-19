@@ -42,7 +42,6 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
       problem.getMemoryLimitKb(),
       problem.getOutputLimitKb(),
       problem.getNumSubmissions(),
-      problem.getClearedSubmissions(),
       ""
     );
   }
@@ -350,7 +349,6 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
             result.getInt("memory_limit_kb"),
             result.getInt("output_limit_kb"),
             result.getInt("num_submissions"),
-            result.getInt("cleared_submissions"),
             result.getInt("submissions_limit"),
             result.getLong("contest_id")
           )
@@ -372,7 +370,6 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
             result.getInt("memory_limit_kb"),
             result.getInt("output_limit_kb"),
             result.getInt("num_submissions"),
-            result.getInt("cleared_submissions"),
             result.getString("editorial")
           )
         );

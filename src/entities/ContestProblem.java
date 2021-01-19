@@ -32,7 +32,6 @@ public class ContestProblem extends Problem {
    * @param memoryLimitKb      this problem's memory limit, in kilobytes.
    * @param outputLimitKb      this problem's output limit, in kilobytes.
    * @param numSubmissions     this problem's amount of total submissions.
-   * @param clearedSubmissions this problem's amount of cleared submissions.
    * @param submissionsLimit   the amount of submissions a user can submit.
    * @param contestId          the id of the contest that contains this problem.
    */
@@ -48,7 +47,6 @@ public class ContestProblem extends Problem {
     int memoryLimitKb,
     int outputLimitKb,
     int numSubmissions,
-    int clearedSubmissions,
     int submissionsLimit,
     long contestId
   ) {
@@ -64,8 +62,7 @@ public class ContestProblem extends Problem {
       timeLimitMillis,
       memoryLimitKb,
       outputLimitKb,
-      numSubmissions,
-      clearedSubmissions
+      numSubmissions
     );
 
     this.submissionsLimit = submissionsLimit;

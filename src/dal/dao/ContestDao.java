@@ -84,7 +84,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
   @Override
   public long add(Contest data) {
     String sql = "INSERT INTO contests"
-                +"(creator_id, description, title, start_time, end_time, duration)"
+                +"(creator_id, description, title, start_time, end_time, duration_minutes)"
                 +" VALUES (" + DaoHelper.getParamString(6) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
@@ -192,7 +192,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
         result.getString("title"),
         Timestamp.valueOf(result.getString("start_time")),
         Timestamp.valueOf(result.getString("end_time")),
-        result.getInt("duration")
+        result.getInt("duration_minutes")
       )
     );
   }
