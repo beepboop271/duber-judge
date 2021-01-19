@@ -13,7 +13,7 @@ public class Interpreter {
 
   public String resolveString(StringResolvable s) {
     if (s.isTemplate()) {
-      Object content = namespace.get(s.getContent());
+      Object content = this.namespace.get(s.getContent());
       if (content instanceof String) {
         return (String) content;
       }
@@ -42,15 +42,15 @@ public class Interpreter {
 
     if (curNode instanceof TemplatedContent) {
       // TODO: what if it doesn't map to a string
-      return (interpreted += namespace.get(((TemplatedContent) curNode).getExpression()));
+      return (interpreted += this.namespace.get(((TemplatedContent) curNode).getExpression()));
     }
     
     if (curNode instanceof Loop) {
       Loop loop = (Loop) curNode;
-      Object loopTarget = namespace.get(resolveString(loop.getTarget()));
+      Object loopTarget = this.namespace.get(resolveString(loop.getTarget()));
       if (loopTarget instanceof Iterable<?>) {
         for (Object item : (Iterable<Object>)loopTarget) {
-          namespace.put(loop.getLoopVariable(), item);
+          this.namespace.put(loop.getLoopVariable(), item);
           Iterator<Node> children = curNode.getChildren();
           while (children.hasNext()) {
             interpreted = interpretHelper(children.next(), interpreted);
