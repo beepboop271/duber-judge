@@ -1,6 +1,6 @@
 package webserver.webcache;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * n implementationo of a Least Recently Used cache, used
@@ -11,53 +11,69 @@ import java.util.HashMap;
  * cached objects.
  * <p>
  * This cache will run a low-priority background thread to
- * clean up expired objects from the cache.
+ * clean up expired objects from the cache. The background
+ * thread will sleep for 15 seconds after checking to
+ * prevent starvation.
  * <p>
  * Created <b> 2020-01-08 </b>.
  *
  * @since 0.0.1
- * @version 0.0.1
+ * @version 0.0.2
  * @author Joseph Wang
  */
 public class WebLruCache {
   /** The default max capacity for any WebLRUCache. */
-  public static int DEFAULT_MAX_CAPACITY = 100;
+  public static final int DEFAULT_MAX_CAPACITY = 100;
   /**
    * The head of the cache, for the most recently used object.
    */
-  private Node<TimedObject<String>> head;
+  private TimedNode<String> head;
   /**
    * The tail of the cache, for the least recently used
    * object.
    */
-  private Node<TimedObject<String>> tail;
+  private TimedNode<String> tail;
   /**
    * The id-to-node lookup table to get O(1) get time for all
-   * cached objects.
+   * cached objects, concurrent for thread safety.
    */
-  private HashMap<String, Node<TimedObject<String>>> lookup;
+  private ConcurrentHashMap<String, TimedNode<String>> lookup;
+  /**
+   * The node-to-id lookup table to get O(1) get time for
+   * nodes to keys, concurrent for thread safety.
+   */
+  private ConcurrentHashMap<TimedNode<String>, String> reverseLookup;
   /** The total amount of capacity this cache has. */
   private int maxCapacity;
   /** If this web cache's cleanup thread should run. */
   private boolean runCleanup = true;
+  /** A locking object for linked list synchronization. */
+  private Object listLock = new Object();
 
   /**
    * Constructs a new WebLruCache, with a capacity of 100.
    */
   public WebLruCache() {
-    this(DEFAULT_MAX_CAPACITY);
+    this(WebLruCache.DEFAULT_MAX_CAPACITY);
   }
 
   /**
    * Constructs a new WebLruCache, with an declared capacity.
    *
    * @param maxCapacity The max capacity of this cache.
+   * @throws IllegalArgumentException if the provided capacity
+   *                                  is 0 or less.
    */
   public WebLruCache(int maxCapacity) {
-    this.maxCapacity = maxCapacity;
-    this.lookup = new HashMap<>(maxCapacity);
+    if (maxCapacity <= 0) {
+      throw new IllegalArgumentException("Capacity cannot be 0 or less.");
+    }
 
-    initializeCleanupThread();
+    this.maxCapacity = maxCapacity;
+    this.lookup = new ConcurrentHashMap<>(maxCapacity);
+    this.reverseLookup = new ConcurrentHashMap<>(maxCapacity);
+
+    this.initializeCleanupThread();
   }
 
   /**
@@ -76,39 +92,34 @@ public class WebLruCache {
    * @param secondsToLive The amount of seconds this item has
    *                      to live.
    */
-  public synchronized void putCache(String item, String id, int secondsToLive) {
-    synchronized (lookup) {
+  public void putCache(String item, String id, int secondsToLive) {
+    TimedNode<String> newNode;
+
+    synchronized (this.listLock) {
       if (this.lookup.size() >= this.maxCapacity) {
-        // Remove the tail from the lookup index in O(n) worst time
-        for (String key : this.lookup.keySet()) {
-          if (this.lookup.get(key).equals(tail)) {
-            this.lookup.remove(key);
-            break;
-          }
-        }
+        // Remove the tail from the lookup index
+        String key = reverseLookup.get(this.tail);
+        this.lookup.remove(key);
+        this.reverseLookup.remove(this.tail);
 
         // Remove other references
-        if (tail.prev != null) {
-          tail.prev.next = null;
+        if (this.tail.prev != null) {
+          this.tail.prev.next = null;
         }
 
-        tail = tail.prev;
+        this.tail = this.tail.prev;
       }
 
-      // Create and insert the new node into the proper areas
-      Node<TimedObject<String>> newNode =
-        new Node<TimedObject<String>>(
-          new TimedObject<String>(item, secondsToLive),
-          null,
-          head
-        );
+      // Create and insert the new node into the head
+      newNode = new TimedNode<>(item, null, head, secondsToLive);
       this.head = newNode;
       if (this.lookup.size() == 0) {
         this.tail = newNode;
       }
-
-      this.lookup.put(id, newNode);
     }
+
+    this.lookup.put(id, newNode);
+    this.reverseLookup.put(newNode, id);
   }
 
   /**
@@ -127,10 +138,29 @@ public class WebLruCache {
    * @param id      The id to update.
    * @param newItem The new item to replace the old item.
    */
-  public synchronized void updateCache(String id, String newItem) {
-    synchronized (this.lookup) {
-      if (checkCache(id)) {
-        this.lookup.get(id).data.setObject(newItem);
+  public void updateCache(String id, String newItem) {
+    if (checkCache(id)) {
+      synchronized (this.listLock) {
+        TimedNode<String> node = this.lookup.get(id);
+        // Push recently updated to top
+        if (node.next != null) {
+          node.next.prev = node.prev;
+        }
+
+        if (node.prev != null) {
+          node.prev.next = node.next;
+        }
+
+        node.next = this.head;
+        this.head = node;
+
+        if (node == this.tail) {
+          this.tail = node.prev;
+        }
+
+        node.prev = null;
+
+        node.setData(newItem);
       }
     }
   }
@@ -145,9 +175,33 @@ public class WebLruCache {
    * @param id The id of the cached object to fetch.
    * @return the cached object, or {@code null}.
    */
-  public synchronized String getCachedObject(String id) {
-    synchronized (this.lookup) {
-      return this.lookup.get(id).data.getObject();
+  public String getCachedObject(String id) {
+    synchronized (this.listLock) {
+      TimedNode<String> node = this.lookup.get(id);
+
+      if (node != null) {
+        // Push recently got to top
+        if (node.next != null) {
+          node.next.prev = node.prev;
+        }
+
+        if (node.prev != null) {
+          node.prev.next = node.next;
+        }
+
+        node.next = this.head;
+        this.head = node;
+
+        if (node == this.tail) {
+          this.tail = node.prev;
+        }
+
+        node.prev = null;
+
+        return node.getData();
+      } else {
+        return null;
+      }
     }
   }
 
@@ -157,17 +211,17 @@ public class WebLruCache {
    * @param id The id to check the cache for.
    * @return true if the cache has the specified id.
    */
-  public synchronized boolean checkCache(String id) {
-    synchronized (this.lookup) {
-      return this.lookup.containsKey(id);
-    }
+  public boolean checkCache(String id) {
+    return this.lookup.containsKey(id);
   }
 
   /**
    * Clears the cache and removes all cached objects.
    */
   public void clearCache() {
-    this.lookup.clear();
+    synchronized (this.listLock) {
+      this.lookup.clear();
+    }
   }
 
   /**
@@ -176,39 +230,61 @@ public class WebLruCache {
    * cache.
    */
   private void initializeCleanupThread() {
-    Thread cleanupThread = new Thread(new Runnable() {
-      public synchronized void run() {
-        while (runCleanup) {
-          synchronized (lookup) {
-            for (String toCheck : lookup.keySet()) {
-              if (lookup.get(toCheck).data.isExpired()) {
-                // Remove expired cache objects
-                Node<TimedObject<String>> toRemove = lookup.get(toCheck);
-                lookup.remove(toCheck);
+    Thread cleanupThread = new Thread(new CleanupRunnable());
 
-                if (toRemove.next != null) {
-                  toRemove.next.prev = toRemove.prev;
-                }
+    cleanupThread.setPriority(Thread.MIN_PRIORITY);
+    cleanupThread.start();
+  }
 
-                if (toRemove.prev != null) {
-                  toRemove.prev.next = toRemove.next;
-                }
+  /**
+   * A runnable that handles cleanup of expired cached items
+   * with a 10 second delay between each check.
+   * <p>
+   * Created <b> 2021-01-19 </b>.
+   *
+   * @since 0.0.2
+   * @version 0.0.2
+   * @author Joseph Wang
+   */
+  private final class CleanupRunnable implements Runnable {
+    private static final int SLEEP_TIME_MS = 15_000;
 
-                if (toRemove == head) {
-                  head = toRemove.next;
-                }
+    public void run() {
+      while (runCleanup) {
+        synchronized (WebLruCache.this.listLock) {
+          for (String toCheck : WebLruCache.this.lookup.keySet()) {
+            if (WebLruCache.this.lookup.get(toCheck).isExpired()) {
+              // Remove expired cache objects
+              TimedNode<String> toRemove = WebLruCache.this.lookup.get(toCheck);
+              WebLruCache.this.lookup.remove(toCheck);
 
-                if (toRemove == tail) {
-                  tail = toRemove.prev;
-                }
+              if (toRemove.next != null) {
+                toRemove.next.prev = toRemove.prev;
+              }
+
+              if (toRemove.prev != null) {
+                toRemove.prev.next = toRemove.next;
+              }
+
+              if (toRemove == WebLruCache.this.head) {
+                WebLruCache.this.head = toRemove.next;
+              }
+
+              if (toRemove == WebLruCache.this.tail) {
+                WebLruCache.this.tail = toRemove.prev;
               }
             }
           }
         }
-      }
-    });
 
-    cleanupThread.setPriority(Thread.MIN_PRIORITY);
-    cleanupThread.start();
+        // Since marking thread as MIN_PRIRORITY doesn't magically
+        // make it pause, wait a delay
+        try {
+          Thread.sleep(CleanupRunnable.SLEEP_TIME_MS);
+        } catch (InterruptedException e) {
+          System.out.println("Cleanup thread interrupted while sleeping.");
+        }
+      }
+    }
   }
 }
