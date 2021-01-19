@@ -36,18 +36,18 @@ public class Judger {
     this.tempFileDirectory = tempFileDirectory;
   }
 
-  public void judge(Submission submission) {
+  public Submission judge(Submission submission) {
     // check
     try {
       if (!ProgramChecker.isClean(submission)) {
         submission.setStatus(ExecutionStatus.ILLEGAL_CODE);
         this.updateDatabase(submission);
-        return;
+        return submission;
       }
     } catch (UnknownLanguageException unknownLanguageException) {
       submission.setStatus(ExecutionStatus.UNKNOWN_LANGUAGE);
       this.updateDatabase(submission);
-      return;
+      return submission;
     }
     // get launcher
     CompletableFuture<SourceLauncher> launcherFuture =
@@ -64,7 +64,7 @@ public class Judger {
       submission.setStatus(ExecutionStatus.INTERNAL_ERROR);
       this.updateDatabase(submission);
       cancellationException.printStackTrace();
-      return;
+      return submission;
 
     } catch (ExecutionException executionException) {
       Throwable cause = executionException.getCause();
@@ -76,13 +76,13 @@ public class Judger {
       }
       this.updateDatabase(submission);
       executionException.printStackTrace();
-      return;
+      return submission;
 
     } catch (InterruptedException interruptedException) {
       submission.setStatus(ExecutionStatus.INTERNAL_ERROR);
       this.updateDatabase(submission);
       interruptedException.printStackTrace();
-      return;
+      return submission;
 
     }
 
@@ -93,7 +93,7 @@ public class Judger {
       this.updateDatabase(submission);
       internalErrorException.printStackTrace();
       launcher.close();
-      return;
+      return submission;
 
     } catch (UserException userException) {
       if (userException instanceof CompileErrorException) {
@@ -104,7 +104,7 @@ public class Judger {
       }
       this.updateDatabase(submission);
       launcher.close();
-      return;
+      return submission;
     }
 
     // test
@@ -192,6 +192,7 @@ public class Judger {
     this.updateDatabase(submission);
     // - close resources
     launcher.close();
+    return submission;
   }
 
   public void shutdown() {
