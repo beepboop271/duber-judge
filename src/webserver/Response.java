@@ -5,13 +5,14 @@ import java.util.Map;
 /**
  * This class represents an HTTP {@code Response} object.
  * <p>
- * Since the web server is expected to return a properly formatted HTTP response
- * object, this class overrides and implements {@link #toString()} which will
- * convert this object to a properly formatted HTTP response string, ready to be
- * sent to the client.
+ * Since the web server is expected to return a properly
+ * formatted HTTP response object, this class overrides and
+ * implements {@link #toString()} which will convert this
+ * object to a properly formatted HTTP response string,
+ * ready to be sent to the client.
  * <p>
  * Created <b> 2020-12-28 </b>
- * 
+ *
  * @since 0.0.1
  * @version 0.0.1
  * @author Joseph Wang
@@ -27,8 +28,9 @@ public class Response extends HttpMessage {
    * Constructs a new Response, without any body or headers.
    * <p>
    * The body will be initialized as an empty string.
-   * 
-   * @param statusCode the status code of the response (eg. 201, 404, etc)
+   *
+   * @param statusCode The status code of the response (eg.
+   *                   201, 404, etc)
    */
   public Response(int statusCode) {
     this(statusCode, "");
@@ -36,73 +38,87 @@ public class Response extends HttpMessage {
 
   /**
    * Constructs a new Response, without any headers.
-   * 
-   * @param statusCode the status code of the response (eg. 201, 404, etc)
-   * @param body       the body of the response.
+   *
+   * @param statusCode The status code of the response (eg.
+   *                   201, 404, etc)
+   * @param body       The body of the response.
    */
   public Response(int statusCode, String body) {
     super();
 
-    this.statusString = "HTTP/1.1 " + statusCode;
+    this.statusString = "HTTP/1.1 "+statusCode;
     this.body = body;
   }
 
   /**
-   * Constructs a new Response with the specified map of headers.
-   * 
-   * @param statusCode the status code of the response (eg. 201, 404, etc)
-   * @param headers    a map with the headers of the response.
-   * @param body       the body of the response.
+   * Constructs a new Response with the specified map of
+   * headers.
+   *
+   * @param statusCode The status code of the response (eg.
+   *                   201, 404, etc)
+   * @param headers    A map with the headers of the response.
+   * @param body       The body of the response.
    */
   public Response(int statusCode, Map<String, String> headers, String body) {
     super(headers);
 
-    this.statusString = "HTTP/1.1 " + statusCode;
+    this.statusString = "HTTP/1.1 "+statusCode;
     this.body = body;
   }
 
   /**
-   * Constructs a new Response with the specified string array of headers.
+   * Constructs a new Response with the specified string array
+   * of headers.
    * <p>
-   * This constructor will accept a string array of headers, seperated by a colon.
+   * This constructor will accept a string array of headers,
+   * seperated by a colon.
    * <p>
-   * For example: {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
+   * For example:
+   * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
-   * 
-   * @param statusCode the status code of the response (eg. 201, 404, etc)
-   * @param headers    a string array with the headers of the response.
-   * @param body       the body of the response.
+   *
+   * @param statusCode The status code of the response (eg.
+   *                   201, 404, etc)
+   * @param headers    A string array with the headers of the
+   *                   response.
+   * @param body       The body of the response.
    */
   public Response(int statusCode, String[] headers, String body) {
     super(headers);
 
-    this.statusString = "HTTP/1.1 " + statusCode;
+    this.statusString = "HTTP/1.1 "+statusCode;
     this.body = body;
   }
 
   /**
-   * Constructs a new Response with the specified map of headers and no body.
-   * 
-   * @param statusCode the status code of the response (eg. 201, 404, etc)
-   * @param headers    a map with the headers of the response.
+   * Constructs a new Response with the specified map of
+   * headers and no body.
+   *
+   * @param statusCode The status code of the response (eg.
+   *                   201, 404, etc)
+   * @param headers    A map with the headers of the response.
    */
   public Response(int statusCode, Map<String, String> headers) {
     this(statusCode, headers, "");
   }
 
   /**
-   * Constructs a new Response with the specified string array of headers and no
-   * body.
+   * Constructs a new Response with the specified string array
+   * of headers and no body.
    * <p>
-   * This constructor will accept a string array of headers, seperated by a colon.
+   * This constructor will accept a string array of headers,
+   * seperated by a colon.
    * <p>
-   * For example: {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
+   * For example:
+   * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
-   * 
-   * @param statusCode the status code of the response (eg. 201, 404, etc)
-   * @param headers    a string array with the headers of the response.
+   *
+   * @param statusCode The status code of the response (eg.
+   *                   201, 404, etc)
+   * @param headers    A string array with the headers of the
+   *                   response.
    */
   public Response(int statusCode, String[] headers) {
     this(statusCode, headers, "");
@@ -110,7 +126,7 @@ public class Response extends HttpMessage {
 
   /**
    * Retrieves this Response's status string.
-   * 
+   *
    * @return a string with this Response's status string.
    */
   public String getStatusString() {
@@ -120,12 +136,12 @@ public class Response extends HttpMessage {
   /**
    * {@inheritDoc}
    * <p>
-   * This method will return a string that is formatted and ready for output back
-   * to a client.
+   * This method will return a string that is formatted and
+   * ready for output back to a client.
    */
   public String toString() {
-    String responseString = this.statusString + "\n";
-    responseString += this.getHeadersString() + "\n";
+    String responseString = this.statusString+"\n";
+    responseString += this.getHeadersString()+"\n";
 
     if (this.body != "") {
       responseString += this.getBody();

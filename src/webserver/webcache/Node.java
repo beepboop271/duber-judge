@@ -1,14 +1,15 @@
 package webserver.webcache;
 
 /**
- * A simple node class designed to work alongside a doubly linked list
- * implementation.
+ * A simple node class designed to work alongside a doubly
+ * linked list implementation.
  * <p>
- * This node class stores pointers to both the previous and next node. If the
- * pointers do not exist, the values will be {@code null}.
+ * This node class stores references to both the previous
+ * and next node. If no node is provided, the values will be
+ * {@code null}.
  * <p>
  * Created <b> 2021-01-08</b>.
- * 
+ *
  * @since 0.0.1
  * @version 0.0.1
  * @author Joseph Wang
@@ -25,10 +26,11 @@ class Node<T> {
   /**
    * Constructs a new Node.
    * <p>
-   * This constructor will create a Node with data but no previous or next node.
-   * Those will be initialized as {@code null}.
-   * 
-   * @param data the data to save in this node.
+   * This constructor will create a Node with data but no
+   * previous or next node. Those will be initialized as
+   * {@code null}.
+   *
+   * @param data The data to save in this node.
    */
   public Node(T data) {
     this(data, null, null);
@@ -37,11 +39,12 @@ class Node<T> {
   /**
    * Constructs a new Node.
    * <p>
-   * This constructor will create a Node with data and a previous node but no next
-   * node. That will be initialized as {@code null}.
-   * 
-   * @param data the data to save in this node.
-   * @param prev a pointer to the previous node.
+   * This constructor will create a Node with data and a
+   * previous node but no next node. That will be initialized
+   * as {@code null}.
+   *
+   * @param data The data to save in this node.
+   * @param prev A pointer to the previous node.
    */
   public Node(T data, Node<T> prev) {
     this(data, prev, null);
@@ -50,15 +53,16 @@ class Node<T> {
   /**
    * Constructs a new Node.
    * <p>
-   * This constructor will create a Node with data and both a previous and next
-   * node.
+   * This constructor will create a Node with data and both a
+   * previous and next node.
    * <p>
-   * If the next node or both nodes do not exist, consider using
-   * {@link #Node(Object, Node)} or {@link #Node(Object)} respectively, instead.
-   * 
-   * @param data the data to save in this node.
-   * @param prev a pointer to the previous node.
-   * @param next a pointer to the next node.
+   * If the next node or both nodes do not exist, consider
+   * using {@link #Node(Object, Node)} or
+   * {@link #Node(Object)} respectively, instead.
+   *
+   * @param data The data to save in this node.
+   * @param prev A pointer to the previous node.
+   * @param next A pointer to the next node.
    */
   public Node(T data, Node<T> prev, Node<T> next) {
     this.data = data;

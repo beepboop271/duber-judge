@@ -1,22 +1,24 @@
 package webserver;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
 
 /**
  * This class represents an HTTP {@code Request} object.
  * <p>
- * The web server does not need to propagate this request to other HTTP servers,
- * and so does not store the exact request status line or implement a method
- * designed to format this request into a proper HTTP request string.
+ * The web server does not need to propagate this request to
+ * other HTTP servers, and so does not store the exact
+ * request status line or implement a method designed to
+ * format this request into a proper HTTP request string.
  * <p>
- * This request object stores both the full path (with query strings), and a
- * modified path that does not include query strings. Query strings are parsed
- * on initialization and can be retrieved using {@link #getQuery(String)}.
+ * This request object stores both the full path (with query
+ * strings), and a modified path that does not include query
+ * strings. Query strings are parsed on initialization and
+ * can be retrieved using {@link #getQuery(String)}.
  * <p>
  * Created <b> 2020-12-28 </b>
- * 
+ *
  * @since 0.0.1
  * @version 0.0.1
  * @author Joseph Wang
@@ -38,9 +40,9 @@ public class Request extends HttpMessage {
    * Constructs a new Request without any headers or a body.
    * <p>
    * The body will be initialized as an empty string.
-   * 
-   * @param method   the HTTP method for the request.
-   * @param fullPath the full path for the request.
+   *
+   * @param method   The HTTP method for the request.
+   * @param fullPath The full path for the request.
    */
   public Request(String method, String fullPath) {
     this(method, fullPath, new HashMap<String, String>(), "");
@@ -48,56 +50,66 @@ public class Request extends HttpMessage {
 
   /**
    * Constructs a new Request with a body but no headers.
-   * 
-   * @param method   the HTTP method for the request.
-   * @param fullPath the full path for the request.
-   * @param body     the body of the request.
+   *
+   * @param method   The HTTP method for the request.
+   * @param fullPath The full path for the request.
+   * @param body     The body of the request.
    */
   public Request(String method, String fullPath, String body) {
     this(method, fullPath, new HashMap<String, String>(), body);
   }
 
   /**
-   * Constructs a new Request with specified headers but no body.
+   * Constructs a new Request with specified headers but no
+   * body.
    * <p>
    * The body will be initialized as an empty string.
-   * 
-   * @param method   the HTTP method for the request.
-   * @param fullPath the full path for the request.
-   * @param headers  the headers for this request.
+   *
+   * @param method   The HTTP method for the request.
+   * @param fullPath The full path for the request.
+   * @param headers  The headers for this request.
    */
   public Request(String method, String fullPath, Map<String, String> headers) {
     this(method, fullPath, headers, "");
   }
 
   /**
-   * Constructs a new Request with specified string array of headers but no body.
+   * Constructs a new Request with specified string array of
+   * headers but no body.
    * <p>
    * The body will be initialzed as an empty string.
    * <p>
-   * This constructor will accept a string array of headers, seperated by a colon.
+   * This constructor will accept a string array of headers,
+   * seperated by a colon.
    * <p>
-   * For example: {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
+   * For example:
+   * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
-   * 
-   * @param method   the HTTP method for the request.
-   * @param fullPath the full path for the request.
-   * @param headers  the headers for this request.
+   *
+   * @param method   The HTTP method for the request.
+   * @param fullPath The full path for the request.
+   * @param headers  The headers for this request.
    */
   public Request(String method, String fullPath, String[] headers) {
     this(method, fullPath, headers, "");
   }
 
   /**
-   * Constructs a new Request with a specified map of headers and a body.
-   * 
-   * @param method   the HTTP method for the request.
-   * @param fullPath the full path for the request.
-   * @param headers  the headers for this request.
-   * @param body     the body of the request.
+   * Constructs a new Request with a specified map of headers
+   * and a body.
+   *
+   * @param method   The HTTP method for the request.
+   * @param fullPath The full path for the request.
+   * @param headers  The headers for this request.
+   * @param body     The body of the request.
    */
-  public Request(String method, String fullPath, Map<String, String> headers, String body) {
+  public Request(
+    String method,
+    String fullPath,
+    Map<String, String> headers,
+    String body
+  ) {
     super(headers, body);
 
     this.method = method;
@@ -107,20 +119,28 @@ public class Request extends HttpMessage {
   }
 
   /**
-   * Constructs a new Request with specified string array of headers and a body.
+   * Constructs a new Request with specified string array of
+   * headers and a body.
    * <p>
-   * This constructor will accept a string array of headers, seperated by a colon.
+   * This constructor will accept a string array of headers,
+   * seperated by a colon.
    * <p>
-   * For example: {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
+   * For example:
+   * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
-   * 
-   * @param method   the HTTP method for the request.
-   * @param fullPath the full path for the request.
-   * @param headers  the headers for this request.
-   * @param body     the body of the request.
+   *
+   * @param method   The HTTP method for the request.
+   * @param fullPath The full path for the request.
+   * @param headers  The headers for this request.
+   * @param body     The body of the request.
    */
-  public Request(String method, String fullPath, String[] headers, String body) {
+  public Request(
+    String method,
+    String fullPath,
+    String[] headers,
+    String body
+  ) {
     super(headers, body);
 
     this.method = method;
@@ -130,14 +150,16 @@ public class Request extends HttpMessage {
   }
 
   /**
-   * Takes in a full path and returns a path with the query strings parsed and
-   * removed.
+   * Takes in a full path and returns a path with the query
+   * strings parsed and removed.
    * <p>
-   * All query strings will be stored and can be accessed using the
-   * {@link #getQuery(String)} method. {@link #getAllQueries()} can be used to
-   * identify all query strings stored.
-   * 
-   * @param fullPath the full path to parse through for query strings.
+   * All query strings will be stored and can be accessed
+   * using the {@link #getQuery(String)} method.
+   * {@link #getAllQueries()} can be used to identify all
+   * query strings stored.
+   *
+   * @param fullPath The full path to parse through for query
+   *                 strings.
    * @return the modified path with no query strings.
    */
   private String parseQueryStrings(String fullPath) {
@@ -149,7 +171,8 @@ public class Request extends HttpMessage {
       return fullPath;
     }
 
-    String[] queries = fullPath.substring(fullPath.lastIndexOf("?") + 1).split("&");
+    String[] queries =
+      fullPath.substring(fullPath.lastIndexOf("?")+1).split("&");
     for (String query : queries) {
       String[] queryInfo = query.split("=");
 
@@ -164,7 +187,7 @@ public class Request extends HttpMessage {
 
   /**
    * Retrieves this Request's HTTP method.
-   * 
+   *
    * @return a string with this Request's HTTP method.
    */
   public String getMethod() {
@@ -172,8 +195,9 @@ public class Request extends HttpMessage {
   }
 
   /**
-   * Retrieves this Request's method full path, including query strings.
-   * 
+   * Retrieves this Request's method full path, including
+   * query strings.
+   *
    * @return a String with this Request's method path.
    */
   public String getFullPath() {
@@ -181,10 +205,12 @@ public class Request extends HttpMessage {
   }
 
   /**
-   * Retrieves this Request's method shortened path, without query strings.
+   * Retrieves this Request's method shortened path, without
+   * query strings.
    * <p>
-   * Query strings can be accessed easily using {@link #getQuery(String)}.
-   * 
+   * Query strings can be accessed easily using
+   * {@link #getQuery(String)}.
+   *
    * @return a String with this Request's method path.
    */
   public String getPath() {
@@ -192,30 +218,35 @@ public class Request extends HttpMessage {
   }
 
   /**
-   * Retrieves a specific query's details, or {@code null} if the query cannot be
-   * found.
-   * 
-   * @param query the query to look for.
-   * @return the specified query's details, or {@code null} if not found.
+   * Retrieves a specific query's details, or {@code null} if
+   * the query cannot be found.
+   *
+   * @param query The query to look for.
+   * @return the specified query's details, or {@code null} if
+   *         not found.
    */
   public String getQuery(String query) {
     return queryStrings.get(query);
   }
 
   /**
-   * Retrieves a set with all the queries stored in this request object.
-   * 
-   * @return a {@code Set} with all the queries stored in this request object.
+   * Retrieves a set with all the queries stored in this
+   * request object.
+   *
+   * @return a {@code Set} with all the queries stored in this
+   *         request object.
    */
   public Set<String> getAllQueries() {
     return queryStrings.keySet();
   }
 
   /**
-   * Checks if a specific query is stored in this request object.
-   * 
-   * @param query the query to check.
-   * @return true if this request object has details for the specified query.
+   * Checks if a specific query is stored in this request
+   * object.
+   *
+   * @param query The query to check.
+   * @return true if this request object has details for the
+   *         specified query.
    */
   public boolean hasQuery(String query) {
     return queryStrings.containsKey(query);
