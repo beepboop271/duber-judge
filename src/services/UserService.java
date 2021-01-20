@@ -2,15 +2,16 @@ package services;
 
 import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
 
+import dal.dao.ContestDao;
 import dal.dao.RecordNotFoundException;
+import dal.dao.SubmissionDao;
 import dal.dao.UserDao;
 import entities.Contest;
+import entities.ContestStatus;
 import entities.Entity;
-import entities.Problem;
 import entities.Submission;
 import entities.User;
 import entities.UserType;
@@ -28,9 +29,13 @@ import entities.entity_fields.UserField;
 public class UserService {
 
   private UserDao userDao;
+  private SubmissionDao submissionDao;
+  private ContestDao contestDao;
 
   public UserService() {
     this.userDao = new UserDao();
+    this.submissionDao = new SubmissionDao();
+    this.contestDao = new ContestDao();
   }
 
   private String generateSalt() {
@@ -152,53 +157,87 @@ public class UserService {
     return user.getUserType() == UserType.ADMIN;
   }
 
-
-
-  public ArrayList<Entity<Submission>> getSolvedProblemsByTime(
-    long userId,
-    Timestamp before,
-    int numProblems
-  ) {
-
-  }
-
-
-  public ArrayList<Entity<Submission>> getSolvedProblemsByPoints(
+  /**
+   * Gets the problems that the user has attempted in order from greatest points to least points.
+   * These problems do not include contest problems.
+   *
+   * @param userId           the user's ID
+   * @param index            the index
+   * @param numProblems      the number of problems to retrieve
+   * @return                 a list of problems
+   */
+  public ArrayList<Entity<Submission>> getProblems(
     long userId,
     int index,
     int numProblems
   ) {
-
+    return this.submissionDao.getUniqueSubmissions(userId, index, numProblems);
   }
 
 
-  public ArrayList<Entity<Submission>> getSubmissions(long userId, int index, int numSubmissions) {
-
+  /**
+   * Get all the submissions the user has from latest to earliest.
+   *
+   * @param userId               the user's ID
+   * @param index                the index
+   * @param numSubmissions       the number of submissions to retrieve
+   * @return                     a list of submissions
+   */
+  public ArrayList<Entity<Submission>> getSubmissions(
+    long userId,
+    int index,
+    int numSubmissions
+  ) {
+    return this.submissionDao.getByUser(userId, index, numSubmissions);
   }
 
 
+  /**
+   * Get the user's submissions by problem.
+   *
+   * @param userId              the user's ID
+   * @param problemId           the problem's ID
+   * @param index               the index
+   * @param numSubmissions      the number of submissions to retrieve
+   * @return                    a list of submissions
+   */
   public ArrayList<Entity<Submission>> getProblemSubmissions(
     long userId,
     long problemId,
     int index,
     int numSubmissions
   ) {
-
+    return this.submissionDao.getByUserAndProblem(userId, problemId, index, numSubmissions);
   }
 
+  /**
+   * Get all the contests that a user is currently participating in.
+   *
+   * @param userId           the user's ID
+   * @return                 a list of active contests
+   */
   public ArrayList<Entity<Contest>> getActiveContests(long userId) {
-
+    return this.contestDao.getContestsByStatus(userId, ContestStatus.ONGOING);
   }
 
+  /**
+   * Get all the contests a user has participated in.
+   *
+   * @param userId        the user's ID
+   * @return              a list of all contests a user participated in
+   */
   public ArrayList<Entity<Contest>> getParticipatedContests(long userId) {
-
+    return this.contestDao.getContestsByStatus(userId, ContestStatus.OVER);
   }
 
-  public ArrayList<Entity<Problem>> getSolvedContestProblems(long usrId, long contestId) {
-
-  }
-
+  /**
+   * Get the number of times a user has submitted to a single problem.
+   *
+   * @param userId                the user ID
+   * @param problemId             the problem ID
+   * @return                      the number of times the user has submitted
+   */
   public int getSubmissionCount(long userId, long problemId) {
-
+    return this.submissionDao.countByUserAndProblem(userId, problemId);
   }
 }

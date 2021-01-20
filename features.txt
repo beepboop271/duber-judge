@@ -1,0 +1,19 @@
+admin:
+
+- create/update/delete contest/problem/batch/testcase
+- kick user from contest
+
+
+
+- get submissions of a problem
+- get unique submissions of a user
+- get all submissions of a problem (authenticated users)
+- get all submissions of a problem of a user
+- get all submissions of a user
+
+
+
+
+unused methods:
+-getByProblemAndStatus()
+-countByUserAndProblem()

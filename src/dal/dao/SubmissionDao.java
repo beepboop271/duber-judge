@@ -198,12 +198,23 @@ public class SubmissionDao implements Dao<Submission> {
   public ArrayList<Entity<Submission>>
     getUniqueSubmissions(long userId, int index, int numSubmissions) {
     String sql = String.format(
-                "SELECT *, MAX(score) AS highest_score"
-                +"FROM submissions"
-                +"WHERE user_id = ?"
-                +"GROUP BY problem_id"
-                +"ORDER BY score DESC"
-                +"LIMIT %s OFFSET %s", numSubmissions, index);
+      "SELECT submissions.*"
+      +"FROM submissions"
+      +"  INNER JOIN ("
+      +"    SELECT submissions.problem_id AS problem_id, MAX(submissions.score) AS highest_score"
+      +"      FROM submissions"
+      +"        INNER JOIN problems ON submissions.problem_id = problems.id"
+      +"    WHERE submissions.user_id = ? AND problems.problem_type = 'PRACTICE'"
+      +"    GROUP BY submissions.problem_id"
+      +"    ORDER BY highest_score DESC"
+      +"    LIMIT %s OFFSET %s"
+      +"  ) AS a"
+      +"        ON submissions.problem_id = a.problem_id"
+      +"        AND submissions.score = a.highest_score;",
+      numSubmissions, index);
+
+
+
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
@@ -266,9 +277,54 @@ public class SubmissionDao implements Dao<Submission> {
     return submissions;
   }
 
+  /**
+   * Get all the submissions made by a user of a problem ordered from latest to earliest.
+   * The index indicates the offset of the redord in the database.
+   * If no results are found, it will return an empty array.
+   *
+   * @param userId           the user id
+   * @param index            the offset of the submission in the query result
+   * @param numSubmissions   the number of submissions to retrieve
+   * @return                 the list of submissions
+   */
+  public ArrayList<Entity<Submission>> getByUserAndProblem(
+    long userId,
+    long problemId,
+    int index,
+    int numSubmissions
+  ) {
+    String sql = String.format(
+                "SELECT * FROM submissions"
+                +"WHERE user_id = ? AND problem_id = ?"
+                +"ORDER BY created_at DESC"
+                +"LIMIT %s OFFSET %s", numSubmissions, index);
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+      ps.setLong(2, problemId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        submissions.add(this.getSubmissionByResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return submissions;
+  }
+
   public ArrayList<Entity<Submission>>
     getByProblemAndStatus(long problemId, ExecutionStatus status, int index, int numProblems) {
-    String sql = "SELECT * FROM submissions WHERE problem_id = ?, status = ?;";
+    String sql = "SELECT * FROM submissions WHERE problem_id = ? AND status = ?;";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
@@ -315,7 +371,7 @@ public class SubmissionDao implements Dao<Submission> {
   }
 
   public int countByUserAndProblem(long userId, long problemId) {
-    String sql = "SELECT COUNT(*) FROM submissions WHERE user_id = ?, problem_id = ?;";
+    String sql = "SELECT COUNT(*) FROM submissions WHERE user_id = ? AND problem_id = ?;";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet result = null;

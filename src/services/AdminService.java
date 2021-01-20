@@ -9,6 +9,7 @@ import dal.dao.ContestDao;
 import dal.dao.ContestSessionDao;
 import dal.dao.ProblemDao;
 import dal.dao.RecordNotFoundException;
+import dal.dao.SubmissionDao;
 import dal.dao.TestcaseDao;
 import dal.dao.UserDao;
 import entities.Batch;
@@ -47,6 +48,7 @@ public class AdminService {
   private TestcaseDao testcaseDao;
   private ClarificationDao clarificationDao;
   private UserDao userDao;
+  private SubmissionDao submissionDao;
 
   public AdminService() {
     this.userService = new UserService();
@@ -57,6 +59,7 @@ public class AdminService {
     this.testcaseDao = new TestcaseDao();
     this.clarificationDao = new ClarificationDao();
     this.userDao = new UserDao();
+    this.submissionDao = new SubmissionDao();
   }
 
   public long createContest(
@@ -204,6 +207,7 @@ public class AdminService {
     for (Entity<Batch> batch : batches) {
       this.testcaseDao.deleteByBatch(batch.getId());
     }
+    this.submissionDao.deleteByProblem(problemId);
   }
 
   private void validateBatch(long userId, long batchId) throws InsufficientPermissionException {
@@ -306,6 +310,7 @@ public class AdminService {
     this.clarificationDao.update(clarificationId, ClarificationField.RESPONSE, response);
   }
 
+  //TODO: maybe move this to handlers
   private void validate(long userId) throws InsufficientPermissionException {
     try {
       if (!this.userService.isAdmin(userId)) {

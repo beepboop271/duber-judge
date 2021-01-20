@@ -2,6 +2,8 @@ package services;
 
 import java.util.ArrayList;
 
+import dal.dao.UserDao;
+import dal.dao.UserPoints;
 import entities.Contest;
 import entities.Entity;
 import entities.User;
@@ -16,11 +18,12 @@ import entities.User;
  * @since 1.0.0
  */
 public class PublicService {
+  private UserDao userDao;
 
   public PublicService() {
-    
+    this.userDao = new UserDao();
   }
-  
+
   /**
    * Get the contests ordered from latest to earliest.
    *
@@ -29,12 +32,12 @@ public class PublicService {
    * @return                 a list of contests
    */
   public ArrayList<Entity<Contest>> getContests(int index, int numContests) {
-
+    
   }
 
 
-  public ArrayList<Entity<User>> getLeaderboard(int index, int numUsers) {
-
+  public ArrayList<UserPoints> getLeaderboard(int index, int numUsers) {
+    return this.userDao.getByPoints(index, numUsers);
   }
 
 

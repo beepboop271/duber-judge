@@ -216,7 +216,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
 
 
   /**
-   * Get the users within a point range ordered from highest to lowest.
+   * Get the users ordered from highest points to lowest.
    * If no results are found, it will return an empty array.
    *
    * @param index         the offset of the user in query results
@@ -235,7 +235,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
                 +"        GROUP BY (user_id, problem_id)"
                 +"      )"
                 +"    GROUP BY (user_id)"
-                +"  )"
+                +"  ) ON users.id = user_id"
                 +"ORDER BY total_score DESC"
                 +"LIMIT %s OFFSET %s;", numUsers, index);
 
@@ -251,7 +251,6 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
       while (result.next()) {
 
         Entity<User> user = this.getUserFromResultSet(result);
-        //TODO: flatten it so there's no 100 layers of wraps
         users.add(new UserPoints(user, result.getInt("total_score")));
       }
 

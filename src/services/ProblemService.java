@@ -48,9 +48,14 @@ public class ProblemService {
     return false;
   }
 
-  public Submission submitSolution(long userId, long problemId, String code, Language language) {
+  public Submission submitSolution(
+    long userId,
+    long problemId,
+    String code,
+    Language language
+  ) throws InsufficientPermissionException {
     if (!this.canSubmit(userId, problemId)) {
-      //TODO: what should it do here? return null? throw some custom exception?
+      throw new InsufficientPermissionException();
     }
     Submission submission = new Submission(
       problemId,
@@ -64,7 +69,8 @@ public class ProblemService {
 
   public void requestClarification(long userId, long problemId, String message)
     throws InsufficientPermissionException, RecordNotFoundException {
-    Clarification clarification = new Clarification(
+
+      Clarification clarification = new Clarification(
       problemId,
       userId,
       message,
@@ -72,4 +78,6 @@ public class ProblemService {
     );
     clarificationDao.add(clarification);
   }
+
+  public ArrayList<Entity<Submission>> getSubmissions(long problemId, )
 }

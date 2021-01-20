@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
 import entities.Contest;
+import entities.ContestStatus;
 import entities.Entity;
 import entities.entity_fields.ContestField;
 
@@ -181,6 +182,65 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
   @Override
   public void deleteById(long id) {
     DaoHelper.deleteById("contests", id);
+  }
+
+
+  public ArrayList<Entity<Contest>> getContestsByStatus(long userId, ContestStatus status) {
+    String sql = String.format(
+      "SELECT * FROM contests WHERE user_id = ? AND status = %s;",
+      status.toString()
+    );
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Contest>> contests = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        contests.add(this.getContestFromResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return contests;
+  }
+
+  public ArrayList<Entity<Contest>> getContests(int index, int numContests) {
+    String sql = String.format(
+      "SELECT * FROM contests WHERE user_id = ? AND status = %s;",
+      status.toString()
+    );
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Contest>> contests = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        contests.add(this.getContestFromResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return contests;
   }
 
   private Entity<Contest> getContestFromResultSet(ResultSet result) throws SQLException {
