@@ -11,9 +11,77 @@ admin:
 - get all submissions of a problem of a user
 - get all submissions of a user
 
-
-
-
 unused methods:
 -getByProblemAndStatus()
 -countByUserAndProblem()
+
+a list of methods:
+AdminService
+  - createContest
+  - updateContest
+  - deleteContest
+  - kickUserFromContest
+  - createProblem
+  - validateProblem
+  - updateProblem
+  - deleteProblem
+  - validateBatch
+  - createBatch
+  - updateBatch
+  - deleteBatch
+  - validateTestcase
+  - createTestcase
+  - updateTestcase
+  - deleteTestcase
+  - clarifyProblem
+  - validate <- maybe move to handlers
+  - validateContest
+
+ContestService
+  - validateContestSession
+  - startContest
+
+ProblemService
+  - canSubmit
+  - submitSolution
+  - requestClarification
+  - getSubmissions
+
+PublicService
+  - getContests
+  - getLeaderboard
+  - getContestLeaderboard
+  - getProblemLeaderboard
+  - getPracticeProblems
+  - getPracticeProblemsByCategory
+  - getPracticeProblemsByCreator
+  - getPracticeProblemsByPoints
+  - getPracticeProblemsByNumSubmissions
+
+SessionService
+  - generateToken
+  - createSession(userId)
+  - createSession()
+  - getSession
+  - updateSession
+  - updateLastActive
+  - deleteFromBefore
+
+UserService
+  - generateSalt
+  - hashPassword
+  - validatePassword(username)
+  - validatePassword(password)
+  - validateUser
+  - createUser
+  - createAdmin
+  - login
+  - updateUserProfile
+  - updateUserPassword
+  - isAdmin
+  - getProblems <- problems the user has attempted, not contest
+  - getSubmissions <- all submissions
+  - getProblemSubmissions <- submission by problem
+  - getActiveContests
+  - getParticipatedContests
+  - getSubmissionCount
