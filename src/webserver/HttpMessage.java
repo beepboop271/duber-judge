@@ -15,7 +15,7 @@ import java.util.Map;
  * Created <b> 2021-01-01 </b>
  *
  * @since 0.0.1
- * @version 0.0.1
+ * @version 0.0.4
  * @author Joseph Wang
  */
 abstract class HttpMessage {
@@ -73,7 +73,7 @@ abstract class HttpMessage {
    * A constructor for a new HttpMessage with headers but no
    * body, for invokation of implementing subclasses. This
    * constructor will accept a string array of headers,
-   * seperated by a colon.
+   * separated by a colon.
    * <p>
    * For example:
    * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
@@ -83,14 +83,16 @@ abstract class HttpMessage {
    * {@link #getHeader(String)} with the appropriate header
    * name.
    * <p>
-   * This constructor will throw out any headers that do not
-   * adhere to this rule.
+   * An {@code InvalidHeaderException} will be thrown if an
+   * improperly formatted header is provided.
    *
    * @param headers A {@code String} array with applicable
-   *                headers, with key and value seperated by
+   *                headers, with key and value separated by
    *                {@code :} for each header string.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header is provided.
    */
-  public HttpMessage(String[] headers) {
+  public HttpMessage(String[] headers) throws InvalidHeaderException {
     this(headers, "");
   }
 
@@ -98,7 +100,7 @@ abstract class HttpMessage {
    * A constructor for a new HttpMessage with headers and a
    * body, for invokation of implementing subclasses. This
    * constructor will accept a string array of headers,
-   * seperated by a colon.
+   * separated by a colon.
    * <p>
    * For example:
    * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
@@ -108,14 +110,17 @@ abstract class HttpMessage {
    * {@link #getHeader(String)} with the appropriate header
    * name.
    * <p>
-   * This constructor will throw out any headers that do not
-   * adhere to this rule.
+   * An {@code InvalidHeaderException} will be thrown if an
+   * improperly formatted header is provided.
    *
    * @param headers A {@code String} array with applicable
-   *                headers, with key and value seperated by
+   *                headers, with key and value separated by
    *                {@code :} for each header string.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header is provided.
    */
-  public HttpMessage(String[] headers, String body) {
+  public HttpMessage(String[] headers, String body)
+    throws InvalidHeaderException {
     this.headers = new HashMap<>();
     this.addHeaders(headers);
     this.body = "";
@@ -124,12 +129,43 @@ abstract class HttpMessage {
   /**
    * Adds a header and value to this message's list of
    * headers.
+   * <p>
+   * The header added cannot be an empty string or
+   * {@code null}.
    *
    * @param header  The name of the header to be added.
-   * @param details The details of the header.
+   * @param value The value of the header.
+   * @throws InvalidHeaderException if an empty or null header
+   *                                is provided.
    */
-  public void addHeader(String header, String details) {
-    this.headers.put(header, details);
+  public void addHeader(String header, String value) throws InvalidHeaderException {
+    if (header == null || header.equals("")) {
+      throw new InvalidHeaderException("Cannot have an empty header.");
+    }
+    this.headers.put(header, value);
+  }
+
+  /**
+   * Parses and adds the header to this message's list of
+   * headers.
+   * <p>
+   * The provided string should be a header and value,
+   * separated by a colon.
+   * <p>
+   * An {@code InvalidHeaderException} will be thrown if an
+   * improperly formatted header is provided.
+   *
+   * @param header The header string to parse and add.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header is provided.
+   */
+  public void addHeader(String header) throws InvalidHeaderException {
+    if (header.indexOf(":") != -1) {
+      String headerName = header.substring(0, header.indexOf(":")).trim();
+      String headerValue = header.substring(header.indexOf(":")).trim();
+
+      this.addHeader(headerName, headerValue);
+    }
   }
 
   /**
@@ -145,7 +181,7 @@ abstract class HttpMessage {
 
   /**
    * Adds a string array of headers to this message's list of
-   * headers. Headers in the array will be parsed, seperated
+   * headers. Headers in the array will be parsed, separated
    * by a colon.
    * <p>
    * For example:
@@ -153,20 +189,25 @@ abstract class HttpMessage {
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
    * <p>
-   * Invalid headers will be thrown out.
+   * An {@code InvalidHeaderException} will be thrown if an
+   * improperly formatted header is provided.
    *
    * @param headers A string array of headers.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header is provided.
    */
-  public void addHeaders(String[] headers) {
+  public void addHeaders(String[] headers) throws InvalidHeaderException {
     for (String s : headers) {
-      // seperate the headers info and place into hashmap
+      // Seperate the headers info and place into hashmap
       if (s.indexOf(":") != -1) {
         String headerName = s.substring(0, s.indexOf(":")).trim();
-        String headerDetails = s.substring(s.indexOf(":")).trim();
+        String headerValue = s.substring(s.indexOf(":")).trim();
 
-        if (!headerName.equals("") && !headerDetails.equals("")) {
-          this.headers.put(headerName, headerDetails);
+        if (headerName.equals("") && !headerValue.equals("")) {
+          throw new InvalidHeaderException("Improper header provided.");
         }
+
+        this.headers.put(headerName, headerValue);
       }
     }
   }
@@ -209,17 +250,21 @@ abstract class HttpMessage {
   /**
    * Returns a string containing the headers, ready for output
    * stream.
+   * <p>
+   * An empty line will be inserted after, so manual insertion
+   * is not required.
    *
    * @return a string with all the headers.
    */
   public String getHeadersString() {
-    String headerString = "";
+    StringBuilder headerString = new StringBuilder();
 
     for (String s : this.headers.keySet()) {
-      headerString += s+": "+this.headers.get(s)+"\n";
+      headerString.append(s+": "+this.headers.get(s)+"\r\n");
     }
 
-    return headerString;
+    headerString.append("\r\n");
+    return headerString.toString();
   }
 
   /**

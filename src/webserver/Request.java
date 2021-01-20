@@ -1,5 +1,7 @@
 package webserver;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +31,7 @@ import java.util.Set;
 public class Request extends HttpMessage {
   /** The related HTTP method, like GET or POST. */
   private String method;
-  /** The path for the request, minus query strings. */
+  /** The path for the request, minus query strings and percent encoding. */
   private String path;
   /** The full path for the request. */
   private String fullPath;
@@ -43,8 +45,10 @@ public class Request extends HttpMessage {
    *
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
+   * @throws URISyntaxException if the path provided is
+   *                            invalid.
    */
-  public Request(String method, String fullPath) {
+  public Request(String method, String fullPath) throws URISyntaxException {
     this(method, fullPath, new HashMap<String, String>(), "");
   }
 
@@ -54,8 +58,11 @@ public class Request extends HttpMessage {
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
    * @param body     The body of the request.
+   * @throws URISyntaxException if the path provided is
+   *                            invalid.
    */
-  public Request(String method, String fullPath, String body) {
+  public Request(String method, String fullPath, String body)
+    throws URISyntaxException {
     this(method, fullPath, new HashMap<String, String>(), body);
   }
 
@@ -68,8 +75,11 @@ public class Request extends HttpMessage {
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
    * @param headers  The headers for this request.
+   * @throws URISyntaxException if the path provided is
+   *                            invalid.
    */
-  public Request(String method, String fullPath, Map<String, String> headers) {
+  public Request(String method, String fullPath, Map<String, String> headers)
+    throws URISyntaxException {
     this(method, fullPath, headers, "");
   }
 
@@ -80,18 +90,27 @@ public class Request extends HttpMessage {
    * The body will be initialzed as an empty string.
    * <p>
    * This constructor will accept a string array of headers,
-   * seperated by a colon.
+   * separated by a colon.
    * <p>
    * For example:
    * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
+   * <p>
+   * An {@code InvalidHeaderException} will be thrown if an
+   * improperly formatted header is provided.
    *
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
    * @param headers  The headers for this request.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header is provided.
+   * @throws URISyntaxException     if the path provided is
+   *                                invalid.
    */
-  public Request(String method, String fullPath, String[] headers) {
+  public Request(String method, String fullPath, String[] headers)
+    throws InvalidHeaderException,
+    URISyntaxException {
     this(method, fullPath, headers, "");
   }
 
@@ -103,19 +122,24 @@ public class Request extends HttpMessage {
    * @param fullPath The full path for the request.
    * @param headers  The headers for this request.
    * @param body     The body of the request.
+   * @throws URISyntaxException if the path provided is
+   *                            invalid.
    */
   public Request(
     String method,
     String fullPath,
     Map<String, String> headers,
     String body
-  ) {
+  ) throws URISyntaxException {
     super(headers, body);
 
     this.method = method;
     this.path = fullPath;
     this.queryStrings = new HashMap<>();
-    this.path = this.parseQueryStrings(fullPath);
+
+    URI pathUri = new URI(fullPath);
+    this.parseQueryStrings(pathUri.getQuery());
+    this.path = pathUri.getPath();
   }
 
   /**
@@ -123,56 +147,50 @@ public class Request extends HttpMessage {
    * headers and a body.
    * <p>
    * This constructor will accept a string array of headers,
-   * seperated by a colon.
+   * separated by a colon.
    * <p>
    * For example:
    * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
+   * <p>
+   * An {@code InvalidHeaderException} will be thrown if an
+   * improperly formatted header is provided.
    *
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
    * @param headers  The headers for this request.
    * @param body     The body of the request.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header is provided.
+   * @throws URISyntaxException     if the path provided is
+   *                                invalid.
    */
-  public Request(
-    String method,
-    String fullPath,
-    String[] headers,
-    String body
-  ) {
+  public Request(String method, String fullPath, String[] headers, String body)
+    throws InvalidHeaderException,
+    URISyntaxException {
     super(headers, body);
 
     this.method = method;
     this.fullPath = fullPath;
     this.queryStrings = new HashMap<>();
-    this.path = this.parseQueryStrings(fullPath);
+
+    // Use URI class for proper decoding and query processing
+    URI pathUri = new URI(fullPath);
+    this.parseQueryStrings(pathUri.getQuery());
+    this.path = pathUri.getPath();
   }
 
   /**
-   * Takes in a full path and returns a path with the query
-   * strings parsed and removed.
-   * <p>
-   * All query strings will be stored and can be accessed
-   * using the {@link #getQuery(String)} method.
-   * {@link #getAllQueries()} can be used to identify all
-   * query strings stored.
+   * Takes in a decoded string with all the query strings from
+   * a path, parses through them, and adds them to this
+   * Request's map of queries.
    *
-   * @param fullPath The full path to parse through for query
-   *                 strings.
-   * @return the modified path with no query strings.
+   * @param queryString The decoded string with queries,
+   *                    without the beginning {@code ?}
    */
-  private String parseQueryStrings(String fullPath) {
-    // Find the start of the query strings
-    int startIndex = fullPath.lastIndexOf("?");
-
-    // Check if this path has no query strings
-    if (startIndex == -1) {
-      return fullPath;
-    }
-
-    String[] queries =
-      fullPath.substring(fullPath.lastIndexOf("?")+1).split("&");
+  private void parseQueryStrings(String queryString) {
+    String[] queries = queryString.split("&");
     for (String query : queries) {
       String[] queryInfo = query.split("=");
 
@@ -181,8 +199,6 @@ public class Request extends HttpMessage {
         this.queryStrings.put(queryInfo[0], queryInfo[1]);
       }
     }
-
-    return fullPath.substring(0, startIndex);
   }
 
   /**
@@ -206,7 +222,7 @@ public class Request extends HttpMessage {
 
   /**
    * Retrieves this Request's method shortened path, without
-   * query strings.
+   * query strings and percent encoding.
    * <p>
    * Query strings can be accessed easily using
    * {@link #getQuery(String)}.

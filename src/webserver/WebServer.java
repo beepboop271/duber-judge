@@ -1,11 +1,15 @@
 package webserver;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -243,11 +247,19 @@ public class WebServer {
       this.client = client;
 
       try {
-        this.input =
-          new BufferedReader(
-            new InputStreamReader(this.client.getInputStream())
+        // Initialize proper input and output
+        InputStreamReader clientInput =
+          new InputStreamReader(this.client.getInputStream());
+        this.input = new BufferedReader(clientInput);
+
+        OutputStreamWriter utfWriter =
+          new OutputStreamWriter(
+            this.client.getOutputStream(),
+            StandardCharsets.UTF_8
           );
-        this.output = new PrintWriter(this.client.getOutputStream());
+        BufferedWriter bufferedUtfWriter = new BufferedWriter(utfWriter);
+        this.output = new PrintWriter(bufferedUtfWriter);
+
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -261,12 +273,12 @@ public class WebServer {
      */
     public void run() {
       String statusLine = "";
-      String headerLine = "";
+      String headersLine = "";
 
       try {
         while (statusLine.equals("")) {
-          if (input.ready()) {
-            statusLine = input.readLine();
+          if (this.input.ready()) {
+            statusLine = this.input.readLine();
 
             // We add them to one large header line so we can split it
             // later and have the
@@ -274,8 +286,8 @@ public class WebServer {
 
             // Since readLine() strips the \n, we can safely use \n as a
             // delimiter for split
-            while (input.ready()) {
-              headerLine += input.readLine()+"\n";
+            while (this.input.ready()) {
+              headersLine += this.input.readLine()+"\n";
             }
           }
         }
@@ -283,13 +295,13 @@ public class WebServer {
         e.printStackTrace();
       }
 
-      Response response = processRecievedStrings(statusLine, headerLine);
+      Response response = processRecievedStrings(statusLine, headersLine);
 
       // Output to user and shut down
-      output.println(response);
-      output.flush();
+      this.output.print(response);
+      this.output.flush();
 
-      closeConnection();
+      this.closeConnection();
     }
 
     /**
@@ -297,9 +309,9 @@ public class WebServer {
      */
     private void closeConnection() {
       try {
-        input.close();
-        output.close();
-        client.close();
+        this.input.close();
+        this.output.close();
+        this.client.close();
       } catch (IOException e) {
         System.out.println("Failed to close connection.");
         e.printStackTrace();
@@ -334,7 +346,7 @@ public class WebServer {
       // processing it
       statusTokens = statusLine.split(" ");
       if (statusTokens.length != 3) {
-        return this.generateFailedResponse(400, "400 Bad Request.");
+        return Response.badRequest();
       }
 
       method = statusTokens[0];
@@ -342,7 +354,7 @@ public class WebServer {
       protocol = statusTokens[2];
 
       if (!protocol.equals("HTTP/1.1")) {
-        return this.generateFailedResponse(505, "HTTP Version Not Supported.");
+        return Response.unsupportedVersion();
       }
 
       String[] headers;
@@ -357,7 +369,15 @@ public class WebServer {
 
       // Generate response from request object from the parsed
       // HTTP request
-      Request newRequest = new Request(method, fullPath, headers, body);
+      Request newRequest;
+      try {
+        newRequest = new Request(method, fullPath, headers, body);
+      } catch (InvalidHeaderException e) {
+        return Response.badRequest();
+      } catch (URISyntaxException e) {
+        return Response.badRequest();
+      }
+
       Response response = this.generateResponseFromRequest(newRequest);
 
       // Re-insert into cache if we need to
@@ -381,7 +401,7 @@ public class WebServer {
     private Response generateResponseFromRequest(Request request) {
       if (cache.checkCache(request.getFullPath())) {
         // Retrieve the cached object
-        return new Response(200, cache.getCachedObject(request.getFullPath()));
+        return Response.okHtml(cache.getCachedObject(request.getFullPath()));
       }
 
       RouteTarget handler = getRoute(request.getPath());
@@ -391,31 +411,8 @@ public class WebServer {
         return handler.accept(request);
       } else {
         // Generate the failed response
-        return this.generateFailedResponse(404, "404 Not Found.");
+        return Response.notFoundHtml(request.getPath());
       }
-    }
-
-    /**
-     * Generates a generic failed response with an HTML file
-     * detailing the failure.
-     *
-     * @param status      The failed status to return to the
-     *                    client.
-     * @param description A small description for the user.
-     * @return a failed Response.
-     */
-    private Response generateFailedResponse(int status, String description) {
-      String failedTemplate =
-        "<html><head><title>%s</title></head><body>%s</body></html>";
-      String failedBody =
-        String.format(failedTemplate, description, description);
-
-      Response response = new Response(status, failedBody);
-      response.addHeader("Content-Type", "text/html");
-      response
-        .addHeader("Content-Length", Integer.toString(failedBody.length()));
-
-      return response;
     }
   }
 }

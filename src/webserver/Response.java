@@ -14,7 +14,7 @@ import java.util.Map;
  * Created <b> 2020-12-28 </b>
  *
  * @since 0.0.1
- * @version 0.0.1
+ * @version 0.0.4
  * @author Joseph Wang
  * @see <a href=
  *      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#HTTP_Responses">More
@@ -23,6 +23,88 @@ import java.util.Map;
 public class Response extends HttpMessage {
   /** The status of the response. */
   private String statusString;
+
+  /**
+   * Generates a generic HTML page to represent a
+   * {@code 404 Not Found} response, with the associated
+   * headers and the appropriate headers.
+   *
+   * @param resource The resource requested.
+   * @return a 404 HTTP response object.
+   */
+  public static Response notFoundHtml(String resource) {
+    String body =
+      "<html><head><title>404</title></head><body>404: "
+        +resource
+        +" not found. </body></html>";
+
+    Response response = new Response(404, body);
+    response.headers.put("Content-Type", "text/html");
+    response.headers.put("Content-Length", Integer.toString(body.length()));
+
+    return response;
+  }
+
+  /**
+   * Generates a generic HTML page to represent a
+   * {@code 400 Bad Request} response with the associated
+   * cause and the appropriate headers.
+   *
+   * @param reason The cause of the bad response.
+   * @return a 400 HTTP response object.
+   */
+  public static Response badRequestHtml(String reason) {
+    String body =
+      "<html><head><title>400</title></head><body>400: Bad Request - "
+        +reason
+        +"</body></html>";
+
+    Response response = new Response(400, body);
+    response.headers.put("Content-Type", "text/html");
+    response.headers.put("Content-Length", Integer.toString(body.length()));
+
+    return response;
+  }
+
+  /**
+   * Generates a generic
+   * {@code 505 HTTP Version Not Supported} HTTP response with
+   * the appropriate headers.
+   *
+   * @return a 505 HTTP response object.
+   */
+  public static Response unsupportedVersion() {
+    Response response = new Response(505);
+
+    return response;
+  }
+
+  /**
+   * Generates a generic {@code 400 Bad Request} HTTP response
+   * with the appropriate headers.
+   *
+   * @return a 400 HTTP response object.
+   */
+  public static Response badRequest() {
+    Response response = new Response(400);
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 200 OK} html HTTP response with the
+   * appropriate headers.
+   *
+   * @param html The html file to send in the Response.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okHtml(String html) {
+    Response response = new Response(200, html);
+    response.headers.put("Content-Type", "text/html");
+    response.headers.put("Content-Length", Integer.toString(html.length()));
+
+    return response;
+  }
 
   /**
    * Constructs a new Response, without any body or headers.
@@ -46,7 +128,7 @@ public class Response extends HttpMessage {
   public Response(int statusCode, String body) {
     super();
 
-    this.statusString = "HTTP/1.1 "+statusCode;
+    this.statusString = "HTTP/1.1 "+statusCode+"ur bad kiddo";
     this.body = body;
   }
 
@@ -71,20 +153,26 @@ public class Response extends HttpMessage {
    * of headers.
    * <p>
    * This constructor will accept a string array of headers,
-   * seperated by a colon.
+   * separated by a colon.
    * <p>
    * For example:
    * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
+   * <p>
+   * An {@code InvalidHeaderException} will be thrown if an
+   * improperly formatted header is provided.
    *
    * @param statusCode The status code of the response (eg.
    *                   201, 404, etc)
    * @param headers    A string array with the headers of the
    *                   response.
    * @param body       The body of the response.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header is provided.
    */
-  public Response(int statusCode, String[] headers, String body) {
+  public Response(int statusCode, String[] headers, String body)
+    throws InvalidHeaderException {
     super(headers);
 
     this.statusString = "HTTP/1.1 "+statusCode;
@@ -108,19 +196,25 @@ public class Response extends HttpMessage {
    * of headers and no body.
    * <p>
    * This constructor will accept a string array of headers,
-   * seperated by a colon.
+   * separated by a colon.
    * <p>
    * For example:
    * {@code ["Connection: Keep-Alive", "Accept-Language: en-us"]}
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
+   * <p>
+   * An {@code InvalidHeaderException} will be thrown if an
+   * improperly formatted header is provided.
    *
    * @param statusCode The status code of the response (eg.
    *                   201, 404, etc)
    * @param headers    A string array with the headers of the
    *                   response.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header is provided.
    */
-  public Response(int statusCode, String[] headers) {
+  public Response(int statusCode, String[] headers)
+    throws InvalidHeaderException {
     this(statusCode, headers, "");
   }
 
@@ -140,13 +234,13 @@ public class Response extends HttpMessage {
    * ready for output back to a client.
    */
   public String toString() {
-    String responseString = this.statusString+"\n";
-    responseString += this.getHeadersString()+"\n";
+    StringBuilder responseString = new StringBuilder(this.statusString+"\r\n");
+    responseString.append(this.getHeadersString());
 
     if (this.body != "") {
-      responseString += this.getBody();
+      responseString.append(this.getBody()+"\r\n");
     }
 
-    return responseString;
+    return responseString.toString();
   }
 }
