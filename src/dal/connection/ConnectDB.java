@@ -21,9 +21,10 @@ import java.util.Properties;
 public class ConnectDB {
 
   /**
+   * Gets a new {@code Connection} to the database given a specified file path.
    *
-   * @param filePath
-   * @return
+   * @param filePath         The path to the .db file.
+   * @return                 The connection to the database.
    */
   public static Connection getConnection(String filePath) {
     Connection connection = null;
@@ -42,8 +43,9 @@ public class ConnectDB {
   }
 
   /**
+   * Closes a resource.
    *
-   * @param resource
+   * @param resource       The resource to close.
    */
   public static void close(AutoCloseable resource) {
     if (resource != null) {
@@ -58,7 +60,7 @@ public class ConnectDB {
   /**
    * Create all required table upon first connecting to database.
    *
-   * @param connection         the database connection
+   * @param connection         The database connection.
    */
   public static void initialize(Connection connection) {
     String[] createTableSql = new String[] {
@@ -76,6 +78,7 @@ public class ConnectDB {
         +"title                 TEXT UNIQUE NOT NULL,"
         +"start_time            TEXT NOT NULL,"
         +"end_time              TEXT NOT NULL,"
+        +"status                TEXT NOT NULL,"
         +"duration_minutes      INTEGER NOT NULL,"
         +"FOREIGN KEY(creator_id) REFERENCES users(id) ON DELETE CASCADE"
         +");",
@@ -164,12 +167,6 @@ public class ConnectDB {
         +"FOREIGN KEY(submission_id) REFERENCES submissions(id) ON DELETE CASCADE,"
         +"FOREIGN KEY(batch_id) REFERENCES batches(id) ON DELETE CASCADE"
         +");",
-      "CREATE TABLE IF NOT EXISTS sessions ("
-        +"id             INTEGER PRIMARY KEY,"
-        +"token          TEXT NOT NULL,"
-        +"session_info   BLOB NOT NULL,"
-        +"last_active    TEXT NOT NULL"
-        +");",
       };
     String[] createIdxSql = new String[]{
       "CREATE INDEX IF NOT EXISTS idx_username      ON users(username)",
@@ -182,8 +179,6 @@ public class ConnectDB {
       "CREATE INDEX IF NOT EXISTS idx_problem_id    ON submissions(problem_id)",
       "CREATE INDEX IF NOT EXISTS idx_user_id       ON submissions(user_id)",
       "CREATE INDEX IF NOT EXISTS idx_submissions   ON testcase_runs(submission_id, batch_id)",
-      "CREATE INDEX IF NOT EXISTS idx_last_active   ON sessions(last_active)",
-      "CREATE INDEX IF NOT EXISTS idx_token         ON sessions(token)",
     };
 
     Statement statement = null;

@@ -2,11 +2,11 @@ package services;
 
 import java.sql.Timestamp;
 
-import dal.dao.ContestDao;
 import dal.dao.ContestSessionDao;
 import dal.dao.RecordNotFoundException;
 import entities.ContestSession;
-import entities.ContestStatus;
+import entities.ContestSessionStatus;
+import entities.entity_fields.ContestSessionField;
 
 /**
  * [description]
@@ -19,18 +19,16 @@ import entities.ContestStatus;
  */
 
 public class ContestService {
-  private ContestDao contestDao;
   private ContestSessionDao contestSessionDao;
 
   public ContestService() {
-    this.contestDao = new ContestDao();
     this.contestSessionDao = new ContestSessionDao();
   }
 
-  private boolean validateContestSession(long userId, long contestSessionId) {
+  private boolean validateContestSession(long userId, long contestId) {
     try {
-      ContestSession contestSession = this.contestSessionDao.get(contestSessionId).getContent();
-      return contestSession.getStatus() == ContestStatus.ONGOING;
+      ContestSession contestSession = this.contestSessionDao.get(contestId, userId).getContent();
+      return contestSession.getStatus() == ContestSessionStatus.ONGOING;
     } catch (RecordNotFoundException e) {
       return false;
     }
@@ -38,16 +36,27 @@ public class ContestService {
 
   public void startContest(long userId, long contestId)
     throws InsufficientPermissionException, RecordNotFoundException {
-    this.contestDao.get(contestId); // check if record exists
-    //TODO: permission checking for InsufficientPermissionException?
+    if (!this.validateContestSession(userId, contestId)) {
+      throw new InsufficientPermissionException();
+    }
     this.contestSessionDao.add(
       new ContestSession(
         contestId,
         userId,
         new Timestamp(System.currentTimeMillis()),
-        ContestStatus.ONGOING,
+        ContestSessionStatus.ONGOING,
         0
       )
+    );
+  }
+
+
+  public void updateScore(long contestSessionId, int score)
+    throws RecordNotFoundException {
+    this.contestSessionDao.update(
+      contestSessionId,
+      ContestSessionField.SCORE,
+      score
     );
   }
 

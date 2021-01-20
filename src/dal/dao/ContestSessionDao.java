@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
 import entities.ContestSession;
-import entities.ContestStatus;
+import entities.ContestSessionStatus;
 import entities.Entity;
 import entities.entity_fields.ContestSessionField;
 
@@ -46,7 +46,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
       ps = connection.prepareStatement(sql);
       switch (field) {
         case STATUS:
-          ps.setString(1, ((ContestStatus)value).name());
+          ps.setString(1, ((ContestSessionStatus)value).name());
           break;
         case SCORE:
           ps.setInt(1, (Integer)value);
@@ -84,7 +84,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
       ps = connection.prepareStatement(sql);
       switch (field) {
         case STATUS:
-          ps.setString(1, ((ContestStatus)value).name());
+          ps.setString(1, ((ContestSessionStatus)value).name());
           break;
         case SCORE:
           ps.setInt(1, (Integer)value);
@@ -243,7 +243,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
         result.getLong("contest_id"),
         result.getLong("user_id"),
         Timestamp.valueOf(result.getString("started_at")),
-        ContestStatus.valueOf(result.getString("status")),
+        ContestSessionStatus.valueOf(result.getString("status")),
         result.getInt("score")
       )
     );

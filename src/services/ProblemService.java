@@ -79,5 +79,7 @@ public class ProblemService {
     clarificationDao.add(clarification);
   }
 
-  public ArrayList<Entity<Submission>> getSubmissions(long problemId, )
+  public ArrayList<Entity<Submission>> getSubmissions(long problemId, ) {
+    
+  }
 }

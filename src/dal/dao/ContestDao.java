@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
 import entities.Contest;
+import entities.ContestSessionStatus;
 import entities.ContestStatus;
 import entities.Entity;
 import entities.entity_fields.ContestField;
@@ -185,7 +186,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
   }
 
 
-  public ArrayList<Entity<Contest>> getContestsByStatus(long userId, ContestStatus status) {
+  public ArrayList<Entity<Contest>> getContestsByStatus(long userId, ContestSessionStatus status) {
     String sql = String.format(
       "SELECT * FROM contests WHERE user_id = ? AND status = %s;",
       status.toString()
@@ -214,10 +215,13 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
     return contests;
   }
 
-  public ArrayList<Entity<Contest>> getContests(int index, int numContests) {
+  public ArrayList<Entity<Contest>> getContests(int index, int numContests, ContestStatus status) {
     String sql = String.format(
-      "SELECT * FROM contests WHERE user_id = ? AND status = %s;",
-      status.toString()
+      "SELECT * FROM contests"
+      +"WHERE status = %s"
+      +"LIMIT %s OFFSET %s"
+      +"ORDER BY start_time DESC",
+      status.toString(), numContests, index
     );
 
     PreparedStatement ps = null;
@@ -227,7 +231,6 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
-      ps.setLong(1, userId);
 
       results = ps.executeQuery();
       while (results.next()) {

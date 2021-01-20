@@ -17,7 +17,7 @@ import entities.Category;
 import entities.Contest;
 import entities.ContestProblem;
 import entities.ContestSession;
-import entities.ContestStatus;
+import entities.ContestSessionStatus;
 import entities.Entity;
 import entities.PracticeProblem;
 import entities.Problem;
@@ -114,7 +114,7 @@ public class AdminService {
     try {
       ContestSession session = this.contestSessionDao.get(contestId, kickedUserId).getContent();
       this.contestSessionDao.update(
-        session.getContestId(), ContestSessionField.STATUS, ContestStatus.OVER
+        session.getContestId(), ContestSessionField.STATUS, ContestSessionStatus.OVER
       );
     } catch (RecordNotFoundException e) {
       System.out.println("Contest not found");

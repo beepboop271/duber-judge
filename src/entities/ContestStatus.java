@@ -1,17 +1,16 @@
 package entities;
 
 /**
- * An enum containing the possible current contest statuses a user could have.
+ * Serves public information (client does not need to login).
  * <p>
- * Created on 2021.01.07.
+ * Created on 2021.01.20.
  *
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
 public enum ContestStatus {
-  /** To indicate that the user is still writing the contest. */
   ONGOING,
-  /** To indicate that the user is finished writing the contest. */
-  OVER
+  UPCOMING,
+  PAST,
 }

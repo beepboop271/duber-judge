@@ -41,7 +41,7 @@ public abstract class Problem {
 
   /**
    * Constructs a new Problem.
-   * 
+   *
    * @param problemType        the type of this problem.
    * @param category           the category this problem is in.
    * @param creatorId          the id of the creator of this problem.
@@ -86,7 +86,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's problem type.
-   * 
+   *
    * @return this problem's problem type.
    */
   public ProblemType getProblemType() {
@@ -95,7 +95,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's category.
-   * 
+   *
    * @return this problem's category.
    */
   public Category getCategory() {
@@ -104,7 +104,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's creator's id.
-   * 
+   *
    * @return this problem's creator's id.
    */
   public long getCreatorId() {
@@ -113,7 +113,7 @@ public abstract class Problem {
 
   /**
    * Retrieves when this problem was created.
-   * 
+   *
    * @return a {@code Timestamp} with when this problem was created.
    */
   public Timestamp getCreatedAt() {
@@ -122,7 +122,7 @@ public abstract class Problem {
 
   /**
    * Retrieves when this problem was last modified.
-   * 
+   *
    * @return a {@code Timestamp} with when this problem was last modified.
    */
   public Timestamp getLastModifiedAt() {
@@ -131,7 +131,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's title.
-   * 
+   *
    * @return this problem's title.
    */
   public String getTitle() {
@@ -140,7 +140,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's description.
-   * 
+   *
    * @return this problem's description.
    */
   public String getDescription() {
@@ -149,7 +149,7 @@ public abstract class Problem {
 
   /**
    * Retrieves the amount of points this problem is worth.
-   * 
+   *
    * @return the amount of points this problem is worth.
    */
   public int getPoints() {
@@ -158,7 +158,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's total amount of submissions.
-   * 
+   *
    * @return this problem's total amount of submissions.
    */
   public int getNumSubmissions() {
@@ -167,7 +167,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's number of cleared submissions.
-   * 
+   *
    * @return this problem's number of cleared submissions.
    */
   public int getClearedSubmissions() {
@@ -176,7 +176,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's time limit in ms.
-   * 
+   *
    * @return this problem's time limit in ms.
    */
   public int getTimeLimitMillis() {
@@ -185,7 +185,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's memory limit in kB.
-   * 
+   *
    * @return this problem's memory limit in kB.
    */
   public int getMemoryLimitKb() {
@@ -194,7 +194,7 @@ public abstract class Problem {
 
   /**
    * Retrieves this problem's output limit in kB.
-   * 
+   *
    * @return this problem's output limit in kB.
    */
   public int getOutputLimitKb() {
