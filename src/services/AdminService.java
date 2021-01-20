@@ -1,6 +1,7 @@
 package services;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.ArrayList;
 
 import dal.dao.BatchDao;
@@ -35,7 +36,7 @@ import entities.entity_fields.TestcaseField;
  * <p>
  * Created on 2021.01.16.
  *
- * @author Shari Sun
+ * @author Shari Sun, Joseph Wang
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -70,15 +71,29 @@ public class AdminService {
     Timestamp endTime,
     int durationMinutes
   ) throws InsufficientPermissionException {
+    if (durationMinutes <= 0) {
+      throw new IllegalArgumentException(
+        "Duration cannot be equal or less than zero."
+      );
+    }
+
+    if (!endTime.after(startTime) || startTime.compareTo(new Date()) < 0) {
+      throw new IllegalArgumentException("Provided times are invalid.");
+    }
+
     this.validate(userId);
-    long id = this.contestDao.add(new Contest(
-      userId,
-      description,
-      title,
-      startTime,
-      endTime,
-      durationMinutes
-    ));
+
+    long id =
+      this.contestDao.add(
+        new Contest(
+          userId,
+          description,
+          title,
+          startTime,
+          endTime,
+          durationMinutes
+        )
+      );
     return id;
   }
 
@@ -87,18 +102,22 @@ public class AdminService {
     long contestId,
     ContestField field,
     T value
-  ) throws RecordNotFoundException, InsufficientPermissionException {
+  ) throws RecordNotFoundException,
+    InsufficientPermissionException {
     this.validateContest(userId, contestId);
     this.contestDao.update(contestId, field, value);
   }
 
-  public void deleteContest(long userId, long contestId) throws InsufficientPermissionException {
+  public void deleteContest(long userId, long contestId)
+    throws InsufficientPermissionException {
     this.validateContest(userId, contestId);
     this.contestDao.deleteById(contestId);
-    ArrayList<Entity<Problem>> problems = this.problemDao.getAllByContest(contestId);
+    ArrayList<Entity<Problem>> problems =
+      this.problemDao.getAllByContest(contestId);
     for (Entity<Problem> problem : problems) {
       this.problemDao.deleteById(problem.getId());
-      ArrayList<Entity<Batch>> batches = this.batchDao.getByProblem(problem.getId());
+      ArrayList<Entity<Batch>> batches =
+        this.batchDao.getByProblem(problem.getId());
       for (Entity<Batch> batch : batches) {
         this.testcaseDao.deleteByBatch(batch.getId());
       }
@@ -112,9 +131,12 @@ public class AdminService {
   ) throws InsufficientPermissionException {
     this.validateContest(userId, contestId);
     try {
-      ContestSession session = this.contestSessionDao.get(contestId, kickedUserId).getContent();
+      ContestSession session =
+        this.contestSessionDao.get(contestId, kickedUserId).getContent();
       this.contestSessionDao.update(
-        session.getContestId(), ContestSessionField.STATUS, ContestStatus.OVER
+        session.getContestId(),
+        ContestSessionField.STATUS,
+        ContestStatus.OVER
       );
     } catch (RecordNotFoundException e) {
       System.out.println("Contest not found");
@@ -138,51 +160,86 @@ public class AdminService {
     int submissionsLimit,
     long contestId,
     String editorial
-  ) throws InsufficientPermissionException {
+  ) throws InsufficientPermissionException,
+    IllegalArgumentException {
     this.validate(userId);
+
+    if (memoryLimitKb <= 0 || outputLimitKb <= 0 || timeLimitMillis <= 0) {
+      throw new IllegalArgumentException(
+        "Problem limits cannot be less than or equal to 0."
+      );
+    }
+    if (createdAt.after(lastModifiedAt)) {
+      throw new IllegalArgumentException(
+        "Problem must be created first before modified."
+      );
+    }
+    if (submissionsLimit <= 0) {
+      throw new IllegalArgumentException(
+        "Submission limit must be greater than 0."
+      );
+    }
+    if (numSubmissions < 0) {
+      throw new IllegalArgumentException(
+        "Number of submissions cannot be negative."
+      );
+    }
+    if (points < 0) {
+      throw new IllegalArgumentException("Points cannot be negative.");
+    }
+
     long id = 0;
     switch (type) {
       case CONTEST:
-        id = this.problemDao.add(new ContestProblem(
-          category,
-          userId,
-          createdAt,
-          lastModifiedAt,
-          title,
-          description,
-          points,
-          timeLimitMillis,
-          memoryLimitKb,
-          outputLimitKb,
-          numSubmissions,
-          submissionsLimit,
-          contestId
-        ));
+        id =
+          this.problemDao.add(
+            new ContestProblem(
+              category,
+              userId,
+              createdAt,
+              lastModifiedAt,
+              title,
+              description,
+              points,
+              timeLimitMillis,
+              memoryLimitKb,
+              outputLimitKb,
+              numSubmissions,
+              submissionsLimit,
+              contestId
+            )
+          );
         break;
       case PRACTICE:
-        id = this.problemDao.add(new PracticeProblem(
-          category,
-          userId,
-          createdAt,
-          lastModifiedAt,
-          title,
-          description,
-          points,
-          timeLimitMillis,
-          memoryLimitKb,
-          outputLimitKb,
-          numSubmissions,
-          editorial
-        ));
+        id =
+          this.problemDao.add(
+            new PracticeProblem(
+              category,
+              userId,
+              createdAt,
+              lastModifiedAt,
+              title,
+              description,
+              points,
+              timeLimitMillis,
+              memoryLimitKb,
+              outputLimitKb,
+              numSubmissions,
+              editorial
+            )
+          );
         break;
     }
     return id;
   }
 
-  private void validateProblem(long userId, long problemId) throws InsufficientPermissionException {
+  private void validateProblem(long userId, long problemId)
+    throws InsufficientPermissionException {
     this.validate(userId);
     try {
-      if (this.problemDao.get(problemId).getContent().getCreatorId() != userId) {
+      if (
+        this.problemDao.get(problemId).getContent().getCreatorId() != userId
+      ) {
         throw new InsufficientPermissionException();
       }
     } catch (RecordNotFoundException e) {
@@ -195,12 +252,14 @@ public class AdminService {
     long problemId,
     ProblemField field,
     T value
-  ) throws RecordNotFoundException, InsufficientPermissionException {
+  ) throws RecordNotFoundException,
+    InsufficientPermissionException {
     this.validateProblem(userId, problemId);
     this.problemDao.update(problemId, field, value);
   }
 
-  public void deleteProblem(long userId, long problemId) throws InsufficientPermissionException {
+  public void deleteProblem(long userId, long problemId)
+    throws InsufficientPermissionException {
     this.validateProblem(userId, problemId);
     this.problemDao.deleteById(problemId);
     ArrayList<Entity<Batch>> batches = this.batchDao.getByProblem(problemId);
@@ -210,7 +269,8 @@ public class AdminService {
     this.submissionDao.deleteByProblem(problemId);
   }
 
-  private void validateBatch(long userId, long batchId) throws InsufficientPermissionException {
+  private void validateBatch(long userId, long batchId)
+    throws InsufficientPermissionException {
     this.validate(userId);
     try {
       if (this.batchDao.get(batchId).getContent().getCreatorId() != userId) {
@@ -221,19 +281,14 @@ public class AdminService {
     }
   }
 
-  public long createBatch(
-    long userId,
-    long problemId,
-    int sequence,
-    int points
-  ) throws InsufficientPermissionException {
+  public long createBatch(long userId, long problemId, int sequence, int points)
+    throws InsufficientPermissionException, IllegalArgumentException {
+    if (points < 0) {
+      throw new IllegalArgumentException("Points cannot be negative.");
+    }
+
     this.validate(userId);
-    long id = this.batchDao.add(new Batch(
-      problemId,
-      userId,
-      sequence,
-      points
-    ));
+    long id = this.batchDao.add(new Batch(problemId, userId, sequence, points));
     return id;
   }
 
@@ -242,15 +297,14 @@ public class AdminService {
     long batchId,
     BatchField field,
     T value
-  ) throws RecordNotFoundException, InsufficientPermissionException {
+  ) throws RecordNotFoundException,
+    InsufficientPermissionException {
     this.validateBatch(userId, batchId);
     this.batchDao.update(batchId, field, value);
   }
 
-  public void deleteBatch(
-    long userId,
-    long batchId
-  ) throws InsufficientPermissionException {
+  public void deleteBatch(long userId, long batchId)
+    throws InsufficientPermissionException {
     this.validateBatch(userId, batchId);
     this.batchDao.deleteById(batchId);
     this.testcaseDao.deleteByBatch(batchId);
@@ -274,15 +328,15 @@ public class AdminService {
     int sequence,
     String input,
     String output
-  ) throws InsufficientPermissionException {
+  ) throws InsufficientPermissionException, IllegalArgumentException {
+    if (sequence < 0) {
+      throw new IllegalArgumentException("Sequences cannot be negative.");
+    }
+
     this.validate(userId);
-    long id = this.testcaseDao.add(new Testcase(
-      batchId,
-      userId,
-      sequence,
-      input,
-      output
-    ));
+    long id =
+      this.testcaseDao
+        .add(new Testcase(batchId, userId, sequence, input, output));
     return id;
   }
 
@@ -291,26 +345,27 @@ public class AdminService {
     long testcaseId,
     TestcaseField field,
     T value
-  ) throws RecordNotFoundException, InsufficientPermissionException {
+  ) throws RecordNotFoundException,
+    InsufficientPermissionException {
     this.validateTestcase(userId, testcaseId);
     this.testcaseDao.update(userId, field, value);
   }
 
-  public void deleteTestcase(long userId, long testcaseId) throws InsufficientPermissionException {
+  public void deleteTestcase(long userId, long testcaseId)
+    throws InsufficientPermissionException {
     this.validateTestcase(userId, testcaseId);
     this.testcaseDao.deleteById(testcaseId);
   }
 
-  public void clarifyProblem(
-    long userId,
-    long clarificationId,
-    String response
-  ) throws InsufficientPermissionException, RecordNotFoundException {
+  public void clarifyProblem(long userId, long clarificationId, String response)
+    throws InsufficientPermissionException,
+    RecordNotFoundException {
     this.validate(userId);
-    this.clarificationDao.update(clarificationId, ClarificationField.RESPONSE, response);
+    this.clarificationDao
+      .update(clarificationId, ClarificationField.RESPONSE, response);
   }
 
-  //TODO: maybe move this to handlers
+  // TODO: maybe move this to handlers
   private void validate(long userId) throws InsufficientPermissionException {
     try {
       if (!this.userService.isAdmin(userId)) {
@@ -321,10 +376,13 @@ public class AdminService {
     }
   }
 
-  private void validateContest(long userId, long contestId) throws InsufficientPermissionException {
+  private void validateContest(long userId, long contestId)
+    throws InsufficientPermissionException {
     this.validate(userId);
     try {
-      if (this.contestDao.get(contestId).getContent().getCreatorId() != userId) {
+      if (
+        this.contestDao.get(contestId).getContent().getCreatorId() != userId
+      ) {
         throw new InsufficientPermissionException();
       }
     } catch (RecordNotFoundException e) {
