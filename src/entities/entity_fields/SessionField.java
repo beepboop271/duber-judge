@@ -3,13 +3,12 @@ package entities.entity_fields;
 /**
  * [description]
  * <p>
- * Created on 2021.01.12.
+ * Created on 2021.01.19.
  *
  * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
-public enum SessionField implements EntityField {
-  SESSION_INFO,
-  LAST_ACTIVE,
+public enum SessionField {
+  USER_ID,
 }

@@ -2,7 +2,6 @@ package services;
 
 import java.sql.Timestamp;
 
-import dal.dao.SessionDao;
 
 /**
  * Clears out expired sessions.
@@ -14,6 +13,8 @@ import dal.dao.SessionDao;
  * @since 1.0.0
  */
 public class SessionCleaner {
+  private static final long SESSION_DURATION = 1000*60*30;
+  private static final int RUN_INTERVAL = 1000*30;
   private Thread thread = null;
   private boolean running = false;
 
@@ -31,21 +32,20 @@ public class SessionCleaner {
   }
 
   private class SessionHandler implements Runnable {
-    private SessionDao sessionDao = new SessionDao();
-    private static final long SESSION_DURATION = 1000*60*30;
+    private SessionService sessionService = new SessionService();
 
     private void clearSessions() {
-      this.sessionDao.deleteSessionFromBefore(new Timestamp(
-        System.currentTimeMillis()-SessionHandler.SESSION_DURATION
+      this.sessionService.deleteFromBefore(new Timestamp(
+        System.currentTimeMillis()-SessionCleaner.SESSION_DURATION
       ));
     }
 
     @Override
     public void run() {
-      while (running) {
+      while (SessionCleaner.this.running) {
         this.clearSessions();
         try {
-          Thread.sleep(1000*30);
+          Thread.sleep(SessionCleaner.RUN_INTERVAL);
         } catch (Exception e) {
           e.printStackTrace();
         }

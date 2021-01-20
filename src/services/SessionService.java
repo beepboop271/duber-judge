@@ -5,9 +5,7 @@ import java.sql.Timestamp;
 import java.util.Base64;
 
 import dal.dao.RecordNotFoundException;
-import dal.dao.SessionDao;
 import entities.Session;
-import entities.SessionInfo;
 import entities.entity_fields.SessionField;
 
 /**
@@ -20,12 +18,7 @@ import entities.entity_fields.SessionField;
  * @since 1.0.0
  */
 public class SessionService {
-  private SessionDao sessionDao;
 
-  public SessionService() {
-    this.sessionDao = new SessionDao();
-  }
-  
   private String generateToken() {
     SecureRandom random = new SecureRandom();
     byte[] token = new byte[32];
@@ -36,20 +29,54 @@ public class SessionService {
 
   public String createSession(long userId) {
     String token = this.generateToken();
-    SessionInfo sessionInfo = new SessionInfo(userId);
-    this.sessionDao.add(new Session(token, sessionInfo, new Timestamp(System.currentTimeMillis())));
+    Session session = new Session(userId, token);
+    Sessions.tokenToSessions.put(token, session);
+    Sessions.sessions.add(session);
     return token;
   }
 
-  public SessionInfo getSessionInfo(String token) throws RecordNotFoundException {
-    return this.sessionDao.get(token).getContent().getSessionInfo();
+  public String createSession() {
+    String token = this.generateToken();
+    Session session = new Session(token);
+    Sessions.tokenToSessions.put(token, session);
+    Sessions.sessions.add(session);
+    return token;
   }
 
-  public <V> void updateSessionInfo(String token, SessionField field, V value) {
-    try {
-      this.sessionDao.update(token, field, value);
-    } catch (RecordNotFoundException e) {
-      System.out.println("Session not found");
+  public Session getSession(String token) throws RecordNotFoundException {
+    if (!Sessions.tokenToSessions.containsKey(token)) {
+      throw new RecordNotFoundException();
+    }
+    return Sessions.tokenToSessions.get(token);
+  }
+
+  public <T> void updateSession(String token, SessionField field, T value) {
+    if (!Sessions.tokenToSessions.containsKey(token)) {
+      return;
+    }
+    switch (field) {
+      case USER_ID:
+        Sessions.tokenToSessions.get(token).setUserId((long)value);;
     }
   }
+
+  public void updateLastActive(String token) {
+    if (!Sessions.tokenToSessions.containsKey(token)) {
+      return;
+    }
+    Session session = Sessions.tokenToSessions.get(token);
+    session.updateLastActive(new Timestamp(System.currentTimeMillis()));
+    Sessions.sessions.remove(session);
+    Sessions.sessions.add(session);
+  }
+
+  public void deleteFromBefore(Timestamp before) {
+    while (!Sessions.sessions.isEmpty()
+      && Sessions.sessions.first().getLastActive().compareTo(before) < 0
+    ) {
+      Session session = Sessions.sessions.pollFirst();
+      Sessions.tokenToSessions.remove(session.getToken());
+    }
+  }
+
 }

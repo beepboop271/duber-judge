@@ -47,15 +47,16 @@ public class ConnectionPool {
     if (this.isClosed) {
       throw new IllegalStateException("Connection pool closed");
     }
-    if (availableConnections.size() == 0 && numConnections < maxConnections) {
+    if (this.availableConnections.size() == 0
+      && this.numConnections < this.maxConnections) {
       addConnection();
       //enqueue the current thread if there are threads waiting
       //or if there are no available connections
       //the reason why I checked if there are waiting threads is
       //in case if a connection is released and this took the connection
       //rather than letting a queued thread to take it
-    } else if (waitingThreads.size() > 0 || availableConnections.size() == 0) {
-      waitingThreads.add(Thread.currentThread());
+    } else if (this.waitingThreads.size() > 0 || this.availableConnections.size() == 0) {
+      this.waitingThreads.add(Thread.currentThread());
       try {
         Thread.currentThread().wait();
 
@@ -65,9 +66,9 @@ public class ConnectionPool {
     }
 
 
-    Connection connection = availableConnections.get(0);
-    availableConnections.remove(connection);
-    usedConnections.add(connection);
+    Connection connection = this.availableConnections.get(0);
+    this.availableConnections.remove(connection);
+    this.usedConnections.add(connection);
     return connection;
   }
 

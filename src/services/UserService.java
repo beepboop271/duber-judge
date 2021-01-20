@@ -26,8 +26,6 @@ import entities.entity_fields.UserField;
  * @since 1.0.0
  */
 public class UserService {
-  private static String REGEX_FILTER_USERNAME = "^(?=.*[a-zA-Z_-])(?=\\S+$).{3,}$";
-  private static String REGEX_FILTER_PASSWORD = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{6,}$";
 
   private UserDao userDao;
 
@@ -64,20 +62,20 @@ public class UserService {
    * @return               whether or not it's valid
    */
   private boolean validateUsername(String username) {
-    return username.matches(UserService.REGEX_FILTER_USERNAME);
+    return username.matches("^(?=.*[a-zA-Z_-])(?=\\S+$).{3,}$");
   }
 
   /**
    * Ensures that the password meets the requirements.
    * <p>
    * A valid password should be at least 6 characters long and include
-   * a mix of letters and numbers. It should not contain any whitespace character. 
+   * a mix of letters and numbers. It should not contain any whitespace character.
    *
    * @param password       the password to check for
    * @return               whether or not the password's valid
    */
   private boolean validatePassword(String password) {
-    return password.matches(UserService.REGEX_FILTER_PASSWORD);
+    return password.matches("^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{6,}$");
   }
 
   private void validateUser(String username, String password) throws IllegalArgumentException {
@@ -89,7 +87,8 @@ public class UserService {
     }
   }
 
-  public long createUser(String username, String password) throws IllegalArgumentException {
+  public long createUser(String username, String password)
+    throws IllegalArgumentException {
     this.validateUser(username, password);
     String salt = this.generateSalt();
     String hashed = this.hashPassword(password, salt);
@@ -173,7 +172,7 @@ public class UserService {
   }
 
 
-  public ArrayList<Entity<Submission>> getSubmissions(long userId, Timestamp before, int numSubmissions) {
+  public ArrayList<Entity<Submission>> getSubmissions(long userId, int index, int numSubmissions) {
 
   }
 
@@ -188,7 +187,7 @@ public class UserService {
   }
 
   public ArrayList<Entity<Contest>> getActiveContests(long userId) {
-    
+
   }
 
   public ArrayList<Entity<Contest>> getParticipatedContests(long userId) {

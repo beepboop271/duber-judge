@@ -502,7 +502,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
     getPracticeProblemsByPoints(int min, int max, int index, int numProblems) {
     String sql = String.format(
                 "SELECT * FROM problems"
-                +"WHERE problem_type = %s, score > ?, score < ?"
+                +"WHERE problem_type = %s, points > ?, points < ?"
                 +"ORDER BY created_at DESC"
                 +"LIMIT %s OFFSET %s",
       ProblemType.PRACTICE.toString(), numProblems, index
