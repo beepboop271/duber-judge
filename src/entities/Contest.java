@@ -24,10 +24,12 @@ public class Contest {
   private Timestamp endTime;
   /** The duration of this contest, in minutes. */
   private int durationMinutes;
+  /** The current status of the contest. */
+  private ContestStatus status;
 
   /**
    * Constructs a new Contest.
-   * 
+   *
    * @param creatorId       the contest creator's id.
    * @param description     the description of this contest.
    * @param title           the title of this contest.
@@ -49,11 +51,12 @@ public class Contest {
     this.startTime = startTime;
     this.endTime = endTime;
     this.durationMinutes = durationMinutes;
+    this.status = ContestStatus.UPCOMING;
   }
 
   /**
    * Retrieves the contest creator's id.
-   * 
+   *
    * @return the contest creator's id.
    */
   public long getCreatorId() {
@@ -62,7 +65,7 @@ public class Contest {
 
   /**
    * Retrieves the description of this contest.
-   * 
+   *
    * @return the description of this contest.
    */
   public String getDescription() {
@@ -71,7 +74,7 @@ public class Contest {
 
   /**
    * Retrieves the title of this contest.
-   * 
+   *
    * @return the title of this contest.
    */
   public String getTitle() {
@@ -80,7 +83,7 @@ public class Contest {
 
   /**
    * Retrieves the start time of this contest.
-   * 
+   *
    * @return the start time of this contest.
    */
   public Timestamp getStartTime() {
@@ -89,7 +92,7 @@ public class Contest {
 
   /**
    * Retrieves the end time of this contest.
-   * 
+   *
    * @return the end time of this contest.
    */
   public Timestamp getEndTime() {
@@ -98,11 +101,16 @@ public class Contest {
 
   /**
    * Retrieves this contest's duration, in minutes.
-   * 
+   *
    * @return this contest's duration, in minutes.
    */
   public int getDurationMinutes() {
     return this.durationMinutes;
+  }
+
+
+  public ContestStatus getStatus() {
+    return this.status;
   }
 
 }

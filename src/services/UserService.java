@@ -13,6 +13,7 @@ import dal.dao.UserDao;
 import entities.Contest;
 import entities.ContestSession;
 import entities.ContestStatus;
+import entities.ContestSessionStatus;
 import entities.Entity;
 import entities.Submission;
 import entities.User;
@@ -240,7 +241,7 @@ public class UserService {
    * @return a list of active contests
    */
   public ArrayList<Entity<Contest>> getActiveContests(long userId) {
-    return this.contestDao.getContestsByStatus(userId, ContestStatus.ONGOING);
+    return this.contestDao.getContestsByStatus(userId, ContestSessionStatus.ONGOING);
   }
 
   public int getNumActiveContests(long userId) {
@@ -262,7 +263,7 @@ public class UserService {
    * @return a list of all contests a user participated in
    */
   public ArrayList<Entity<Contest>> getParticipatedContests(long userId) {
-    return this.contestDao.getContestsByStatus(userId, ContestStatus.OVER);
+    return this.contestDao.getContestsByStatus(userId, ContestSessionStatus.OVER);
   }
 
   /**

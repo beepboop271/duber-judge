@@ -23,6 +23,12 @@ public class ConnectionPool {
   private int numConnections;
   private boolean isClosed;
 
+
+  /**
+   *
+   * @param minConnections
+   * @param maxConnections
+   */
   public ConnectionPool(int minConnections, int maxConnections) {
     this.minConnections = minConnections;
     this.maxConnections = maxConnections;
@@ -43,6 +49,21 @@ public class ConnectionPool {
     this.numConnections++;
   }
 
+
+  /**
+   * This returns an available connection and if none are found,
+   * this is a blocking method that waits until a free connection
+   * is released.
+   * <p>
+   * It enqueue the current thread if there are threads waiting
+   * or if there are no available connections.
+   * The reason why the number of waiting threads is checked is because
+   * in case a connection is released and this took the connection
+   * rather than letting a queued thread (that waited longer) take it.
+   *
+   * @return                             A database connection.
+   * @throws IllegalStateException       If the database is closed.
+   */
   public Connection getConnection() throws IllegalStateException {
     if (this.isClosed) {
       throw new IllegalStateException("Connection pool closed");
@@ -50,11 +71,7 @@ public class ConnectionPool {
     if (this.availableConnections.size() == 0
       && this.numConnections < this.maxConnections) {
       addConnection();
-      //enqueue the current thread if there are threads waiting
-      //or if there are no available connections
-      //the reason why I checked if there are waiting threads is
-      //in case if a connection is released and this took the connection
-      //rather than letting a queued thread to take it
+
     } else if (this.waitingThreads.size() > 0 || this.availableConnections.size() == 0) {
       this.waitingThreads.add(Thread.currentThread());
       try {
@@ -72,6 +89,13 @@ public class ConnectionPool {
     return connection;
   }
 
+  /**
+   * Releases a connection that becomes available for
+   * a waiting thread or future thread to use.
+   *
+   * @param connection                  The connection to release.
+   * @throws IllegalStateException
+   */
   public void releaseConnection(Connection connection) throws IllegalStateException {
     if (this.isClosed) {
       throw new IllegalStateException("Connection pool closed");
