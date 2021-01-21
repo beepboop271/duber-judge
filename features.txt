@@ -51,14 +51,14 @@ SessionService
   - deleteFromBefore
 
 UserService
-  - generateSalt
-  - hashPassword
-  - validatePassword(username)
-  - validatePassword(password)
+ ✓ - generateSalt
+ ✓ - hashPassword
+ ✓ - validatePassword(username)
+ ✓ - validatePassword(password)
   - validateUser
-  - createUser
-  - createAdmin
-  - login
+ ✓ - createUser
+ ✓ - createAdmin
+ ✓ - login
   - updateUserProfile
   - updateUserPassword
   - isAdmin

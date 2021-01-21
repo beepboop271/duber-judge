@@ -73,7 +73,7 @@ public class UserService {
    * @return whether or not it's valid
    */
   private boolean validateUsername(String username) {
-    return username.matches("^(?=.*[a-zA-Z_-])(?=\\S+$).{3,}$");
+    return username.matches("^([a-zA-Z0-9_-]{3,20})$");
   }
 
   /**
@@ -87,7 +87,7 @@ public class UserService {
    * @return whether or not the password's valid
    */
   private boolean validatePassword(String password) {
-    return password.matches("^(?=.*[0-9])(?=.*[a-zA-Z])(?=\\S+$).{6,}$");
+    return password.matches("^(?=.*[0-9])(?=.*[a-zA-Z])\\S{6,25}$");
   }
 
   private void validateUser(String username, String password)
@@ -142,7 +142,13 @@ public class UserService {
   }
 
   public <T> void updateUserProfile(long userId, UserField field, T value)
-    throws RecordNotFoundException {
+    throws RecordNotFoundException, IllegalArgumentException {
+    switch (field) {
+      case USERNAME:
+        this.validateUsername((String)value);
+        System.out.println("LSKDFJ");
+        break;
+    }
     this.userDao.update(userId, field, value);
   }
 

@@ -1,7 +1,6 @@
 package services;
 
 import java.sql.Timestamp;
-
 import java.util.ArrayList;
 
 import dal.dao.ClarificationDao;
@@ -16,7 +15,7 @@ import entities.Language;
 import entities.PracticeProblem;
 import entities.Problem;
 import entities.Submission;
-import judge.Judger;
+// import judge.Judger;
 
 /**
  * [description]
@@ -74,7 +73,9 @@ public class ProblemService {
         language,
         new Timestamp(System.currentTimeMillis())
       );
-    return Judger.judge(submission);
+    return submission;
+    //TODO: uncomment this line
+    // return Judger.judge(submission);
   }
 
   public void requestClarification(long userId, long problemId, String message)
