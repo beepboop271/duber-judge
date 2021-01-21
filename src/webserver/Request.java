@@ -154,13 +154,15 @@ public class Request extends HttpMessage {
     super(headers, body);
 
     this.method = method;
-    this.path = fullPath;
+    this.fullPath = fullPath;
     this.protocol = protocol;
     this.queryStrings = new HashMap<>();
 
     try {
       URI pathUri = new URI(fullPath);
-      this.parseQueryStrings(pathUri.getQuery());
+      if (pathUri.getQuery() != null) {
+        this.parseQueryStrings(pathUri.getQuery());
+      }
       this.path = pathUri.getPath();
     } catch (URISyntaxException e) {
       throw new HttpSyntaxException("Provided path is invalid.", e);

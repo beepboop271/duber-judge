@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
@@ -261,7 +262,11 @@ public class WebServer {
         BufferedWriter bufferedUtfWriter = new BufferedWriter(utfWriter);
         this.output = new PrintWriter(bufferedUtfWriter);
 
+      } catch (SocketException e) {
+        System.out.println("A stream failed to connect.");
+        e.printStackTrace();
       } catch (IOException e) {
+        System.out.println("An I/O error occured while handling the streams.");
         e.printStackTrace();
       }
     }
@@ -278,16 +283,13 @@ public class WebServer {
         // case keep-alive header exists
         while (this.shouldRun) {
           RequestBuilder rb = new RequestBuilder();
-          if (this.input.ready()) {
-            rb.resetTimeoutStart();
-          }
 
-          while (!rb.hasCompletedRequest()) {
+          boolean waitingForConnection = true;
+          while (waitingForConnection) {
             if (this.input.ready()) {
-              rb = new RequestBuilder();
-              while (this.input.ready()) {
-                rb.append(this.input.readLine()+"\r\n");
-              }
+              this.assembleRequest(rb);
+
+              waitingForConnection = false;
             }
           }
 
@@ -309,11 +311,48 @@ public class WebServer {
           // Keep open if keep alive header exists
           this.output.print(res);
           this.output.flush();
+
+          //TODO: implement proper socket closure according to http
+          if (
+            res.getHeader("Connection") == null
+              || !res.getHeader("Connection").equals("keep-alive")
+          ) {
+            this.shouldRun = false;
+          }
         }
 
         this.closeConnection();
       } catch (IOException e) {
         e.printStackTrace();
+      }
+    }
+
+    /**
+     * Attempts to assemble a request from the input stream.
+     * <p>
+     * This method will return early if the
+     * {@code RequestBuilder} timeout has been reached while
+     * assembling the event
+     * ({@link RequestBuilder#shouldTimeout()} returns
+     * {@code true}).
+     *
+     * @param rb The {@code RequestBuilder} used to assemble the
+     *           request.
+     * @throws IOException if an I/O error occurs during reading
+     *                     the connection.
+     */
+    private void assembleRequest(RequestBuilder rb) throws IOException {
+      rb.resetTimeoutStart();
+
+      while (!rb.hasCompletedRequest()) {
+        while (this.input.ready()) {
+          String reqString = input.readLine();
+          rb.append(reqString+"\r\n");
+        }
+
+        if (rb.shouldTimeout()) {
+          return;
+        }
       }
     }
 

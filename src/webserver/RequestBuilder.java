@@ -161,7 +161,7 @@ public class RequestBuilder {
 
         if (header.length == 2) {
           if (
-            !header[0].equals("Content-Length") && header[1].matches("^\\d+$")
+            header[0].equals("Content-Length") && header[1].matches("^\\d+$")
           ) {
             this.contentLength = Integer.parseInt(header[1]);
           } else if (
@@ -171,6 +171,8 @@ public class RequestBuilder {
             this.chunked = true;
           }
         }
+
+        headerString = requestReader.readLine();
       }
 
       this.evaluatedHeaders = true;
