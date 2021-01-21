@@ -396,4 +396,48 @@ public class SubmissionDao implements Dao<Submission> {
     }
     return count;
   }
+
+
+  public ArrayList<Entity<Submission>> getProblemLeaderboard(
+    long problemId,
+    int index,
+    int numUsers
+  ) {
+    String sql = String.format(
+       "SELECT submissions.*"
+      +"  FROM submissions"
+      +"    INNER JOIN ("
+      +"      SELECT user_id, MAX(score) AS highest_score"
+      +"        FROM submissions"
+      +"        WHERE problem_id = ?"
+      +"        GROUP BY user_id"
+      +"        ORDER BY highest_score DESC"
+      +"        LIMIT %s OFFSET %s"
+      +"    ) a ON submissions.user_id = a.user_id"
+      +"          AND submissions.score = a.highest_score;",
+      numUsers, index
+    );
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, problemId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        submissions.add(this.getSubmissionByResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return submissions;
+  }
 }

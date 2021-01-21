@@ -220,7 +220,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
       "SELECT * FROM contests"
       +"WHERE status = %s"
       +"LIMIT %s OFFSET %s"
-      +"ORDER BY start_time DESC",
+      +"ORDER BY start_time ACS",
       status.toString(), numContests, index
     );
 

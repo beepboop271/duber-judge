@@ -3,14 +3,18 @@ package services;
 import java.util.ArrayList;
 
 import dal.dao.ContestDao;
+import dal.dao.ContestSessionDao;
 import dal.dao.ProblemDao;
 import dal.dao.SubmissionDao;
 import dal.dao.UserDao;
 import dal.dao.UserPoints;
 import entities.Category;
 import entities.Contest;
+import entities.ContestSession;
+import entities.ContestStatus;
 import entities.Entity;
 import entities.Problem;
+import entities.Submission;
 import entities.User;
 
 /**
@@ -28,47 +32,58 @@ public class PublicService {
   private ProblemDao problemDao;
   private SubmissionDao submissionDao;
   private ContestDao contestDao;
+  private ContestSessionDao contestSessionDao;
 
   public PublicService() {
     this.userDao = new UserDao();
     this.problemDao = new ProblemDao();
     this.submissionDao = new SubmissionDao();
     this.contestDao = new ContestDao();
+    this.contestSessionDao = new ContestSessionDao();
   }
 
   /**
-   * Get the contests ordered from latest to earliest.
+   * Get the ongoing contests ordered from earliest to latest.
    *
    * @param index       the current offset
    * @param numContests the number of contests to retrieve
    * @return a list of contests
    */
-  public ArrayList<Entity<Contest>> getContests(int index, int numContests) {
-    return this.contestDao.getContests(index, numContests);
+  public ArrayList<Entity<Contest>> getOngoingContests(int index, int numContests) {
+    return this.contestDao.getContests(index, numContests, ContestStatus.ONGOING);
+  }
+
+  /**
+   * Get the upcoming contests ordered from earliest to latest.
+   *
+   * @param index       the current offset
+   * @param numContests the number of contests to retrieve
+   * @return a list of contests
+   */
+  public ArrayList<Entity<Contest>> getUpcomingContests(int index, int numContests) {
+    return this.contestDao.getContests(index, numContests, ContestStatus.UPCOMING);
   }
 
   public ArrayList<UserPoints> getLeaderboard(int index, int numUsers) {
     return this.userDao.getByPoints(index, numUsers);
   }
 
-  public ArrayList<Entity<User>> getContestLeaderboard(
+  public ArrayList<Entity<ContestSession>> getContestLeaderboard(
     int contestId,
     int index,
     int numUsers
   ) {
-
+    return this.contestSessionDao.getLeaderboard(contestId, index, numUsers);
   }
 
-  public ArrayList<Entity<User>> getProblemLeaderboard(
+  public ArrayList<Entity<Submission>> getProblemLeaderboard(
     int problemId,
     int index,
     int numUsers
   ) {
-
+    return this.submissionDao.getProblemLeaderboard(problemId, index, numUsers);
   }
 
-  // change problem[] to ArrayList<Entity<Problem>> and
-  // 'Timetsamp before' to 'int index'
   ArrayList<Entity<Problem>> getPracticeProblems(int index, int numProblems) {
     return this.problemDao.getPracticeProblems(index, numProblems);
   }

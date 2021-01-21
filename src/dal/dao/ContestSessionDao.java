@@ -382,5 +382,42 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
   }
 
 
+  public ArrayList<Entity<ContestSession>> getLeaderboard(
+    long contestId,
+    int index,
+    int numUsers
+  ) {
+    String sql = String.format(
+      "SELECT * FROM contest_sessions"
+      +"  WHERE contest_id = ?"
+      +"  ORDER BY score DESC"
+      +"  LIMIT %s OFFSET %s;,",
+      numUsers, index
+    );
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<ContestSession>> contests = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, contestId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        contests.add(this.getContestSessionFromResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return contests;
+  }
+
+
 
 }
