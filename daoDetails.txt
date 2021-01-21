@@ -3,23 +3,22 @@ Unused Daos
 BatchDao - AC
 
 ClarificationDao 
-  - getByProblemAndUser
+  x getByProblemAndUser
 
 ContestDao - AC
 
 ContestSessionDao 
-  - updateByUser
-  - getNumSessions
-  - getNumContests
-  - getByContest
-  - getByUser
-  - updateScore
+  x updateByUser
+  x getNumSessions
+  x getNumContests
+  x getByContest
+  x getByUser
 
 ProblemDao - AC
 
 SubmissionDao
-  - getByProblem
-  - getByProblemAndStatus
+  x getByProblem
+  x getByProblemAndStatus
 
 TestcaseDao
   - getByBatch

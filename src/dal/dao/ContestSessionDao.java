@@ -65,6 +65,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
 
   }
 
+  //TODO: figure out a way to clean expired contest sessions
   public <V> void updateByUser(long userId, ContestSessionField field, V value)
     throws RecordNotFoundException {
     String element = "";

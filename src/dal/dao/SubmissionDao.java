@@ -323,7 +323,7 @@ public class SubmissionDao implements Dao<Submission> {
   }
 
   public ArrayList<Entity<Submission>>
-    getByProblemAndStatus(long problemId, ExecutionStatus status, int index, int numProblems) {
+    getByProblemAndStatus(long problemId, ExecutionStatus status, int index, int numSubmissions) {
     String sql = "SELECT * FROM submissions WHERE problem_id = ? AND status = ?;";
     PreparedStatement ps = null;
     Connection connection = null;

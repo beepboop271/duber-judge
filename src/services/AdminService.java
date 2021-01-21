@@ -12,6 +12,7 @@ import dal.dao.ProblemDao;
 import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
 import dal.dao.TestcaseDao;
+import dal.dao.TestcaseRunDao;
 import dal.dao.UserDao;
 import entities.Batch;
 import entities.Category;
@@ -24,6 +25,7 @@ import entities.PracticeProblem;
 import entities.Problem;
 import entities.ProblemType;
 import entities.Testcase;
+import entities.TestcaseRun;
 import entities.entity_fields.BatchField;
 import entities.entity_fields.ClarificationField;
 import entities.entity_fields.ContestField;
@@ -47,6 +49,7 @@ public class AdminService {
   private ProblemDao problemDao;
   private BatchDao batchDao;
   private TestcaseDao testcaseDao;
+  private TestcaseRunDao testcaseRunDao;
   private ClarificationDao clarificationDao;
   private UserDao userDao;
   private SubmissionDao submissionDao;
@@ -58,6 +61,7 @@ public class AdminService {
     this.problemDao = new ProblemDao();
     this.batchDao = new BatchDao();
     this.testcaseDao = new TestcaseDao();
+    this.testcaseRunDao = new TestcaseRunDao();
     this.clarificationDao = new ClarificationDao();
     this.userDao = new UserDao();
     this.submissionDao = new SubmissionDao();
@@ -266,6 +270,8 @@ public class AdminService {
     for (Entity<Batch> batch : batches) {
       this.testcaseDao.deleteByBatch(batch.getId());
     }
+
+    // TODO: delete test case runs here
     this.submissionDao.deleteByProblem(problemId);
   }
 
@@ -282,7 +288,8 @@ public class AdminService {
   }
 
   public long createBatch(long userId, long problemId, int sequence, int points)
-    throws InsufficientPermissionException, IllegalArgumentException {
+    throws InsufficientPermissionException,
+    IllegalArgumentException {
     if (points < 0) {
       throw new IllegalArgumentException("Points cannot be negative.");
     }
@@ -328,7 +335,8 @@ public class AdminService {
     int sequence,
     String input,
     String output
-  ) throws InsufficientPermissionException, IllegalArgumentException {
+  ) throws InsufficientPermissionException,
+    IllegalArgumentException {
     if (sequence < 0) {
       throw new IllegalArgumentException("Sequences cannot be negative.");
     }
