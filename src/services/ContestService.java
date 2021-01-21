@@ -75,7 +75,9 @@ public class ContestService {
     int numSessions
   ) {
     return this.contestSessionDao.getByContest(contestId, index, numSessions);
+  }
 
+  
   public void updateScore(long contestSessionId, int score)
     throws RecordNotFoundException {
     this.contestSessionDao.update(

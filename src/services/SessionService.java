@@ -9,7 +9,7 @@ import entities.Session;
 import entities.entity_fields.SessionField;
 
 /**
- * [description]
+ * A service deals with {@link Session} creation, update, and removal.
  * <p>
  * Created on 2021.01.16.
  *
@@ -19,6 +19,11 @@ import entities.entity_fields.SessionField;
  */
 public class SessionService {
 
+  /**
+   * Generates a unique 32 bytes token for the session.
+   *
+   * @return    The generated token.
+   */
   private String generateToken() {
     SecureRandom random = new SecureRandom();
     byte[] token = new byte[32];
@@ -26,7 +31,12 @@ public class SessionService {
     return Base64.getEncoder().encodeToString(token);
   }
 
-
+  /**
+   * Creates a new session given a user ID.
+   *
+   * @param userId         The user ID.
+   * @return               The session's token.
+   */
   public String createSession(long userId) {
     String token = this.generateToken();
     Session session = new Session(userId, token);
@@ -35,6 +45,11 @@ public class SessionService {
     return token;
   }
 
+  /**
+   * Creates a new session without a user ID (non-logged-in user).
+   *
+   * @return            The session's token.
+   */
   public String createSession() {
     String token = this.generateToken();
     Session session = new Session(token);
@@ -43,6 +58,13 @@ public class SessionService {
     return token;
   }
 
+  /**
+   * Gets the session given a session token.
+   *
+   * @param token                       The token.
+   * @return                            The session.
+   * @throws RecordNotFoundException    If the session is invalid.
+   */
   public Session getSession(String token) throws RecordNotFoundException {
     if (!Sessions.tokenToSessions.containsKey(token)) {
       throw new RecordNotFoundException();
@@ -50,6 +72,15 @@ public class SessionService {
     return Sessions.tokenToSessions.get(token);
   }
 
+  /**
+   * Updates the session data.
+   *
+   * @param <T>         The type of the value that is being updated.
+   * @param token       The session token.
+   * @param field       The field that is being updated.
+   * @param value       The new value.
+   * @see               SessionField
+   */
   public <T> void updateSession(String token, SessionField field, T value) {
     if (!Sessions.tokenToSessions.containsKey(token)) {
       return;
@@ -60,6 +91,11 @@ public class SessionService {
     }
   }
 
+  /**
+   * Update the last active time for the user.
+   *
+   * @param token        The token.
+   */
   public void updateLastActive(String token) {
     if (!Sessions.tokenToSessions.containsKey(token)) {
       return;
@@ -70,6 +106,11 @@ public class SessionService {
     Sessions.sessions.add(session);
   }
 
+  /**
+   * Delete all sessions from before a {@code Timestamp}.
+   *
+   * @param before        The time.
+   */
   public void deleteFromBefore(Timestamp before) {
     while (!Sessions.sessions.isEmpty()
       && Sessions.sessions.first().getLastActive().compareTo(before) < 0

@@ -9,11 +9,14 @@ import java.util.Properties;
 
 
 /**
- * [description]
+ * A static class used for creating new {@code Database connections}
+ * and initializing the database given a {@code Connection}.
+ * It also provides a method to conveniently close resources
+ * such as {@code PreparedStatment, ResultSet, etc}.
  * <p>
  * Created on 2021.01.07.
  *
- * @author Shari Sun, Candice Zhang
+ * @author Shari Sun
  * @version 1.0.0
  * @since 1.0.0
  */
@@ -134,7 +137,7 @@ public class ConnectDB {
         +");",
       "CREATE TABLE IF NOT EXISTS testcases ("
         +"id          INTEGER PRIMARY KEY,"
-        +"creator_id    INTEGER NOT NULL,"
+        +"creator_id  INTEGER NOT NULL,"
         +"batch_id    INTEGER NOT NULL,"
         +"sequence    INTEGER NOT NULL,"
         +"input       TEXT NOT NULL,"

@@ -5,7 +5,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * [description]
+ * {@code ConnectionPool} keep a fixed range of number of {@code Connection}
+ * It will create a minimum number of connections and if all connections are
+ * in use, it will create a new connection unless the max number of connections
+ * are used. If so, it will queue the resource that needs the connection,
+ * and let the thread {@code wait} until a connection is freed up.
+ * <p>
+ * This pool is backed by a queue so the resources that need a connection
+ * serves in a FIFO pattern.
  * <p>
  * Created on 2021.01.08.
  *
@@ -14,20 +21,31 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @since 1.0.0
  */
 public class ConnectionPool {
-  private CopyOnWriteArrayList<Connection> usedConnections;
-  private CopyOnWriteArrayList<Connection> availableConnections;
-  private ConcurrentLinkedQueue<Thread> waitingThreads;
-  private int minConnections;
-  private int maxConnections;
+  /** The file path to the database. */
   private static final String FILE_PATH = System.getProperty("user.dir")+"/database/dubj.db";
+  /** A list of used connections. */
+  private CopyOnWriteArrayList<Connection> usedConnections;
+  /** A list of available/free connections. */
+  private CopyOnWriteArrayList<Connection> availableConnections;
+  /** The queue of waiting threads/resources. */
+  private ConcurrentLinkedQueue<Thread> waitingThreads;
+  /** The min number of connection this pool should maintain at all times. */
+  private int minConnections;
+  /** The max number of connection this pool should maintain at all times. */
+  private int maxConnections;
+  /** The number of connections this pool has. */
   private int numConnections;
+  /** Whether the pool is closed or not. */
   private boolean isClosed;
 
 
   /**
+   * Constructs a new {@link ConnectionPool} given a
+   * minimum and maximum number of connections the pool should maintain
+   * at all times.
    *
-   * @param minConnections
-   * @param maxConnections
+   * @param minConnections       The minimum number of connections.
+   * @param maxConnections       The maximum number of connections.
    */
   public ConnectionPool(int minConnections, int maxConnections) {
     this.minConnections = minConnections;
@@ -43,6 +61,9 @@ public class ConnectionPool {
     ConnectDB.initialize(this.availableConnections.get(0));
   }
 
+  /**
+   * Adds a new connection to {@link ConnectionPool#availableConnections}.
+   */
   private void addConnection() {
     Connection connection = ConnectDB.getConnection(ConnectionPool.FILE_PATH);
     this.availableConnections.add(connection);
@@ -94,7 +115,7 @@ public class ConnectionPool {
    * a waiting thread or future thread to use.
    *
    * @param connection                  The connection to release.
-   * @throws IllegalStateException
+   * @throws IllegalStateException      If the connection pool is already closed.
    */
   public void releaseConnection(Connection connection) throws IllegalStateException {
     if (this.isClosed) {
@@ -112,9 +133,14 @@ public class ConnectionPool {
 
 
   /**
-   * Closes all connections.
+   * Upon the closure of the database, it releases all connections.
+   *
+   * @exception IllegalStateException   If there are threads still awaiting for a connection.
    */
-  public void close() {
+  public void close() throws IllegalStateException {
+    if (!this.waitingThreads.isEmpty()) {
+      throw new IllegalStateException("WaitingThreads not empty");
+    }
     this.isClosed = true;
     for (Connection connection : this.availableConnections) {
       try {
