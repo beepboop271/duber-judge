@@ -8,6 +8,7 @@ package webserver;
  *
  * @since 0.0.4
  * @version 0.0.4
+ * @author Joseph Wang
  */
 @SuppressWarnings("serial")
 public class InvalidHeaderException extends Exception {
@@ -37,6 +38,6 @@ public class InvalidHeaderException extends Exception {
    * @param cause   The cause of this exception.
    */
   public InvalidHeaderException(String message, Throwable cause) {
-
+    super(message, cause);
   }
 }

@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
@@ -236,6 +235,8 @@ public class WebServer {
     private BufferedReader input;
     /** The output stream for the client. */
     private PrintWriter output;
+    /** Determines if the connection loop should run. */
+    private boolean shouldRun = true;
 
     /**
      * Constructs a new ConnectionHandler to handle a specific
@@ -272,36 +273,48 @@ public class WebServer {
      * specific client.
      */
     public void run() {
-      String statusLine = "";
-      String headersLine = "";
-
       try {
-        while (statusLine.equals("")) {
+        // Keep this connection open for as long as we need it in
+        // case keep-alive header exists
+        while (this.shouldRun) {
+          RequestBuilder rb = new RequestBuilder();
           if (this.input.ready()) {
-            statusLine = this.input.readLine();
+            rb.resetTimeoutStart();
+          }
 
-            // We add them to one large header line so we can split it
-            // later and have the
-            // string array be the correct size
-
-            // Since readLine() strips the \n, we can safely use \n as a
-            // delimiter for split
-            while (this.input.ready()) {
-              headersLine += this.input.readLine()+"\n";
+          while (!rb.hasCompletedRequest()) {
+            if (this.input.ready()) {
+              rb = new RequestBuilder();
+              while (this.input.ready()) {
+                rb.append(this.input.readLine()+"\r\n");
+              }
             }
           }
+
+          Response res;
+          try {
+            Request req = rb.construct();
+
+            if (!req.getProtocol().equals("HTTP/1.1")) {
+              res = Response.unsupportedVersion();
+            } else {
+              res = this.generateResponseFromRequest(req);
+              this.attemptCacheStorage(req.getFullPath(), res);
+            }
+          } catch (HttpSyntaxException e) {
+            res = Response.badRequest();
+          }
+
+          // Output to user
+          // Keep open if keep alive header exists
+          this.output.print(res);
+          this.output.flush();
         }
+
+        this.closeConnection();
       } catch (IOException e) {
         e.printStackTrace();
       }
-
-      Response response = processRecievedStrings(statusLine, headersLine);
-
-      // Output to user and shut down
-      this.output.print(response);
-      this.output.flush();
-
-      this.closeConnection();
     }
 
     /**
@@ -318,74 +331,18 @@ public class WebServer {
       }
     }
 
+    // TODO: find the header that affects cache time
     /**
-     * Processes any recieved strings that should be used to
-     * form a request, and generates the response based on that
-     * request, for output back to the client.
-     * <p>
-     * If invalid strings are provided, this method will return
-     * a response with a failed status, depending on the invalid
-     * string.
+     * Attempts to store the provided request body in the web
+     * cache, for later retrieval.
      *
-     * @param statusLine The string with the status line of the
-     *                   HTML request
-     * @param othersLine The string with the headers + body,
-     *                   separated by {@code \n}.
-     * @return a Response generated from the recieved strings.
+     * @param fullPath The path to store the body under.
+     * @param response The response to store.
      */
-    private Response processRecievedStrings(
-      String statusLine,
-      String othersLine
-    ) {
-      String[] statusTokens;
-      String method;
-      String fullPath;
-      String protocol;
-
-      // This should be a 3 string array, and if not we stop
-      // processing it
-      statusTokens = statusLine.split(" ");
-      if (statusTokens.length != 3) {
-        return Response.badRequest();
-      }
-
-      method = statusTokens[0];
-      fullPath = statusTokens[1];
-      protocol = statusTokens[2];
-
-      if (!protocol.equals("HTTP/1.1")) {
-        return Response.unsupportedVersion();
-      }
-
-      String[] headers;
-      String body = "";
-      // The body is simply the last string in the request that we
-      // can parse
-      // Normally an empty string
-      body = othersLine.substring(othersLine.lastIndexOf("\n"));
-      // Everything else is a lot of headers
-      othersLine = othersLine.substring(0, othersLine.lastIndexOf("\n"));
-      headers = othersLine.split("\n");
-
-      // Generate response from request object from the parsed
-      // HTTP request
-      Request newRequest;
-      try {
-        newRequest = new Request(method, fullPath, headers, body);
-      } catch (InvalidHeaderException e) {
-        return Response.badRequest();
-      } catch (URISyntaxException e) {
-        return Response.badRequest();
-      }
-
-      Response response = this.generateResponseFromRequest(newRequest);
-
-      // Re-insert into cache if we need to
+    private void attemptCacheStorage(String fullPath, Response response) {
       if (!cache.checkCache(fullPath)) {
         cache.putCache(response.getBody(), fullPath, 60);
       }
-
-      return response;
     }
 
     /**

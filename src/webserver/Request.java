@@ -31,12 +31,17 @@ import java.util.Set;
 public class Request extends HttpMessage {
   /** The related HTTP method, like GET or POST. */
   private String method;
-  /** The path for the request, minus query strings and percent encoding. */
+  /**
+   * The path for the request, minus query strings and percent
+   * encoding.
+   */
   private String path;
   /** The full path for the request. */
   private String fullPath;
   /** The query strings in the path. */
   private Map<String, String> queryStrings;
+  /** The HTTP protocol for this request. */
+  private String protocol;
 
   /**
    * Constructs a new Request without any headers or a body.
@@ -45,11 +50,13 @@ public class Request extends HttpMessage {
    *
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
-   * @throws URISyntaxException if the path provided is
-   *                            invalid.
+   * @param protocol The HTTP protocol for this request.
+   * @throws HttpSyntaxException if the path provided is
+   *                                invalid.
    */
-  public Request(String method, String fullPath) throws URISyntaxException {
-    this(method, fullPath, new HashMap<String, String>(), "");
+  public Request(String method, String fullPath, String protocol)
+    throws HttpSyntaxException {
+    this(method, fullPath, protocol, new HashMap<String, String>(), "");
   }
 
   /**
@@ -57,13 +64,14 @@ public class Request extends HttpMessage {
    *
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
+   * @param protocol The HTTP protocol for this request.
    * @param body     The body of the request.
-   * @throws URISyntaxException if the path provided is
-   *                            invalid.
+   * @throws HttpSyntaxException if the path provided is
+   *                                invalid.
    */
-  public Request(String method, String fullPath, String body)
-    throws URISyntaxException {
-    this(method, fullPath, new HashMap<String, String>(), body);
+  public Request(String method, String fullPath, String protocol, String body)
+    throws HttpSyntaxException {
+    this(method, fullPath, protocol, new HashMap<String, String>(), body);
   }
 
   /**
@@ -74,13 +82,18 @@ public class Request extends HttpMessage {
    *
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
+   * @param protocol The HTTP protocol for this request.
    * @param headers  The headers for this request.
-   * @throws URISyntaxException if the path provided is
-   *                            invalid.
+   * @throws HttpSyntaxException if the path provided is
+   *                                invalid.
    */
-  public Request(String method, String fullPath, Map<String, String> headers)
-    throws URISyntaxException {
-    this(method, fullPath, headers, "");
+  public Request(
+    String method,
+    String fullPath,
+    String protocol,
+    Map<String, String> headers
+  ) throws HttpSyntaxException {
+    this(method, fullPath, protocol, headers, "");
   }
 
   /**
@@ -102,16 +115,21 @@ public class Request extends HttpMessage {
    *
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
+   * @param protocol The HTTP protocol for this request.
    * @param headers  The headers for this request.
    * @throws InvalidHeaderException if an improperly formatted
    *                                header is provided.
-   * @throws URISyntaxException     if the path provided is
+   * @throws HttpSyntaxException if the path provided is
    *                                invalid.
    */
-  public Request(String method, String fullPath, String[] headers)
-    throws InvalidHeaderException,
-    URISyntaxException {
-    this(method, fullPath, headers, "");
+  public Request(
+    String method,
+    String fullPath,
+    String protocol,
+    String[] headers
+  ) throws InvalidHeaderException,
+    HttpSyntaxException {
+    this(method, fullPath, protocol, headers, "");
   }
 
   /**
@@ -120,26 +138,33 @@ public class Request extends HttpMessage {
    *
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
+   * @param protocol The HTTP protocol for this request.
    * @param headers  The headers for this request.
    * @param body     The body of the request.
-   * @throws URISyntaxException if the path provided is
-   *                            invalid.
+   * @throws HttpSyntaxException if the path provided is
+   *                                invalid.
    */
   public Request(
     String method,
     String fullPath,
+    String protocol,
     Map<String, String> headers,
     String body
-  ) throws URISyntaxException {
+  ) throws HttpSyntaxException {
     super(headers, body);
 
     this.method = method;
     this.path = fullPath;
+    this.protocol = protocol;
     this.queryStrings = new HashMap<>();
 
-    URI pathUri = new URI(fullPath);
-    this.parseQueryStrings(pathUri.getQuery());
-    this.path = pathUri.getPath();
+    try {
+      URI pathUri = new URI(fullPath);
+      this.parseQueryStrings(pathUri.getQuery());
+      this.path = pathUri.getPath();
+    } catch (URISyntaxException e) {
+      throw new HttpSyntaxException("Provided path is invalid.", e);
+    }
   }
 
   /**
@@ -163,22 +188,34 @@ public class Request extends HttpMessage {
    * @param body     The body of the request.
    * @throws InvalidHeaderException if an improperly formatted
    *                                header is provided.
-   * @throws URISyntaxException     if the path provided is
+   * @throws HttpSyntaxException if the path provided is
    *                                invalid.
    */
-  public Request(String method, String fullPath, String[] headers, String body)
-    throws InvalidHeaderException,
-    URISyntaxException {
+  public Request(
+    String method,
+    String fullPath,
+    String protocol,
+    String[] headers,
+    String body
+  ) throws InvalidHeaderException,
+    HttpSyntaxException {
     super(headers, body);
 
     this.method = method;
     this.fullPath = fullPath;
+    this.protocol = protocol;
     this.queryStrings = new HashMap<>();
 
     // Use URI class for proper decoding and query processing
-    URI pathUri = new URI(fullPath);
-    this.parseQueryStrings(pathUri.getQuery());
-    this.path = pathUri.getPath();
+    try {
+      URI pathUri = new URI(fullPath);
+      if (pathUri.getQuery() != null) {
+        this.parseQueryStrings(pathUri.getQuery());
+      }
+      this.path = pathUri.getPath();
+    } catch (URISyntaxException e) {
+      throw new HttpSyntaxException("Provided path is invalid.", e);
+    }
   }
 
   /**
@@ -190,6 +227,7 @@ public class Request extends HttpMessage {
    *                    without the beginning {@code ?}
    */
   private void parseQueryStrings(String queryString) {
+    // TODO: reimplement parsing to make encoded & and = work
     String[] queries = queryString.split("&");
     for (String query : queries) {
       String[] queryInfo = query.split("=");
@@ -266,5 +304,14 @@ public class Request extends HttpMessage {
    */
   public boolean hasQuery(String query) {
     return queryStrings.containsKey(query);
+  }
+
+  /**
+   * Retrieves this request's HTTP protocol.
+   *
+   * @return this request's HTTP protocol.
+   */
+  public String getProtocol() {
+    return this.protocol;
   }
 }
