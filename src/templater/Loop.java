@@ -1,15 +1,15 @@
 package templater;
 
 public class Loop extends Node {
-  private String target;
+  private StringResolvable target;
   private String loopVariable;
 
-  public Loop(String target, String loopVariable) {
+  public Loop(StringResolvable target, String loopVariable) {
     this.target = target;
     this.loopVariable = loopVariable;
   }
 
-  public String getTarget() {
+  public StringResolvable getTarget() {
     return this.target;
   }
 
