@@ -165,7 +165,7 @@ public class WebServer {
    * anything 0-unlimited and 1-unlimited, respectively.
    * The hyphen {@code -} and dot {@code .} character are
    * interpreted literally.
-   * All other symbols will be their regex counterparts
+   * All other symbols will be their regex counterparts.
    * <p>
    * All route will be matched as is, from start to end (akin
    * to placing {@code ^$} symbols). To match every file under
