@@ -332,7 +332,7 @@ public class WebServer {
    *         {@code null} if none exists.
    */
   private RouteTarget getRoute(Request request) {
-    String route = request.getFullPath();
+    String route = request.getPath();
     for (Pattern routePattern : this.routes.keySet()) {
       Matcher matcher = routePattern.matcher(route);
       if (matcher.matches()) {
