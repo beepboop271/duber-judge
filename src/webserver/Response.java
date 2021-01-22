@@ -107,6 +107,75 @@ public class Response extends HttpMessage {
   }
 
   /**
+   * Generates a {@code 200 OK} html HTTP response with the
+   * appropriate headers, and informing the browser not to
+   * cache this page.
+   *
+   * @param html The html file to send in the Response.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okNoCacheHtml(String html) {
+    Response response = Response.okHtml(html);
+    response.headers.put("Cache-Control", "no-store, max-age=0");
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 200 OK} html HTTP response with the
+   * appropriate headers, and sets the specified cookie in the
+   * as a session cookie, which is removed upon client
+   * shutdown.
+   *
+   * @param html  The html file to send in the Response.
+   * @param name  The name of the cookie.
+   * @param value The value of the cookie.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okSetCookieHtml(
+    String html,
+    String name,
+    String value
+  ) {
+    if (name.equals("") || value.equals("")) {
+      throw new IllegalArgumentException("The provided cookie is invalid.");
+    }
+
+    Response response = Response.okHtml(html);
+    response.headers.put("Set-Cookie", name+"="+value);
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 200 OK} html HTTP response with the
+   * appropriate headers, and sets the specified cookie in the
+   * as a cookie, with the provided max age.
+   *
+   * @param html   The html file to send in the Response.
+   * @param name   The name of the cookie.
+   * @param value  The value of the cookie.
+   * @param maxAge The amount of time for the cookie to live,
+   *               in seconds.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okSetCookieHtml(
+    String html,
+    String name,
+    String value,
+    int maxAge
+  ) {
+    if (name.equals("") || value.equals("")) {
+      throw new IllegalArgumentException("The provided cookie is invalid.");
+    }
+
+    Response response = Response.okHtml(html);
+    response.headers.put("Set-Cookie", name+"="+value+"; Max-Age="+maxAge);
+
+    return response;
+  }
+
+  /**
    * Constructs a new Response, without any body or headers.
    * <p>
    * The body will be initialized as an empty string.
@@ -245,7 +314,7 @@ public class Response extends HttpMessage {
     responseString.append(this.getHeadersString());
 
     if (this.body != "") {
-      responseString.append(this.getBody()+"\r\n");
+      responseString.append(this.getBody());
     }
 
     return responseString.toString();

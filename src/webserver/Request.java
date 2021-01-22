@@ -66,7 +66,7 @@ public class Request extends HttpMessage {
     this.queryStrings = new HashMap<>();
     this.params = new HashMap<>();
 
-    this.initializePath(fullPath);
+    this.initializePathAndQueries(fullPath);
   }
 
   /**
@@ -89,7 +89,7 @@ public class Request extends HttpMessage {
     this.queryStrings = new HashMap<>();
     this.params = new HashMap<>();
 
-    this.initializePath(fullPath);
+    this.initializePathAndQueries(fullPath);
   }
 
   /**
@@ -187,7 +187,7 @@ public class Request extends HttpMessage {
     this.queryStrings = new HashMap<>();
     this.params = new HashMap<>();
 
-    this.initializePath(fullPath);
+    this.initializePathAndQueries(fullPath);
   }
 
   /**
@@ -230,7 +230,7 @@ public class Request extends HttpMessage {
     this.queryStrings = new HashMap<>();
     this.params = new HashMap<>();
 
-    this.initializePath(fullPath);
+    this.initializePathAndQueries(fullPath);
   }
 
   /**
@@ -241,7 +241,7 @@ public class Request extends HttpMessage {
    *                             parsed as a request status
    *                             path.
    */
-  private void initializePath(String fullPath) throws HttpSyntaxException {
+  private void initializePathAndQueries(String fullPath) throws HttpSyntaxException {
     try {
       URI pathUri = new URI(fullPath);
       if (pathUri.getQuery() != null) {
@@ -310,16 +310,17 @@ public class Request extends HttpMessage {
    * Retrieves a specific param's value, or {@code null} if
    * the param does not exist.
    * <p>
-   * The keys of the param may come from regex capturing groups,
-   * such as {@code *, (group)}, and are denoted with incrementing keys
-   * like {@code "0", "1", "2"} so results are retrieved using
-   * {@code .getParam("0")}.
+   * The keys of the param may come from regex capturing
+   * groups, such as {@code *, (group)}, and are denoted with
+   * incrementing keys like {@code "0", "1", "2"}. Results are
+   * retrieved using {@code .getParam("0")}.
    * <p>
-   * Another option is to specify param keys using {@code :paramName}
-   * and the value may be retrieved using {@code .getParam("paramName")}.
+   * Another option is to specify param keys using
+   * {@code :paramName} and the value may be retrieved using
+   * {@code .getParam("paramName")}.
    *
-   * @param key             The key of the param.
-   * @return                The value of the param.
+   * @param key The key of the param.
+   * @return The value of the param.
    */
   public String getParam(String key) {
     return this.params.get(key);
@@ -328,16 +329,17 @@ public class Request extends HttpMessage {
   /**
    * Sets a specific param's value.
    * <p>
-   * The keys of the param may come from regex capturing groups,
-   * such as {@code *, (group)}, and are denoted with incrementing keys
-   * like {@code "0", "1", "2"} so params will be set using
-   * {@code .setParam("0", "value")}.
+   * The keys of the param may come from regex capturing
+   * groups, such as {@code *, (group)}, and are denoted with
+   * incrementing keys like {@code "0", "1", "2"}. Params will
+   * be set using {@code .setParam("0", "value")}.
    * <p>
-   * Another option is to specify param keys using {@code :paramName}
-   * and the param may be set using {@code .setParam("paramName", "value")}.
+   * Another option is to specify param keys using
+   * {@code :paramName} and the param may be set using
+   * {@code .setParam("paramName", "value")}.
    *
-   * @param key             The key of the param.
-   * @param value           The value of the param.
+   * @param key   The key of the param.
+   * @param value The value of the param.
    */
   public void setParam(String key, String value) {
     this.params.put(key, value);

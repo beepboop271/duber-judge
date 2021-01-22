@@ -22,12 +22,26 @@ import java.util.regex.Pattern;
 import webserver.webcache.WebLruCache;
 
 /**
- * [Insert description].
+ * A server designed to route requests to the correct
+ * handler and serve responses back to the connecting
+ * client.
+ * <p>
+ * Routes to handlers can be set by calling
+ * {@link #route(String, RouteTarget)}. Upon a received
+ * request, the server will attempt to match the path to a
+ * {@code RouteTarget} to handle. More details about routing
+ * can be found in {@link #route(String, RouteTarget)}.
+ * <p>
+ * This server also serves connections using a
+ * ThreadPoolExecutor with a min and max bound, to avoid
+ * spawning an unreasonable amount of threads, but to also
+ * have a minimum amount of threads to serve requests
+ * without spawning new threads.
  * <p>
  * Created <b> 2020-12-28 </b>
  *
- * @since 0.0.1
- * @version 0.0.1
+ * @since 0.0.4
+ * @version 0.0.4
  * @author Joseph Wang, Shari Sun
  */
 public class WebServer {
@@ -45,8 +59,8 @@ public class WebServer {
   /**
    * The param keys of each route.
    *
-   * @see        Request#setParam(String, String)
-   * @see        Request#getParam(String)
+   * @see Request#setParam(String, String)
+   * @see Request#getParam(String)
    */
   private HashMap<Pattern, ArrayList<String>> routeParamKeys;
   /** The web cache to store cached pages. */
@@ -143,29 +157,27 @@ public class WebServer {
   }
 
   /**
-   * Checks whether this is a valid character to be part
-   * of a named parameter.
+   * Checks whether this is a valid character to be part of a
+   * named parameter.
    *
-   * @param character     The character to check for.
-   * @return              Whether or not it's valid.
+   * @param character The character to check for.
+   * @return Whether or not it's valid.
    */
   private boolean validParamChar(char character) {
-    return (
-         (character >= 'a' && character <= 'z')
+    return ((character >= 'a' && character <= 'z')
       || (character >= 'A' && character <= 'Z')
       || (character >= '0' && character <= '9')
-      || (character == '_')
-      );
+      || (character == '_'));
   }
 
   /**
    * Adds a new routing to a {@code RouteTarget}.
    * <p>
-   * {@code *} and {@code +} are specifically used as wildcards matching
-   * anything 0-unlimited and 1-unlimited, respectively.
-   * The hyphen {@code -} and dot {@code .} character are
-   * interpreted literally.
-   * All other symbols will be their regex counterparts.
+   * {@code *} and {@code +} are specifically used as
+   * wildcards matching anything 0-unlimited and 1-unlimited,
+   * respectively. The hyphen {@code -} and dot {@code .}
+   * character are interpreted literally. All other symbols
+   * will be their regex counterparts.
    * <p>
    * All route will be matched as is, from start to end (akin
    * to placing {@code ^$} symbols). To match every file under
@@ -176,10 +188,10 @@ public class WebServer {
    * are individually parsed separately and can be found in
    * the request object.
    * <p>
-   * If the same path is routed twice, the latter path will override
-   * the previous route, and all parameters will override as well.
-   * {@code /problems/:problemId} and {@code /problems/:id} will route
-   * to the same path.
+   * If the same path is routed twice, the latter path will
+   * override the previous route, and all parameters will
+   * override as well. {@code /problems/:problemId} and
+   * {@code /problems/:id} will route to the same path.
    * <p>
    * A brief example:
    *
@@ -189,49 +201,52 @@ public class WebServer {
    * server.route("/static", new StaticHandler());
    *
    * // This will match
-   * // /problems                 {0: null}
-   * // /problems/problem1        {0: problem1}
-   * // /problems/problem2/123    {0: problem2/123}
+   * // /problems {0: null}
+   * // /problems/problem1 {0: problem1}
+   * // /problems/problem2/123 {0: problem2/123}
    * server.route("/problems/*?", new ProblemHandler());
    *
    * // Named parameters
-   * // /problems/1234abc         {problemId: 1234abc}
+   * // /problems/1234abc {problemId: 1234abc}
    * server.route("/problems/:problemId", new ProblemHander());
    *
    * // Optional named parameters
-   * // /problems/1234abc         {problemId: 1234abc}
-   * // /problems/                {problemId: null}
+   * // /problems/1234abc {problemId: 1234abc}
+   * // /problems/ {problemId: null}
    * server.route("/problems/:problemId?", new ProblemHander());
    * </pre>
    *
-   * @param route                    The route associated with the
-   *                                 {@code RouteTarget}.
-   * @param target                   The RouteTarget to handle the request.
-   * @see                            RouteTarget
-   * @see                            Request#getParam(String)
-   * @throws PatternSyntaxException  When the regex path is invalid.
+   * @param route  The route associated with the
+   *               {@code RouteTarget}.
+   * @param target The RouteTarget to handle the request.
+   * @see RouteTarget
+   * @see Request#getParam(String)
+   * @throws PatternSyntaxException When the regex path is
+   *                                invalid.
    */
   public void route(String route, RouteTarget target) {
     StringBuilder cleanedRoute = new StringBuilder('^');
     char charAt = '/';
-    //a buffer to hold the named params
+    // a buffer to hold the named params
     StringBuilder paramName = new StringBuilder();
-    //the incremental keys for the params
+    // the incremental keys for the params
     int keyI = 0;
-    //a list of param keys, including both named and incremental/automatic
+    // a list of param keys, including both named and
+    // incremental/automatic
     ArrayList<String> paramKeys = new ArrayList<>();
-    //indicating the following characters are parameter names
+    // indicating the following characters are parameter names
     boolean isParamName = false;
 
     for (int i = 0; i < route.length(); i++) {
       charAt = route.charAt(i);
 
-      //if this character is part of a user-defined named parameter
+      // if this character is part of a user-defined named
+      // parameter
       if (isParamName && this.validParamChar(charAt)) {
         paramName.append(charAt);
       } else {
-        //if this character no longer belong to the param name,
-        //push the param name to the end of the paramKeys list
+        // if this character no longer belong to the param name,
+        // push the param name to the end of the paramKeys list
         if (isParamName) {
           isParamName = false;
           paramKeys.add(paramName.toString());
@@ -255,16 +270,19 @@ public class WebServer {
             cleanedRoute.append("(.+)");
             paramKeys.add(String.valueOf(keyI++));
             break;
-          //assign keys to user defined capture groups
+          // assign keys to user defined capture groups
           case '(':
             cleanedRoute.append('(');
             paramKeys.add(String.valueOf(keyI++));
             break;
-          //named parameter
-          //it will be treated as a literal unless there is a character/number/underscore after it
+          // named parameter
+          // it will be treated as a literal unless there is a
+          // character/number/underscore after it
           case ':':
-            if (i+1 < route.length() && this.validParamChar(route.charAt(i+1))) {
-              paramName.setLength(0); //clears the old param name
+            if (
+              i+1 < route.length() && this.validParamChar(route.charAt(i+1))
+            ) {
+              paramName.setLength(0); // clears the old param name
               isParamName = true;
             } else {
               cleanedRoute.append(charAt);
@@ -278,17 +296,19 @@ public class WebServer {
 
     }
 
-    //if this character no longer belong to the param name,
-    //push the param name to the end of the paramKeys list
-    //chances are the param key may go all the way until the end
-    //of the route name so added another check just in case
+    // if this character no longer belong to the param name,
+    // push the param name to the end of the paramKeys list
+    // chances are the param key may go all the way until the
+    // end
+    // of the route name so added another check just in case
     if (isParamName) {
       isParamName = false;
       paramKeys.add(paramName.toString());
       cleanedRoute.append("([^/]+?)");
     }
 
-    //make sure that if the path didn't end with /, / will be matched as well
+    // make sure that if the path didn't end with /, / will be
+    // matched as well
     if (charAt != '/') {
       cleanedRoute.append("(?=/|$)");
     }
@@ -307,7 +327,7 @@ public class WebServer {
    * It also adds the path parameters specified in
    * {@link #route(String, RouteTarget)} if any.
    *
-   * @param request            The original request.
+   * @param request The original request.
    * @return the proper route target to handle the request, or
    *         {@code null} if none exists.
    */
@@ -344,13 +364,33 @@ public class WebServer {
    * @author Joseph Wang
    */
   private class ConnectionHandler implements Runnable {
+    /**
+     * The default amount of time to wait before terminating a
+     * connection.
+     */
     public static final int DEFAULT_TIMEOUT_MS = 15_000;
-    public static final int MAX_REQ = 1000;
+    /**
+     * The default amount of requests that can be sent on one
+     * connection.
+     */
+    public static final int MAX_REQ = 100;
 
+    /**
+     * The amount of time to wait before terminating a
+     * connection.
+     */
     private int timeoutMs = ConnectionHandler.DEFAULT_TIMEOUT_MS;
+    /**
+     * The amount of requests that can be sent on one
+     * connection.
+     */
     private int maxReq = ConnectionHandler.MAX_REQ;
+    /** When the connection was opened, in ms. */
     private long connectionOpenTime;
+    /** The current amount of requests handled. */
     private int curReq;
+    /** If the connection should be closed immedietely. */
+    private boolean closeImmedietely = false;
 
     /** The client to handle. */
     private Socket client;
@@ -407,8 +447,10 @@ public class WebServer {
         // Keep this connection open for as long as we need it in
         // case keep-alive header exists
         do {
+          // Create a new request builder for each request
           RequestBuilder rb = new RequestBuilder();
 
+          // Wait for initial request
           boolean waitingForConnection = true;
           while (waitingForConnection) {
             if (this.input.ready()) {
@@ -453,6 +495,9 @@ public class WebServer {
      * Determines whether or not to close the current open
      * connection with the client, based on {@code Connection}
      * and {@code Keep-Alive} headers.
+     * <p>
+     * If the headers do not exist, the connection persists for
+     * the default amount of time or requests.
      *
      * @return true if the connection with the client should be
      *         terminated.
@@ -468,7 +513,9 @@ public class WebServer {
         return true;
       }
 
-      return false;
+      // If neither of the above are true, just make sure we don't
+      // need to close immedietely
+      return this.closeImmedietely;
     }
 
     /**
@@ -478,7 +525,8 @@ public class WebServer {
      * This method will use {@code Connection} and
      * {@code Keep-Alive} headers to determine how to manage the
      * connection. If these headers are not present, the
-     * connection will persist for the default amount of time.
+     * connection will persist for the default amount of time or
+     * requests.
      * <p>
      * Refer to
      * <a href="https://tools.ietf.org/html/rfc2616">RFC
@@ -486,9 +534,8 @@ public class WebServer {
      *
      * @param res The response to use to parse information about
      *            the connection.
-     * @throws HttpSyntaxException if the {@code Connection} and
-     *                             {@code Keep-Alive} headers
-     *                             are invalid.
+     * @throws HttpSyntaxException if the {@code Keep-Alive}
+     *                             header is invalid.
      */
     private void initializeConnectionInformation(Request res)
       throws HttpSyntaxException {
@@ -500,7 +547,9 @@ public class WebServer {
       // Connection header exists
       String connectionValue = res.getHeader("Connection");
 
+      // Return if we are to close immedietely
       if (connectionValue.contains("close")) {
+        this.closeImmedietely = true;
         return;
 
       } else if (connectionValue.contains("keep-alive")) {
@@ -517,6 +566,8 @@ public class WebServer {
           }
         }
       }
+      // If connection has neither close or keep-alive, use
+      // default
     }
 
     /**
@@ -540,8 +591,14 @@ public class WebServer {
         while (this.input.ready()) {
           String reqString = input.readLine();
           rb.append(reqString+"\r\n");
+
+          // Make sure to exit if we complete the request
+          if (rb.hasCompletedRequest()) {
+            return;
+          }
         }
 
+        // If this loops for long enough, return early
         if (rb.shouldTimeout()) {
           return;
         }
@@ -562,15 +619,28 @@ public class WebServer {
       }
     }
 
-    // TODO: find the header that affects cache time
     /**
-     * Attempts to store the provided request body in the web
+     * Attempts to store the provided response body in the web
      * cache, for later retrieval.
+     * <p>
+     * If the response {@code Cache-Control} header contains
+     * {@code no-store} or {@code no-cache}, the body will not
+     * be cached.
      *
      * @param fullPath The path to store the body under.
      * @param response The response to store.
      */
     private void attemptCacheStorage(String fullPath, Response response) {
+      if (response.hasHeader("Cache-Control")) {
+        // Do not cache if it is labelled as "do not cache"
+        String cacheControl = response.getHeader("Cache-Control");
+        if (
+          cacheControl.contains("no-store") || cacheControl.contains("no-cache")
+        ) {
+          return;
+        }
+      }
+
       if (!cache.checkCache(fullPath)) {
         cache.putCache(response.getBody(), fullPath, 60);
       }
