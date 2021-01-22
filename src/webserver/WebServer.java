@@ -197,7 +197,7 @@ public class WebServer {
    * // Named parameters
    * // /problems/1234abc         {problemId: 1234abc}
    * server.route("/problems/:problemId", new ProblemHander());
-   * 
+   *
    * // Optional named parameters
    * // /problems/1234abc         {problemId: 1234abc}
    * // /problems/                {problemId: null}
@@ -291,8 +291,6 @@ public class WebServer {
     //make sure that if the path didn't end with /, / will be matched as well
     if (charAt != '/') {
       cleanedRoute.append("(?=/|$)");
-    } else {
-      cleanedRoute.append('/');
     }
     Pattern routePattern = Pattern.compile(cleanedRoute.toString());
 

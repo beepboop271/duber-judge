@@ -64,6 +64,7 @@ public class Request extends HttpMessage {
     this.fullPath = fullPath;
     this.protocol = protocol;
     this.queryStrings = new HashMap<>();
+    this.params = new HashMap<>();
 
     this.initializePath(fullPath);
   }
@@ -86,6 +87,7 @@ public class Request extends HttpMessage {
     this.fullPath = fullPath;
     this.protocol = protocol;
     this.queryStrings = new HashMap<>();
+    this.params = new HashMap<>();
 
     this.initializePath(fullPath);
   }
