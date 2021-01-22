@@ -1,6 +1,7 @@
 package entities;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 /**
  * An entity designed to represent specific problems.
@@ -39,6 +40,8 @@ public abstract class Problem {
   /** This problem's number of cleared submissions. */
   private int clearedSubmissions;
 
+  private ArrayList<Entity<Batch>> batches;
+
   /**
    * Constructs a new Problem.
    *
@@ -54,6 +57,7 @@ public abstract class Problem {
    * @param memoryLimitKb      this problem's memory limit, in kilobytes.
    * @param outputLimitKb      this problem's output limit, in kilobytes.
    * @param numSubmissions     this problem's amount of total submissions.
+   * @param clearedSubmissions this problem's amount of cleared submissions.
    */
   public Problem(
     ProblemType problemType,
@@ -67,7 +71,8 @@ public abstract class Problem {
     int timeLimitMillis,
     int memoryLimitKb,
     int outputLimitKb,
-    int numSubmissions
+    int numSubmissions,
+    int clearedSubmissions
   ) {
     this.problemType = problemType;
     this.category = category;
@@ -81,7 +86,58 @@ public abstract class Problem {
     this.memoryLimitKb = memoryLimitKb;
     this.outputLimitKb = outputLimitKb;
     this.numSubmissions = numSubmissions;
-    this.clearedSubmissions = 0;
+    this.clearedSubmissions = clearedSubmissions;
+  }
+
+
+  /**
+   * Constructs a new Problem.
+   *
+   * @param problemType        the type of this problem.
+   * @param category           the category this problem is in.
+   * @param creatorId          the id of the creator of this problem.
+   * @param createdAt          the time this problem was created.
+   * @param lastModifiedAt     the time this problem was last modified.
+   * @param title              the title of this problem.
+   * @param description        the description of this problem.
+   * @param points             the amount of points this problem is worth.
+   * @param timeLimitMillis    this problem's time limit, in milliseconds.
+   * @param memoryLimitKb      this problem's memory limit, in kilobytes.
+   * @param outputLimitKb      this problem's output limit, in kilobytes.
+   * @param numSubmissions     this problem's amount of total submissions.
+   * @param clearedSubmissions this problem's amount of cleared submissions.
+   * @param batches            this batches in this problem.
+   */
+  public Problem(
+    ProblemType problemType,
+    Category category,
+    long creatorId,
+    Timestamp createdAt,
+    Timestamp lastModifiedAt,
+    String title,
+    String description,
+    int points,
+    int timeLimitMillis,
+    int memoryLimitKb,
+    int outputLimitKb,
+    int numSubmissions,
+    int clearedSubmissions,
+    ArrayList<Entity<Batch>> batches
+  ) {
+    this.problemType = problemType;
+    this.category = category;
+    this.creatorId = creatorId;
+    this.createdAt = createdAt;
+    this.lastModifiedAt = lastModifiedAt;
+    this.title = title;
+    this.description = description;
+    this.points = points;
+    this.timeLimitMillis = timeLimitMillis;
+    this.memoryLimitKb = memoryLimitKb;
+    this.outputLimitKb = outputLimitKb;
+    this.numSubmissions = numSubmissions;
+    this.clearedSubmissions = clearedSubmissions;
+    this.batches = batches;
   }
 
   /**
@@ -199,6 +255,14 @@ public abstract class Problem {
    */
   public int getOutputLimitKb() {
     return this.outputLimitKb;
+  }
+
+  public void setBatches(ArrayList<Entity<Batch>> batches) {
+    this.batches = batches;
+  }
+
+  public ArrayList<Entity<Batch>> getBatches() {
+    return this.batches;
   }
 
 }

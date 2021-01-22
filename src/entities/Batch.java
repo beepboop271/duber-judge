@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.ArrayList;
+
 /**
  * An entity designed to represent a batch of test cases.
  * <p>
@@ -20,6 +22,8 @@ public class Batch {
   /** The number of points the batch gives. */
   private int points;
 
+  private ArrayList<Entity<Testcase>> testcases;
+
   /**
    * Constructs a new Batch.
    *
@@ -33,6 +37,30 @@ public class Batch {
     this.creatorId = creatorId;
     this.sequence = sequence;
     this.points = points;
+  }
+
+
+  /**
+   * Constructs a new Batch.
+   *
+   * @param problemId the id of the problem that the batch belongs to
+   * @param creatorId the id of the creator of this batch
+   * @param sequence  the sequence number of the batch.
+   * @param points    the number of points the batch gives.
+   * @param testcases The testcases.
+   */
+  public Batch(
+    long problemId,
+    long creatorId,
+    int sequence,
+    int points,
+    ArrayList<Entity<Testcase>> testcases
+  ) {
+    this.problemId = problemId;
+    this.creatorId = creatorId;
+    this.sequence = sequence;
+    this.points = points;
+    this.testcases = testcases;
   }
 
   /**
@@ -64,6 +92,11 @@ public class Batch {
    */
   public int getPoints() {
     return this.points;
+  }
+
+
+  public ArrayList<Entity<Testcase>> getTestcases() {
+    return this.testcases;
   }
 
 }

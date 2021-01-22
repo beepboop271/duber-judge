@@ -1,0 +1,104 @@
+/ -> /contests
+  - createSession (first time visiting the site no matter what route)
+/login
+  - login
+  - updateSession
+/signup
+  - createUser
+  - updateSession
+/leaderboard
+  - getLeaderboard
+
+
+
+/profile -> /profile/:username
+  - default user
+/profile/:username -> /profile/:username?data=submissions
+  - lists out their top submissions
+  - getSubmissionCount
+/profile/:username?data=submissions
+  - getSubmissions
+/profile/:username?data=problems
+  - getProblems
+/profile/:username?data=contests
+  - getParticipatedContests
+
+/profile/:username/edit
+  - isSameUser
+  - updateUserProfile
+  - updateUserPassword
+
+
+/contests
+  - getContests
+  - getActiveContests
+/contest/:contestId -> /contest/:contestId/problems
+  - getContest
+/contest/:contestId/problems
+  - getProblems
+/contest/:contestId/problem/:problemId
+/contest/:contestId/problem/:problemId/submit
+/contest/:contestId/problem/:problemId/submissions?userid=id
+
+/contest/:contestId/leaderboard
+  - getContestLeaderboard
+
+
+
+
+/problems
+  - getPracticeProblems
+/problems?category=categoryName
+  - getPracticeProblemsByCategory
+/problems?creator=creatorName
+  - getPracticeProblemsByCreator
+/problems?sort=points
+  - getPracticeProblemsByPoints
+/problems?sort=numSubmissions
+  - getPracticeProblemsByNumSubmissions
+
+/problem/:problemId
+  - requestClarification
+/problem/:problemId/submit
+  - submitSolution
+
+
+/problem/:problemId/leaderboard
+  - getProblemLeaderboard
+/problem/:problemId/submissions
+  - getSubmissions
+/problem/:problemId/submissions?userid=id
+  - getProblemSubmissions
+/problem/:problemId/submissions/:submissionId
+
+
+
+/admin/clarifications
+  - getUnresolvedClarifications
+/admin/clarifications/:clarificationId
+  - clarifyProblem
+
+/admin/users
+  - getUsers
+  - removeUser
+/admin/contests
+  - createContest
+  - deleteContest
+/admin/contest/:contestId
+  - updateContest
+  - deleteContest
+  - kickUserFromContest
+/admin/problems
+  - createProblem
+  - deleteProblem
+/admin/problem/:problemId
+  - updateProblem
+  - deleteProblem
+/admin/problem/:problemId/testcases
+  - createBatch
+  - createTestcase
+  - deleteBatch
+  - deleteTestcase
+/admin/problem/:problemId/testcases/:testcaseId
+  - updateTestcase
+  - deleteTestcase

@@ -15,7 +15,8 @@ import entities.Language;
 import entities.PracticeProblem;
 import entities.Problem;
 import entities.Submission;
-// import judge.Judger;
+import judge.Judger;
+import entities.SubmissionResult;
 
 /**
  * [description]
@@ -56,7 +57,7 @@ public class ProblemService {
     return false;
   }
 
-  public Submission submitSolution(
+  public SubmissionResult submitSolution(
     long userId,
     long problemId,
     String code,
@@ -65,17 +66,15 @@ public class ProblemService {
     if (!this.canSubmit(userId, problemId)) {
       throw new InsufficientPermissionException();
     }
-    Submission submission =
-      new Submission(
-        problemId,
-        userId,
-        code,
-        language,
-        new Timestamp(System.currentTimeMillis())
-      );
-    return submission;
-    //TODO: uncomment this line
-    // return Judger.judge(submission);
+    Submission submission = new Submission(
+      problemId,
+      userId,
+      code,
+      language,
+      new Timestamp(System.currentTimeMillis())
+    );
+
+    return Judger.judge(submission);
   }
 
   public void requestClarification(long userId, long problemId, String message)
@@ -108,7 +107,6 @@ public class ProblemService {
     int index,
     int numProblems
   ) {
-    return this.submissionDao
-      .getByProblemAndStatus(problemId, status, index, numProblems);
+    return this.submissionDao.getByProblemAndStatus(problemId, status, index, numProblems);
   }
 }

@@ -10,12 +10,14 @@ import java.util.ArrayList;
 
 import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
+import entities.Batch;
 import entities.Category;
 import entities.ContestProblem;
 import entities.Entity;
 import entities.PracticeProblem;
 import entities.Problem;
 import entities.ProblemType;
+import entities.Testcase;
 import entities.entity_fields.ProblemField;
 
 /**
@@ -42,6 +44,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
       problem.getMemoryLimitKb(),
       problem.getOutputLimitKb(),
       problem.getNumSubmissions(),
+      problem.getClearedSubmissions(),
       ""
     );
   }
@@ -292,6 +295,89 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
     return problem;
   }
 
+
+  public Entity<Problem> getNested(long id) throws RecordNotFoundException {
+    String sql =
+      "SELECT problems.*, batches.*, testcases.*"
+      +"  FROM testcases"
+      +"    INNER JOIN ("
+      +"      SELECT problems.*, batches.*"
+      +"      FROM problems INNER JOIN batches ON problems.id = batches.problem_id"
+      +"      WHERE problems.id = ?"
+      +"    ) ON testcases.batch_id = batches.id"
+      +"  ORDER BY batches.id;";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    Entity<Problem> problem = null;
+    ArrayList<Entity<Batch>> batches = new ArrayList<>();
+    ArrayList<Entity<Testcase>> testcases = new ArrayList<>();
+
+    long batchId = -1;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, id);
+
+      result = ps.executeQuery();
+      while (result.next()) {
+        //new batch
+        if (batchId != result.getLong("batches.id")) {
+          if (batchId != -1) {
+            batches.add(new Entity<Batch>(
+              batchId,
+              new Batch(
+                result.getLong("batches.problem_id"),
+                result.getLong("batches.creator_id"),
+                result.getInt("batches.sequence"),
+                result.getInt("batches.points"),
+                testcases
+              ))
+            );
+            testcases.clear();
+          }
+          batchId = result.getLong("batches.id");
+        }
+
+        testcases.add(new Entity<Testcase>(
+          result.getLong("testcases.id"),
+          new Testcase(
+            result.getLong("testcases.batch_id"),
+            result.getLong("testcases.creator_id"),
+            result.getInt("testcases.sequence"),
+            result.getString("testcases.input"),
+            result.getString("testcases.output")
+          ))
+        );
+
+      }
+      //last batch
+      batches.add(new Entity<Batch>(
+        batchId,
+        new Batch(
+          result.getLong("batches.problem_id"),
+          result.getLong("batches.creator_id"),
+          result.getInt("batches.sequence"),
+          result.getInt("batches.points"),
+          testcases
+        ))
+      );
+
+      result.last();
+      problem = this.getProblemFromResultSet(result);
+      problem.getContent().setBatches(batches);
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return problem;
+  }
+
   @Override
   public ArrayList<Entity<Problem>> getList(long[] ids) {
     String sql = String.format(
@@ -350,7 +436,8 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
             result.getInt("output_limit_kb"),
             result.getInt("num_submissions"),
             result.getInt("submissions_limit"),
-            result.getLong("contest_id")
+            result.getLong("contest_id"),
+            result.getInt("cleared_submissions")
           )
         );
         break;
@@ -370,6 +457,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
             result.getInt("memory_limit_kb"),
             result.getInt("output_limit_kb"),
             result.getInt("num_submissions"),
+            result.getInt("cleared_submissions"),
             result.getString("editorial")
           )
         );

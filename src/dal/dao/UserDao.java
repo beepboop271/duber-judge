@@ -266,6 +266,33 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
     return users;
   }
 
+  public ArrayList<Entity<User>> getUsers(int index, int numUsers) {
+    String sql = String.format(
+                "SELECT * FROM users"
+                +"ORDER BY created_at DESC"
+                +"LIMIT %s OFFSET %s", numUsers, index);
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<User>> users = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        users.add(this.getUserFromResultSet(results));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return users;
+  }
+
   private Entity<User> getUserFromResultSet(ResultSet result) throws SQLException {
     return new Entity<User>(
       result.getLong("id"),

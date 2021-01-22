@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 
@@ -64,8 +65,8 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
 
   @Override
   public long add(Clarification data) {
-    String sql = "INSERT INTO clarifications(problem_id, user_id, message, response)"
-                +"VALUES (?, ?, ?, ?);";
+    String sql = "INSERT INTO clarifications(problem_id, user_id, message, response, created_at)"
+                +"VALUES (?, ?, ?, ?, ?);";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -81,7 +82,8 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
       } else {
         ps.setString(4, data.getResponse());
       }
-      
+      ps.setString(5, data.getCreatedAt().toString());
+
       ps.executeUpdate();
       key = ps.getGeneratedKeys();
       key.next();
@@ -168,7 +170,8 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
         result.getLong("problem_id"),
         result.getLong("user_id"),
         result.getString("message"),
-        result.getString("response")
+        result.getString("response"),
+        Timestamp.valueOf(result.getString("created_at"))
       )
     );
   }
@@ -184,6 +187,45 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
       ps = connection.prepareStatement(sql);
       ps.setLong(1, problemId);
       ps.setLong(2, userId);
+
+      result = ps.executeQuery();
+      while (result.next()) {
+
+        clarifications.add(this.getClarificationFromResultSet(result));
+      }
+
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return clarifications;
+  }
+
+  public ArrayList<Entity<Clarification>> getUnresolvedClarifications(
+    long userId,
+    int index,
+    int numClarifications
+  ) {
+    String sql = String.format(
+      "SELECT clarifications.*"
+      +"  FROM clarifications INNER JOIN problems"
+      +"    ON clarifications.problem_id = problems.id"
+      +"    WHERE problems.creator_id = ?"
+      +"ORDER BY clarifications.created_at ASC"
+      +"LIMIT %s OFFSET %s;", numClarifications, index);
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    ArrayList<Entity<Clarification>> clarifications = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
 
       result = ps.executeQuery();
       while (result.next()) {

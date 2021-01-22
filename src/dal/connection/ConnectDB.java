@@ -118,6 +118,7 @@ public class ConnectDB {
         +");",
       "CREATE TABLE IF NOT EXISTS clarifications ("
         +"id            INTEGER PRIMARY KEY,"
+        +"created_at    TEXT NOT NULL,"
         +"problem_id    INTEGER NOT NULL,"
         +"user_id       INTEGER NOT NULL,"
         +"message       TEXT NOT NULL,"

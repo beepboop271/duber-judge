@@ -1,52 +1,59 @@
 a list of methods:
 AdminService
-  - createContest
-  - updateContest
-  - deleteContest
-  - kickUserFromContest
-  - createProblem
+  o- removeUser
+  o- getUsers
+  o- createContest
+  o- updateContest
+  o- deleteContest
+  o- kickUserFromContest
+  o- createProblem
   - validateProblem
-  - updateProblem
-  - deleteProblem
+  o- updateProblem
+  o- deleteProblem
   - validateBatch
-  - createBatch
-  - updateBatch
-  - deleteBatch
+  o- createBatch
+  o- updateBatch
+  o- deleteBatch
   - validateTestcase
-  - createTestcase
-  - updateTestcase
-  - deleteTestcase
-  - clarifyProblem
-  - validate <- maybe move to handlers
+  o- createTestcase
+  o- updateTestcase
+  o- deleteTestcase
+  o- clarifyProblem
   - validateContest
+  o- getUnresolvedClarifications
 
 ContestService
   - validateContestSession
   - startContest
+  - getProblems
+  o- getContest
+  - getParticipantSessions
+  - updateUserScore
+  - updateUserStatus
 
 ProblemService
   - canSubmit
-  - submitSolution
-  - requestClarification
-  - getSubmissions
+  o- submitSolution
+  o- requestClarification
+  o- getSubmissions
 
 PublicService
-  - getContests
-  - getLeaderboard
-  - getContestLeaderboard
-  - getProblemLeaderboard
-  - getPracticeProblems
-  - getPracticeProblemsByCategory
-  - getPracticeProblemsByCreator
-  - getPracticeProblemsByPoints
-  - getPracticeProblemsByNumSubmissions
+  o- getContests
+  o- getLeaderboard
+  o- getContestLeaderboard
+  o- getProblemLeaderboard
+  o- getPracticeProblems
+  o- getPracticeProblemsByCategory
+  o- getPracticeProblemsByCreator
+  o- getPracticeProblemsByPoints
+  o- getPracticeProblemsByNumSubmissions
 
 SessionService
   - generateToken
   - createSession(userId)
-  - createSession()
+  o- createSession()
   - getSession
-  - updateSession
+  o- updateSession
   - updateLastActive
   - deleteFromBefore
 
@@ -55,16 +62,17 @@ UserService
  ✓ - hashPassword
  ✓ - validatePassword(username)
  ✓ - validatePassword(password)
-  - validateUser
- ✓ - createUser
- ✓ - createAdmin
- ✓ - login
-  - updateUserProfile
-  - updateUserPassword
+ ✓ - validateUser
+ ✓ o- createUser
+ ✓ o- createAdmin
+ ✓ o- login
+  o- updateUserProfile
+  o- updateUserPassword
+  o- isSameUser
   - isAdmin
-  - getProblems <- problems the user has attempted, not contest
-  - getSubmissions <- all submissions
-  - getProblemSubmissions <- submission by problem
-  - getActiveContests
-  - getParticipatedContests
-  - getSubmissionCount
+  o- getProblems <- problems the user has attempted, not contest
+  o- getSubmissions <- all submissions
+  o- getProblemSubmissions <- submission by problem
+  o- getActiveContests
+  o- getParticipatedContests
+  o- getSubmissionCount

@@ -141,6 +141,14 @@ public class UserService {
     return id;
   }
 
+  public boolean isSameUser(long userId, String username) {
+    try {
+      return this.userDao.get(userId).getContent().getUsername().equals(username);
+    } catch (RecordNotFoundException e) {
+      return false;
+    }
+  }
+
   public <T> void updateUserProfile(long userId, UserField field, T value)
     throws RecordNotFoundException, IllegalArgumentException {
     switch (field) {
