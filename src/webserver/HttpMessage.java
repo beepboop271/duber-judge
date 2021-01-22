@@ -49,10 +49,14 @@ abstract class HttpMessage {
    * A constructor for a new HttpMessage with headers but no
    * body, for invokation of implementing subclasses.
    *
-   * @param headers A {@code HashMap<String, String>} with
+   * @param headers A {@code Map<String, String>} with
    *                applicable headers.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header or value is
+   *                                provided.
    */
-  public HttpMessage(Map<String, String> headers) {
+  public HttpMessage(Map<String, String> headers)
+    throws InvalidHeaderException {
     this(headers, "");
   }
 
@@ -60,12 +64,18 @@ abstract class HttpMessage {
    * A constructor for a new HttpMessage with both a body and
    * headers, for invokation of implementing subclasses.
    *
-   * @param headers A {@code HashMap<String, String>} with
+   * @param headers A {@code Map<String, String>} with
    *                applicable headers.
    * @param body    The body of the message, if applicable.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header or value is
+   *                                provided in the headers
+   *                                map.
    */
-  public HttpMessage(Map<String, String> headers, String body) {
-    this.headers = new HashMap<>(headers);
+  public HttpMessage(Map<String, String> headers, String body)
+    throws InvalidHeaderException {
+    this.headers = new HashMap<>();
+    this.addHeaders(headers);
     this.body = body;
   }
 
@@ -90,7 +100,8 @@ abstract class HttpMessage {
    *                headers, with key and value separated by
    *                {@code :} for each header string.
    * @throws InvalidHeaderException if an improperly formatted
-   *                                header is provided.
+   *                                header or value is
+   *                                provided.
    */
   public HttpMessage(String[] headers) throws InvalidHeaderException {
     this(headers, "");
@@ -117,7 +128,8 @@ abstract class HttpMessage {
    *                headers, with key and value separated by
    *                {@code :} for each header string.
    * @throws InvalidHeaderException if an improperly formatted
-   *                                header is provided.
+   *                                header or value is
+   *                                provided.
    */
   public HttpMessage(String[] headers, String body)
     throws InvalidHeaderException {
@@ -132,16 +144,24 @@ abstract class HttpMessage {
    * <p>
    * The header added cannot be an empty string or
    * {@code null}.
+   * <p>
+   * Headers should be compliant with <a href=
+   * "https://tools.ietf.org/html/rfc2616#section-14">Section
+   * 14 of RFC 2626.</a>
    *
-   * @param header  The name of the header to be added.
-   * @param value The value of the header.
+   * @param header The name of the header to be added.
+   * @param value  The value of the header.
    * @throws InvalidHeaderException if an empty or null header
-   *                                is provided.
+   *                                or value is provided.
    */
-  public void addHeader(String header, String value) throws InvalidHeaderException {
+  public void addHeader(String header, String value)
+    throws InvalidHeaderException {
     if (header == null || header.equals("")) {
       throw new InvalidHeaderException("Cannot have an empty header.");
+    } else if (value == null || value.equals("")) {
+      throw new InvalidHeaderException("Cannot have an empty header value.");
     }
+
     this.headers.put(header, value);
   }
 
@@ -151,6 +171,10 @@ abstract class HttpMessage {
    * <p>
    * The provided string should be a header and value,
    * separated by a colon.
+   * <p>
+   * Headers should be compliant with <a href=
+   * "https://tools.ietf.org/html/rfc2616#section-14">Section
+   * 14 of RFC 2626.</a>
    * <p>
    * An {@code InvalidHeaderException} will be thrown if an
    * improperly formatted header is provided.
@@ -165,18 +189,30 @@ abstract class HttpMessage {
       String headerValue = header.substring(header.indexOf(":")).trim();
 
       this.addHeader(headerName, headerValue);
+    } else {
+      throw new InvalidHeaderException("No header value provided.");
     }
   }
 
   /**
    * Adds a group of headers to this message's list of
    * headers.
+   * <p>
+   * Headers should be compliant with <a href=
+   * "https://tools.ietf.org/html/rfc2616#section-14">Section
+   * 14 of RFC 2626.</a>
    *
    * @param headers A header-name header-detail map of headers
    *                to add.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header or value is
+   *                                provided.
    */
-  public void addHeaders(Map<String, String> headers) {
-    this.headers.putAll(headers);
+  public void addHeaders(Map<String, String> headers)
+    throws InvalidHeaderException {
+    for (String header : headers.keySet()) {
+      this.addHeader(header, headers.get(header));
+    }
   }
 
   /**
@@ -189,12 +225,17 @@ abstract class HttpMessage {
    * will be parsed into
    * {@code Connection: "Keep-Alive", Accept-Language: "en-us"}.
    * <p>
+   * Headers should be compliant with <a href=
+   * "https://tools.ietf.org/html/rfc2616#section-14">Section
+   * 14 of RFC 2626.</a>
+   * <p>
    * An {@code InvalidHeaderException} will be thrown if an
    * improperly formatted header is provided.
    *
    * @param headers A string array of headers.
    * @throws InvalidHeaderException if an improperly formatted
-   *                                header is provided.
+   *                                header or value is
+   *                                provided.
    */
   public void addHeaders(String[] headers) throws InvalidHeaderException {
     for (String s : headers) {
@@ -208,6 +249,8 @@ abstract class HttpMessage {
         }
 
         this.headers.put(headerName, headerValue);
+      } else {
+        throw new InvalidHeaderException("No header value provided.");
       }
     }
   }

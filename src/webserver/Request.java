@@ -52,11 +52,18 @@ public class Request extends HttpMessage {
    * @param fullPath The full path for the request.
    * @param protocol The HTTP protocol for this request.
    * @throws HttpSyntaxException if the path provided is
-   *                                invalid.
+   *                             invalid.
    */
   public Request(String method, String fullPath, String protocol)
     throws HttpSyntaxException {
-    this(method, fullPath, protocol, new HashMap<String, String>(), "");
+    super();
+
+    this.method = method;
+    this.fullPath = fullPath;
+    this.protocol = protocol;
+    this.queryStrings = new HashMap<>();
+
+    this.initializePath(fullPath);
   }
 
   /**
@@ -67,11 +74,18 @@ public class Request extends HttpMessage {
    * @param protocol The HTTP protocol for this request.
    * @param body     The body of the request.
    * @throws HttpSyntaxException if the path provided is
-   *                                invalid.
+   *                             invalid.
    */
   public Request(String method, String fullPath, String protocol, String body)
     throws HttpSyntaxException {
-    this(method, fullPath, protocol, new HashMap<String, String>(), body);
+    super(body);
+
+    this.method = method;
+    this.fullPath = fullPath;
+    this.protocol = protocol;
+    this.queryStrings = new HashMap<>();
+
+    this.initializePath(fullPath);
   }
 
   /**
@@ -84,15 +98,20 @@ public class Request extends HttpMessage {
    * @param fullPath The full path for the request.
    * @param protocol The HTTP protocol for this request.
    * @param headers  The headers for this request.
-   * @throws HttpSyntaxException if the path provided is
+   * @throws HttpSyntaxException    if the path provided is
    *                                invalid.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header or value is
+   *                                provided in the headers
+   *                                map.
    */
   public Request(
     String method,
     String fullPath,
     String protocol,
     Map<String, String> headers
-  ) throws HttpSyntaxException {
+  ) throws HttpSyntaxException,
+    InvalidHeaderException {
     this(method, fullPath, protocol, headers, "");
   }
 
@@ -119,7 +138,7 @@ public class Request extends HttpMessage {
    * @param headers  The headers for this request.
    * @throws InvalidHeaderException if an improperly formatted
    *                                header is provided.
-   * @throws HttpSyntaxException if the path provided is
+   * @throws HttpSyntaxException    if the path provided is
    *                                invalid.
    */
   public Request(
@@ -141,8 +160,12 @@ public class Request extends HttpMessage {
    * @param protocol The HTTP protocol for this request.
    * @param headers  The headers for this request.
    * @param body     The body of the request.
-   * @throws HttpSyntaxException if the path provided is
+   * @throws HttpSyntaxException    if the path provided is
    *                                invalid.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header or value is
+   *                                provided in the headers
+   *                                map.
    */
   public Request(
     String method,
@@ -150,7 +173,8 @@ public class Request extends HttpMessage {
     String protocol,
     Map<String, String> headers,
     String body
-  ) throws HttpSyntaxException {
+  ) throws HttpSyntaxException,
+    InvalidHeaderException {
     super(headers, body);
 
     this.method = method;
@@ -158,15 +182,7 @@ public class Request extends HttpMessage {
     this.protocol = protocol;
     this.queryStrings = new HashMap<>();
 
-    try {
-      URI pathUri = new URI(fullPath);
-      if (pathUri.getQuery() != null) {
-        this.parseQueryStrings(pathUri.getQuery());
-      }
-      this.path = pathUri.getPath();
-    } catch (URISyntaxException e) {
-      throw new HttpSyntaxException("Provided path is invalid.", e);
-    }
+    this.initializePath(fullPath);
   }
 
   /**
@@ -190,7 +206,7 @@ public class Request extends HttpMessage {
    * @param body     The body of the request.
    * @throws InvalidHeaderException if an improperly formatted
    *                                header is provided.
-   * @throws HttpSyntaxException if the path provided is
+   * @throws HttpSyntaxException    if the path provided is
    *                                invalid.
    */
   public Request(
@@ -208,7 +224,18 @@ public class Request extends HttpMessage {
     this.protocol = protocol;
     this.queryStrings = new HashMap<>();
 
-    // Use URI class for proper decoding and query processing
+    this.initializePath(fullPath);
+  }
+
+  /**
+   * Attempts to initialize the proper path and query strings.
+   *
+   * @param fullPath The full path provided in the request.
+   * @throws HttpSyntaxException if the path could not be
+   *                             parsed as a request status
+   *                             path.
+   */
+  private void initializePath(String fullPath) throws HttpSyntaxException {
     try {
       URI pathUri = new URI(fullPath);
       if (pathUri.getQuery() != null) {

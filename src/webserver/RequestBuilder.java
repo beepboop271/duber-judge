@@ -31,7 +31,9 @@ import java.io.StringReader;
  * This method will fail if the assembled request is invalid
  * or malformed, as according to
  * <a href= "https://tools.ietf.org/html/rfc7230">RFC
- * 7230.</a>
+ * 7230.</a> Strings can still be appended after
+ * construction, and another call to {@link #construct()}
+ * will yield a different request.
  *
  * @since 0.0.4
  * @version 0.0.4

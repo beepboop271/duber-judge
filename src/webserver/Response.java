@@ -126,10 +126,9 @@ public class Response extends HttpMessage {
    * @param body       The body of the response.
    */
   public Response(int statusCode, String body) {
-    super();
+    super(body);
 
-    this.statusString = "HTTP/1.1 "+statusCode+"ur bad kiddo";
-    this.body = body;
+    this.statusString = "HTTP/1.1 "+statusCode;
   }
 
   /**
@@ -140,12 +139,16 @@ public class Response extends HttpMessage {
    *                   201, 404, etc)
    * @param headers    A map with the headers of the response.
    * @param body       The body of the response.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header or value is
+   *                                provided in the headers
+   *                                map.
    */
-  public Response(int statusCode, Map<String, String> headers, String body) {
-    super(headers);
+  public Response(int statusCode, Map<String, String> headers, String body)
+    throws InvalidHeaderException {
+    super(headers, body);
 
     this.statusString = "HTTP/1.1 "+statusCode;
-    this.body = body;
   }
 
   /**
@@ -173,10 +176,9 @@ public class Response extends HttpMessage {
    */
   public Response(int statusCode, String[] headers, String body)
     throws InvalidHeaderException {
-    super(headers);
+    super(headers, body);
 
     this.statusString = "HTTP/1.1 "+statusCode;
-    this.body = body;
   }
 
   /**
@@ -186,8 +188,13 @@ public class Response extends HttpMessage {
    * @param statusCode The status code of the response (eg.
    *                   201, 404, etc)
    * @param headers    A map with the headers of the response.
+   * @throws InvalidHeaderException if an improperly formatted
+   *                                header or value is
+   *                                provided in the headers
+   *                                map.
    */
-  public Response(int statusCode, Map<String, String> headers) {
+  public Response(int statusCode, Map<String, String> headers)
+    throws InvalidHeaderException {
     this(statusCode, headers, "");
   }
 

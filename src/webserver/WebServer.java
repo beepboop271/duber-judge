@@ -12,7 +12,11 @@ import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import webserver.webcache.WebLruCache;
 
@@ -67,7 +71,15 @@ public class WebServer {
    *                         server's web cache
    */
   public WebServer(int port, int maxCacheCapacity) {
-    this.workers = Executors.newCachedThreadPool();
+    this.workers =
+      new ThreadPoolExecutor(
+        20,
+        200,
+        60L,
+        TimeUnit.SECONDS,
+        new SynchronousQueue<Runnable>()
+      );
+
     this.routes = new HashMap<>();
     this.port = port;
 
@@ -230,6 +242,14 @@ public class WebServer {
    * @author Joseph Wang
    */
   private class ConnectionHandler implements Runnable {
+    public static final int DEFAULT_TIMEOUT_MS = 15_000;
+    public static final int MAX_REQ = 1000;
+
+    private int timeoutMs = ConnectionHandler.DEFAULT_TIMEOUT_MS;
+    private int maxReq = ConnectionHandler.MAX_REQ;
+    private long connectionOpenTime;
+    private int curReq;
+
     /** The client to handle. */
     private Socket client;
     /** The input stream from the client. */
@@ -262,6 +282,9 @@ public class WebServer {
         BufferedWriter bufferedUtfWriter = new BufferedWriter(utfWriter);
         this.output = new PrintWriter(bufferedUtfWriter);
 
+        this.connectionOpenTime = System.currentTimeMillis();
+        this.curReq = 0;
+
       } catch (SocketException e) {
         System.out.println("A stream failed to connect.");
         e.printStackTrace();
@@ -281,7 +304,7 @@ public class WebServer {
       try {
         // Keep this connection open for as long as we need it in
         // case keep-alive header exists
-        while (this.shouldRun) {
+        do {
           RequestBuilder rb = new RequestBuilder();
 
           boolean waitingForConnection = true;
@@ -294,12 +317,14 @@ public class WebServer {
           }
 
           Response res;
+          this.curReq++;
           try {
             Request req = rb.construct();
 
             if (!req.getProtocol().equals("HTTP/1.1")) {
               res = Response.unsupportedVersion();
             } else {
+              this.initializeConnectionInformation(req);
               res = this.generateResponseFromRequest(req);
               this.attemptCacheStorage(req.getFullPath(), res);
             }
@@ -307,23 +332,88 @@ public class WebServer {
             res = Response.badRequest();
           }
 
-          // Output to user
+          // Finally, output to user
           // Keep open if keep alive header exists
           this.output.print(res);
           this.output.flush();
 
-          //TODO: implement proper socket closure according to http
-          if (
-            res.getHeader("Connection") == null
-              || !res.getHeader("Connection").equals("keep-alive")
-          ) {
-            this.shouldRun = false;
-          }
-        }
+          // TODO: do we even need to remove hop to hop headers
+          this.shouldRun = shouldCloseConnection();
+        } while (this.shouldRun);
 
         this.closeConnection();
       } catch (IOException e) {
         e.printStackTrace();
+      }
+    }
+
+    /**
+     * Determines whether or not to close the current open
+     * connection with the client, based on {@code Connection}
+     * and {@code Keep-Alive} headers.
+     *
+     * @return true if the connection with the client should be
+     *         terminated.
+     */
+    private boolean shouldCloseConnection() {
+      if (this.curReq >= this.maxReq) {
+        return true;
+      }
+
+      if (
+        System.currentTimeMillis()-this.connectionOpenTime >= this.timeoutMs
+      ) {
+        return true;
+      }
+
+      return false;
+    }
+
+    /**
+     * Initializes information about the connection with the
+     * client.
+     * <p>
+     * This method will use {@code Connection} and
+     * {@code Keep-Alive} headers to determine how to manage the
+     * connection. If these headers are not present, the
+     * connection will persist for the default amount of time.
+     * <p>
+     * Refer to
+     * <a href="https://tools.ietf.org/html/rfc2616">RFC
+     * 2616</a> for more details.
+     *
+     * @param res The response to use to parse information about
+     *            the connection.
+     * @throws HttpSyntaxException if the {@code Connection} and
+     *                             {@code Keep-Alive} headers
+     *                             are invalid.
+     */
+    private void initializeConnectionInformation(Request res)
+      throws HttpSyntaxException {
+      // Connection header does not exist
+      if (!res.hasHeader("Connection")) {
+        return;
+      }
+
+      // Connection header exists
+      String connectionValue = res.getHeader("Connection");
+
+      if (connectionValue.contains("close")) {
+        return;
+
+      } else if (connectionValue.contains("keep-alive")) {
+        if (res.hasHeader("Keep-Alive")) {
+          String pattern = "timeout=(\\d+), max=(\\d+)";
+          Matcher m =
+            Pattern.compile(pattern).matcher(res.getHeader("Keep-Alive"));
+
+          if (m.find()) {
+            this.timeoutMs = Integer.parseInt(m.group(0));
+            this.maxReq = Integer.parseInt(m.group(1));
+          } else {
+            throw new HttpSyntaxException("Keep-Alive header malformed.");
+          }
+        }
       }
     }
 
@@ -400,7 +490,7 @@ public class WebServer {
         return Response.okHtml(cache.getCachedObject(request.getFullPath()));
       }
 
-      RouteTarget handler = getRoute(request.getPath());
+      RouteTarget handler = WebServer.this.getRoute(request.getPath());
 
       if (handler != null) {
         // Return the accepted response
