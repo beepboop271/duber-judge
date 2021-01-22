@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
@@ -20,6 +21,15 @@ import java.util.regex.Pattern;
 
 import webserver.webcache.WebLruCache;
 
+/**
+ * [Insert description].
+ * <p>
+ * Created <b> 2020-12-28 </b>
+ *
+ * @since 0.0.1
+ * @version 0.0.1
+ * @author Joseph Wang, Shari Sun
+ */
 public class WebServer {
   /** The port that this WebServer is hosted on. **/
   private int port;
@@ -31,7 +41,14 @@ public class WebServer {
    */
   private ServerSocket sock;
   /** The routes that this WebServer has. */
-  private HashMap<String, RouteTarget> routes;
+  private HashMap<Pattern, RouteTarget> routes;
+  /**
+   * The param keys of each route.
+   *
+   * @see        Request#setParam(String, String)
+   * @see        Request#getParam(String)
+   */
+  private HashMap<Pattern, ArrayList<String>> routeParamKeys;
   /** The web cache to store cached pages. */
   private WebLruCache cache;
 
@@ -81,6 +98,7 @@ public class WebServer {
       );
 
     this.routes = new HashMap<>();
+    this.routeParamKeys = new HashMap<>();
     this.port = port;
 
     this.cache = new WebLruCache(maxCacheCapacity);
@@ -125,84 +143,161 @@ public class WebServer {
   }
 
   /**
+   * Checks whether this is a valid character to be part
+   * of a named parameter.
+   *
+   * @param character     The character to check for.
+   * @return              Whether or not it's valid.
+   */
+  private boolean validParamChar(char character) {
+    return (
+         (character >= 'a' && character <= 'z')
+      || (character >= 'A' && character <= 'Z')
+      || (character >= '0' && character <= '9')
+      || (character == '_')
+      );
+  }
+
+  /**
    * Adds a new routing to a {@code RouteTarget}.
    * <p>
-   * The characters {@code *}, {@code ?}, and {@code +} are
-   * all subsets of their regex counterparts. {@code *} and
-   * {@code +} are specifically used as wildcards matching
-   * anything 0-unlimited and 1-unlimited, respectively. the
-   * hyphen {@code -} and dot {@code .} character are
+   * {@code *} and {@code +} are specifically used as wildcards matching
+   * anything 0-unlimited and 1-unlimited, respectively.
+   * The hyphen {@code -} and dot {@code .} character are
    * interpreted literally.
+   * All other symbols will be their regex counterparts
    * <p>
    * All route will be matched as is, from start to end (akin
    * to placing {@code ^$} symbols). To match every file under
-   * a path, use {@code /*} to indicate that everything under
+   * a path, use {@code *} to indicate that everything under
    * that path should be matched using this route handler.
    * <p>
    * Query strings should not be included in the path as they
    * are individually parsed separately and can be found in
    * the request object.
    * <p>
-   * Caution must be placed with routing two strings that
-   * match the same path, as non-deterministic routing
-   * resolution will occur. There will be no guarantees as to
-   * which route target will handle the request.
+   * If the same path is routed twice, the latter path will override
+   * the previous route, and all parameters will override as well.
+   * {@code /problems/:problemId} and {@code /problems/:id} will route
+   * to the same path.
    * <p>
    * A brief example:
-   * 
+   *
    * <pre>
    * WebServer server = new WebServer(5000);
-   * // This will only match the /static path, nothing more,
-   * // nothing less.
+   * // This will only match the /static path
    * server.route("/static", new StaticHandler());
-   * // This will match /problems, /problems/problem1,
-   * // /problems/problem2, etc.
-   * server.route("/problems/?*", new ProblemHandler());
+   *
+   * // This will match
+   * // /problems                 {0: null}
+   * // /problems/problem1        {0: problem1}
+   * // /problems/problem2/123    {0: problem2/123}
+   * server.route("/problems/*?", new ProblemHandler());
+   *
+   * // Named parameters
+   * // /problems/1234abc         {problemId: 1234abc}
+   * server.route("/problems/:problemId", new ProblemHander());
+   * 
+   * // Optional named parameters
+   * // /problems/1234abc         {problemId: 1234abc}
+   * // /problems/                {problemId: null}
+   * server.route("/problems/:problemId?", new ProblemHander());
    * </pre>
    *
-   * @param route  The route associated with the
-   *               {@code RouteTarget}.
-   * @param target The RouteTarget to handle the request.
-   * @see RouteTarget
+   * @param route                    The route associated with the
+   *                                 {@code RouteTarget}.
+   * @param target                   The RouteTarget to handle the request.
+   * @see                            RouteTarget
+   * @see                            Request#getParam(String)
+   * @throws PatternSyntaxException  When the regex path is invalid.
    */
   public void route(String route, RouteTarget target) {
-    String cleanedRoute = "^";
-    for (int i = 0; i < route.length(); i++) {
-      char charAt = route.charAt(i);
+    StringBuilder cleanedRoute = new StringBuilder('^');
+    char charAt = '/';
+    //a buffer to hold the named params
+    StringBuilder paramName = new StringBuilder();
+    //the incremental keys for the params
+    int keyI = 0;
+    //a list of param keys, including both named and incremental/automatic
+    ArrayList<String> paramKeys = new ArrayList<>();
+    //indicating the following characters are parameter names
+    boolean isParamName = false;
 
-      switch (charAt) {
-        // These characters would mess up the regex and should not
-        // appear
-        case '^':
-        case '[':
-        case ']':
-          break;
-        // These characters simply need to be treated as literals
-        case '$':
-          cleanedRoute += "\\$";
-          break;
-        case '.':
-          cleanedRoute += "\\.";
-          break;
-        case '-':
-          cleanedRoute += "\\-";
-          break;
-        // the * and + chars need wildcard dots
-        case '*':
-          cleanedRoute += ".*";
-          break;
-        case '+':
-          cleanedRoute += ".+";
-          break;
-        default:
-          cleanedRoute += charAt;
-          break;
+    for (int i = 0; i < route.length(); i++) {
+      charAt = route.charAt(i);
+
+      //if this character is part of a user-defined named parameter
+      if (isParamName && this.validParamChar(charAt)) {
+        paramName.append(charAt);
+      } else {
+        //if this character no longer belong to the param name,
+        //push the param name to the end of the paramKeys list
+        if (isParamName) {
+          isParamName = false;
+          paramKeys.add(paramName.toString());
+          cleanedRoute.append("([^/]+?)");
+        }
+
+        switch (charAt) {
+          // These characters are literals
+          case '.':
+            cleanedRoute.append("\\.");
+            break;
+          case '-':
+            cleanedRoute.append("\\-");
+            break;
+          // the * and + are wildcards
+          case '*':
+            cleanedRoute.append("(.*)");
+            paramKeys.add(String.valueOf(keyI++));
+            break;
+          case '+':
+            cleanedRoute.append("(.+)");
+            paramKeys.add(String.valueOf(keyI++));
+            break;
+          //assign keys to user defined capture groups
+          case '(':
+            cleanedRoute.append('(');
+            paramKeys.add(String.valueOf(keyI++));
+            break;
+          //named parameter
+          //it will be treated as a literal unless there is a character/number/underscore after it
+          case ':':
+            if (i+1 < route.length() && this.validParamChar(route.charAt(i+1))) {
+              paramName.setLength(0); //clears the old param name
+              isParamName = true;
+            } else {
+              cleanedRoute.append(charAt);
+            }
+            break;
+          default:
+            cleanedRoute.append(charAt);
+            break;
+        }
       }
+
     }
 
-    cleanedRoute += "$";
+    //if this character no longer belong to the param name,
+    //push the param name to the end of the paramKeys list
+    //chances are the param key may go all the way until the end
+    //of the route name so added another check just in case
+    if (isParamName) {
+      isParamName = false;
+      paramKeys.add(paramName.toString());
+      cleanedRoute.append("([^/]+?)");
+    }
 
-    this.routes.put(cleanedRoute, target);
+    //make sure that if the path didn't end with /, / will be matched as well
+    if (charAt != '/') {
+      cleanedRoute.append("(?=/|$)");
+    } else {
+      cleanedRoute.append('/');
+    }
+    Pattern routePattern = Pattern.compile(cleanedRoute.toString());
+
+    this.routes.put(routePattern, target);
+    this.routeParamKeys.put(routePattern, paramKeys);
   }
 
   /**
@@ -210,15 +305,24 @@ public class WebServer {
    * <p>
    * The worst case speed to find a matching route target is
    * linear time compared to the amount of routes initialized.
+   * <p>
+   * It also adds the path parameters specified in
+   * {@link #route(String, RouteTarget)} if any.
    *
-   * @param path The path to find the route target for.
+   * @param request            The original request.
    * @return the proper route target to handle the request, or
    *         {@code null} if none exists.
    */
-  private RouteTarget getRoute(String route) {
-    for (String possibleRoute : this.routes.keySet()) {
-      if (route.matches(possibleRoute)) {
-        return this.routes.get(possibleRoute);
+  private RouteTarget getRoute(Request request) {
+    String route = request.getFullPath();
+    for (Pattern routePattern : this.routes.keySet()) {
+      Matcher matcher = routePattern.matcher(route);
+      if (matcher.matches()) {
+        int i = 1;
+        for (String paramKey : this.routeParamKeys.get(routePattern)) {
+          request.setParam(paramKey, matcher.group(i++));
+        }
+        return this.routes.get(routePattern);
       }
     }
 
@@ -490,7 +594,7 @@ public class WebServer {
         return Response.okHtml(cache.getCachedObject(request.getFullPath()));
       }
 
-      RouteTarget handler = WebServer.this.getRoute(request.getPath());
+      RouteTarget handler = WebServer.this.getRoute(request);
 
       if (handler != null) {
         // Return the accepted response

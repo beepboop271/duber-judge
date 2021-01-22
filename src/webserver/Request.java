@@ -23,7 +23,7 @@ import java.util.Set;
  *
  * @since 0.0.1
  * @version 0.0.1
- * @author Joseph Wang
+ * @author Joseph Wang, Shari Sun
  * @see <a href=
  *      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#HTTP_Requests">More
  *      information about HTTP Requests (Mozilla)</a>
@@ -42,6 +42,8 @@ public class Request extends HttpMessage {
   private Map<String, String> queryStrings;
   /** The HTTP protocol for this request. */
   private String protocol;
+  /** Stores the route path parameters. */
+  private HashMap<String, String> params;
 
   /**
    * Constructs a new Request without any headers or a body.
@@ -181,6 +183,7 @@ public class Request extends HttpMessage {
     this.fullPath = fullPath;
     this.protocol = protocol;
     this.queryStrings = new HashMap<>();
+    this.params = new HashMap<>();
 
     this.initializePath(fullPath);
   }
@@ -223,6 +226,7 @@ public class Request extends HttpMessage {
     this.fullPath = fullPath;
     this.protocol = protocol;
     this.queryStrings = new HashMap<>();
+    this.params = new HashMap<>();
 
     this.initializePath(fullPath);
   }
@@ -298,6 +302,43 @@ public class Request extends HttpMessage {
    */
   public String getPath() {
     return this.path;
+  }
+
+  /**
+   * Retrieves a specific param's value, or {@code null} if
+   * the param does not exist.
+   * <p>
+   * The keys of the param may come from regex capturing groups,
+   * such as {@code *, (group)}, and are denoted with incrementing keys
+   * like {@code "0", "1", "2"} so results are retrieved using
+   * {@code .getParam("0")}.
+   * <p>
+   * Another option is to specify param keys using {@code :paramName}
+   * and the value may be retrieved using {@code .getParam("paramName")}.
+   *
+   * @param key             The key of the param.
+   * @return                The value of the param.
+   */
+  public String getParam(String key) {
+    return this.params.get(key);
+  }
+
+  /**
+   * Sets a specific param's value.
+   * <p>
+   * The keys of the param may come from regex capturing groups,
+   * such as {@code *, (group)}, and are denoted with incrementing keys
+   * like {@code "0", "1", "2"} so params will be set using
+   * {@code .setParam("0", "value")}.
+   * <p>
+   * Another option is to specify param keys using {@code :paramName}
+   * and the param may be set using {@code .setParam("paramName", "value")}.
+   *
+   * @param key             The key of the param.
+   * @param value           The value of the param.
+   */
+  public void setParam(String key, String value) {
+    this.params.put(key, value);
   }
 
   /**

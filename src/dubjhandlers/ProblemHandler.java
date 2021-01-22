@@ -17,6 +17,11 @@ public class ProblemHandler implements RouteTarget {
       return Response.badRequestHtml(e.getMessage());
     }
 
+    System.out.println(req.getParam("0"));
+    System.out.println(req.getParam("1"));
+    System.out.println(req.getParam("2"));
+    System.out.println(req.getParam("id"));
+
     return newResponse;
   }
 }
