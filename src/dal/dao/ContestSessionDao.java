@@ -107,7 +107,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
   @Override
   public long add(ContestSession data) {
     String sql = "INSERT INTO contest_sessions"
-                +"(contest_id, user_id, started_at, status, score)"
+                +"(contest_id, user_id, created_at, status, score)"
                 +" VALUES (" + DaoHelper.getParamString(5) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
@@ -118,7 +118,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
       ps = connection.prepareStatement(sql);
       ps.setLong(1, data.getContestId());
       ps.setLong(2, data.getUserId());
-      ps.setString(3, data.getStartedAt().toString());
+      ps.setString(3, data.getCreatedAt().toString());
       ps.setString(4, data.getStatus().name());
       ps.setInt(5, data.getScore());
 
@@ -236,6 +236,33 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
     DaoHelper.deleteById("contest_sessions", id);
   }
 
+  public void updateStatus() {
+    String sql =
+      "UPDATE contest_sessions"
+      +"  SET status = 'OVER'"
+      +"  WHERE (datetime('now') - created_at < duration)"
+      +"    FROM ("
+      +"      SELECT duration_minutes AS duration"
+      +"      FROM contest_sessions INNER JOIN contests"
+      +"      ON contest_session.id = contests.id"
+      +"    );";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+  }
+
   private Entity<ContestSession> getContestSessionFromResultSet(ResultSet result)
     throws SQLException {
     return new Entity<ContestSession>(
@@ -317,7 +344,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
     String sql = String.format(
                 "SELECT * FROM contest_sessions"
                 +"WHERE contest_id = ?"
-                +"ORDER BY started_at DESC"
+                +"ORDER BY created_at DESC"
                 +"LIMIT %s OFFSET %s", numSessions, index);
     PreparedStatement ps = null;
     Connection connection = null;
@@ -357,7 +384,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
     String sql = String.format(
                 "SELECT * FROM contest_sessions"
                 +"WHERE user_id = ?"
-                +"ORDER BY started_at DESC"
+                +"ORDER BY created_at DESC"
                 +"LIMIT %s OFFSET %s", numSessions, index);
     PreparedStatement ps = null;
     Connection connection = null;

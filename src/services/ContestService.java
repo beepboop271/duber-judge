@@ -36,7 +36,7 @@ public class ContestService {
     this.contestDao = new ContestDao();
   }
 
-  private boolean validateContestSession(long userId, long contestId) {
+  public boolean validateContestSession(long userId, long contestId) {
     try {
       ContestSession contestSession = this.contestSessionDao.get(contestId, userId).getContent();
       return contestSession.getStatus() == ContestSessionStatus.ONGOING;
@@ -46,7 +46,7 @@ public class ContestService {
   }
 
 
-  private boolean allowProblemViewing(long userId, long contestId) {
+  public boolean allowProblemViewing(long userId, long contestId) {
     try {
       this.contestSessionDao.get(contestId, userId);
       return true;
@@ -83,17 +83,6 @@ public class ContestService {
       .updateByUser(userId, ContestSessionField.SCORE, score);
   }
 
-  public int getNumParticipants(long contestId) {
-    return this.contestSessionDao.getNumSessions(contestId);
-  }
-
-  public ArrayList<Entity<ContestSession>> getParticipantSessions(
-    long contestId,
-    int index,
-    int numSessions
-  ) {
-    return this.contestSessionDao.getByContest(contestId, index, numSessions);
-  }
 
   public ArrayList<Entity<Problem>> getProblems(
     long userId,

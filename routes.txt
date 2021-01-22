@@ -13,14 +13,14 @@
 
 /profile -> /profile/:username
   - default user
-/profile/:username -> /profile/:username?data=submissions
-  - lists out their top submissions
+/profile/:username
   - getSubmissionCount
 /profile/:username?data=submissions
-  - getSubmissions
+  - getAllSubmissions
 /profile/:username?data=problems
   - getProblems
 /profile/:username?data=contests
+  - getActiveContests
   - getParticipatedContests
 
 /profile/:username/edit
@@ -32,13 +32,26 @@
 /contests
   - getContests
   - getActiveContests
+  - startContest
 /contest/:contestId -> /contest/:contestId/problems
   - getContest
 /contest/:contestId/problems
+  - allowProblemViewing
   - getProblems
 /contest/:contestId/problem/:problemId
+  - allowProblemViewing
+  - getProblem
+  - getClarifications
 /contest/:contestId/problem/:problemId/submit
-/contest/:contestId/problem/:problemId/submissions?userid=id
+  - validateContestSession
+  - submitSolution
+/contest/:contestId/problem/:problemId/submissions
+  - allowProblemViewing
+  - getProblemSubmissions
+/contest/:contestId/problem/:problemId/submissions/:submissionId
+  - validateSubmissionId
+  - allowProblemViewing
+  - getSubmission
 
 /contest/:contestId/leaderboard
   - getContestLeaderboard
@@ -59,6 +72,8 @@
 
 /problem/:problemId
   - requestClarification
+  - getClarifications
+  - getProblem
 /problem/:problemId/submit
   - submitSolution
 
@@ -66,11 +81,12 @@
 /problem/:problemId/leaderboard
   - getProblemLeaderboard
 /problem/:problemId/submissions
-  - getSubmissions
+  - getAllSubmissions
 /problem/:problemId/submissions?userid=id
   - getProblemSubmissions
 /problem/:problemId/submissions/:submissionId
-
+  - validateSubmissionId
+  - getSubmission
 
 
 /admin/clarifications
@@ -88,6 +104,7 @@
   - updateContest
   - deleteContest
   - kickUserFromContest
+  - getContestParticipants
 /admin/problems
   - createProblem
   - deleteProblem

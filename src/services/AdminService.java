@@ -26,7 +26,6 @@ import entities.PracticeProblem;
 import entities.Problem;
 import entities.ProblemType;
 import entities.Testcase;
-import entities.TestcaseRun;
 import entities.User;
 import entities.entity_fields.BatchField;
 import entities.entity_fields.ClarificationField;
@@ -45,7 +44,6 @@ import entities.entity_fields.TestcaseField;
  * @since 1.0.0
  */
 public class AdminService {
-  private UserService userService;
   private ContestDao contestDao;
   private ContestSessionDao contestSessionDao;
   private ProblemDao problemDao;
@@ -57,7 +55,6 @@ public class AdminService {
   private SubmissionDao submissionDao;
 
   public AdminService() {
-    this.userService = new UserService();
     this.contestDao = new ContestDao();
     this.contestSessionDao = new ContestSessionDao();
     this.problemDao = new ProblemDao();
@@ -124,16 +121,17 @@ public class AdminService {
     throws InsufficientPermissionException {
     this.validateContest(adminId, contestId);
     this.contestDao.deleteById(contestId);
-    //TODO: delete the problems
     ArrayList<Entity<Problem>> problems = this.problemDao.getAllByContest(contestId);
     for (Entity<Problem> problem : problems) {
-      this.problemDao.deleteById(problem.getId());
-      ArrayList<Entity<Batch>> batches =
-        this.batchDao.getByProblem(problem.getId());
+      this.testcaseRunDao.deleteByProblem(problem.getId());
+      this.submissionDao.deleteByProblem(problem.getId());
+      ArrayList<Entity<Batch>> batches = this.batchDao.getByProblem(problem.getId());
       for (Entity<Batch> batch : batches) {
         this.testcaseDao.deleteByBatch(batch.getId());
       }
     }
+
+    this.problemDao.deleteByContest(contestId);
   }
 
   public void kickUserFromContest(
@@ -278,7 +276,7 @@ public class AdminService {
       this.testcaseDao.deleteByBatch(batch.getId());
     }
 
-    // TODO: delete test case runs here
+    this.testcaseRunDao.deleteByProblem(problemId);
     this.submissionDao.deleteByProblem(problemId);
   }
 
@@ -384,10 +382,19 @@ public class AdminService {
   }
 
   public ArrayList<Entity<Clarification>> getUnresolvedClarifications(
+    int adminId,
     int index,
     int numClarifications
   ) {
-    this.clarificationDao.g
+    return this.clarificationDao.getUnresolvedClarifications(adminId, index, numClarifications);
   }
 
+
+  public ArrayList<Entity<ContestSession>> getContestParticipants(
+    long contestId,
+    int index,
+    int numSessions
+  ) {
+    return this.contestSessionDao.getByContest(contestId, index, numSessions);
+  }
 }

@@ -13,6 +13,7 @@ import entities.Entity;
 import entities.ExecutionStatus;
 import entities.Language;
 import entities.Submission;
+import entities.SubmissionResult;
 
 /**
  * [description]
@@ -24,10 +25,10 @@ import entities.Submission;
  * @since 1.0.0
  */
 
-public class SubmissionDao implements Dao<Submission> {
+public class SubmissionDao implements Dao<SubmissionResult> {
 
   @Override
-  public long add(Submission data) {
+  public long add(SubmissionResult data) {
     String sql = "INSERT INTO submissions"
                 +"(problem_id, user_id, code, language, created_at, status, score, run_duration_millis)"
                 +" VALUES (" + DaoHelper.getParamString(8) + ");";
@@ -38,11 +39,11 @@ public class SubmissionDao implements Dao<Submission> {
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
-      ps.setLong(1, data.getProblemId());
-      ps.setLong(2, data.getUserId());
-      ps.setString(3, data.getCode());
-      ps.setString(4, data.getLanguage().name());
-      ps.setString(5, data.getCreatedAt().toString());
+      ps.setLong(1, data.getSubmission().getProblemId());
+      ps.setLong(2, data.getSubmission().getUserId());
+      ps.setString(3, data.getSubmission().getCode());
+      ps.setString(4, data.getSubmission().getLanguage().name());
+      ps.setString(5, data.getSubmission().getCreatedAt().toString());
       ps.setString(6, data.getStatus().name());
       ps.setInt(7, data.getScore());
       ps.setLong(8, data.getRunDurationMillis());
@@ -65,12 +66,12 @@ public class SubmissionDao implements Dao<Submission> {
   }
 
   @Override
-  public Entity<Submission> get(long id) throws RecordNotFoundException {
+  public Entity<SubmissionResult> get(long id) throws RecordNotFoundException {
     String sql = "SELECT * FROM submissions WHERE id = ?;";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet result = null;
-    Entity<Submission> submission = null;
+    Entity<SubmissionResult> submission = null;
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
@@ -94,7 +95,7 @@ public class SubmissionDao implements Dao<Submission> {
   }
 
   @Override
-  public ArrayList<Entity<Submission>> getList(long[] ids) {
+  public ArrayList<Entity<SubmissionResult>> getList(long[] ids) {
     String sql = String.format(
       "SELECT * FROM submissions WHERE id IN (%s);",
       DaoHelper.getParamString(ids.length)
@@ -103,7 +104,7 @@ public class SubmissionDao implements Dao<Submission> {
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
-    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    ArrayList<Entity<SubmissionResult>> submissions = new ArrayList<>();
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
@@ -130,15 +131,17 @@ public class SubmissionDao implements Dao<Submission> {
     DaoHelper.deleteById("submissions", id);
   }
 
-  private Entity<Submission> getSubmissionByResultSet(ResultSet result) throws SQLException {
-    return new Entity<Submission>(
+  private Entity<SubmissionResult> getSubmissionByResultSet(ResultSet result) throws SQLException {
+    return new Entity<SubmissionResult>(
       result.getLong("id"),
-      new Submission(
-        result.getLong("problem_id"),
-        result.getLong("user_id"),
-        result.getString("code"),
-        Language.valueOf(result.getString("language")),
-        Timestamp.valueOf(result.getString("created_at")),
+      new SubmissionResult(
+        new Submission(
+          result.getLong("problem_id"),
+          result.getLong("user_id"),
+          result.getString("code"),
+          Language.valueOf(result.getString("language")),
+          Timestamp.valueOf(result.getString("created_at"))
+        ),
         ExecutionStatus.valueOf(result.getString("status")),
         result.getInt("score"),
         result.getLong("run_duration_millis")
@@ -156,7 +159,7 @@ public class SubmissionDao implements Dao<Submission> {
    * @param numSubmissions   the number of submissions to retrieve
    * @return                 the list of submissions
    */
-  public ArrayList<Entity<Submission>> getByProblem(long problemId, int index, int numSubmissions) {
+  public ArrayList<Entity<SubmissionResult>> getByProblem(long problemId, int index, int numSubmissions) {
     String sql = String.format(
                 "SELECT * FROM submissions"
                 +"WHERE problem_id = ?"
@@ -165,7 +168,7 @@ public class SubmissionDao implements Dao<Submission> {
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
-    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    ArrayList<Entity<SubmissionResult>> submissions = new ArrayList<>();
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
@@ -195,7 +198,7 @@ public class SubmissionDao implements Dao<Submission> {
    * @param numSubmissions   the number of submissions to retrive
    * @return                 the list of submissions
    */
-  public ArrayList<Entity<Submission>>
+  public ArrayList<Entity<SubmissionResult>>
     getUniqueSubmissions(long userId, int index, int numSubmissions) {
     String sql = String.format(
       "SELECT submissions.*"
@@ -218,7 +221,7 @@ public class SubmissionDao implements Dao<Submission> {
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
-    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    ArrayList<Entity<SubmissionResult>> submissions = new ArrayList<>();
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
@@ -248,7 +251,7 @@ public class SubmissionDao implements Dao<Submission> {
    * @param numSubmissions   the number of submissions to retrieve
    * @return                 the list of submissions
    */
-  public ArrayList<Entity<Submission>> getByUser(long userId, int index, int numSubmissions) {
+  public ArrayList<Entity<SubmissionResult>> getByUser(long userId, int index, int numSubmissions) {
     String sql = String.format(
                 "SELECT * FROM submissions"
                 +"WHERE user_id = ?"
@@ -257,7 +260,7 @@ public class SubmissionDao implements Dao<Submission> {
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
-    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    ArrayList<Entity<SubmissionResult>> submissions = new ArrayList<>();
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
@@ -287,7 +290,7 @@ public class SubmissionDao implements Dao<Submission> {
    * @param numSubmissions   the number of submissions to retrieve
    * @return                 the list of submissions
    */
-  public ArrayList<Entity<Submission>> getByUserAndProblem(
+  public ArrayList<Entity<SubmissionResult>> getByUserAndProblem(
     long userId,
     long problemId,
     int index,
@@ -301,7 +304,7 @@ public class SubmissionDao implements Dao<Submission> {
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
-    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    ArrayList<Entity<SubmissionResult>> submissions = new ArrayList<>();
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
@@ -322,13 +325,13 @@ public class SubmissionDao implements Dao<Submission> {
     return submissions;
   }
 
-  public ArrayList<Entity<Submission>>
+  public ArrayList<Entity<SubmissionResult>>
     getByProblemAndStatus(long problemId, ExecutionStatus status, int index, int numSubmissions) {
     String sql = "SELECT * FROM submissions WHERE problem_id = ? AND status = ?;";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
-    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    ArrayList<Entity<SubmissionResult>> submissions = new ArrayList<>();
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
@@ -398,7 +401,7 @@ public class SubmissionDao implements Dao<Submission> {
   }
 
 
-  public ArrayList<Entity<Submission>> getProblemLeaderboard(
+  public ArrayList<Entity<SubmissionResult>> getProblemLeaderboard(
     long problemId,
     int index,
     int numUsers
@@ -421,7 +424,7 @@ public class SubmissionDao implements Dao<Submission> {
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
-    ArrayList<Entity<Submission>> submissions = new ArrayList<>();
+    ArrayList<Entity<SubmissionResult>> submissions = new ArrayList<>();
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);

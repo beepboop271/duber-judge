@@ -48,6 +48,26 @@ public class SubmissionResult {
   }
 
   /**
+   * Constructs a new submission result.
+   *
+   * @param submission               The submission.
+   * @param status                   The execution status.
+   * @param score                    The score.
+   * @param runDurationMillis        The run duration in milliseconds.
+   */
+  public SubmissionResult(
+    Submission submission,
+    ExecutionStatus status,
+    int score,
+    long runDurationMillis
+  ) {
+    this.submission = submission;
+    this.status = status;
+    this.score = score;
+    this.runDurationMillis = runDurationMillis;
+  }
+
+  /**
    * Gets the original submission.
    *
    * @return        The submission.

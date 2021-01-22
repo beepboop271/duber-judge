@@ -15,8 +15,8 @@ import entities.Language;
 import entities.PracticeProblem;
 import entities.Problem;
 import entities.Submission;
-import judge.Judger;
 import entities.SubmissionResult;
+import judge.Judger;
 
 /**
  * [description]
@@ -81,19 +81,24 @@ public class ProblemService {
     throws InsufficientPermissionException,
     RecordNotFoundException {
 
-    Clarification clarification =
-      new Clarification(problemId, userId, message, null);
+    Clarification clarification = new Clarification(
+      problemId,
+      userId,
+      message,
+      null,
+      new Timestamp(System.currentTimeMillis())
+    );
     clarificationDao.add(clarification);
   }
 
-  public ArrayList<Entity<Clarification>> getClarificationsByUser(
-    long problemId,
-    long userId
+  public ArrayList<Entity<Clarification>> getClarifications(
+    long userId,
+    long problemId
   ) {
     return this.clarificationDao.getByProblemAndUser(problemId, userId);
   }
 
-  public ArrayList<Entity<Submission>> getSubmissions(
+  public ArrayList<Entity<SubmissionResult>> getAllSubmissions(
     long problemId,
     int index,
     int numSubmissions
@@ -101,12 +106,29 @@ public class ProblemService {
     return this.submissionDao.getByProblem(problemId, index, numSubmissions);
   }
 
-  public ArrayList<Entity<Submission>> getSubmissionsWithStatus(
+  public ArrayList<Entity<SubmissionResult>> getSubmissionsWithStatus(
     long problemId,
     ExecutionStatus status,
     int index,
     int numProblems
   ) {
     return this.submissionDao.getByProblemAndStatus(problemId, status, index, numProblems);
+  }
+
+  public Entity<Problem> getProblem(
+    long problemId
+  ) throws RecordNotFoundException {
+    return this.problemDao.get(problemId);
+  }
+
+  public Entity<SubmissionResult> getSubmission(long submissionId) throws RecordNotFoundException {
+    return this.submissionDao.get(submissionId);
+  }
+
+  public boolean validateSubmissionId(
+    long userId,
+    long submissionId
+  ) throws RecordNotFoundException {
+    return this.submissionDao.get(submissionId).getContent().getSubmission().getUserId() == userId;
   }
 }

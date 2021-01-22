@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import dal.dao.ContestDao;
 import dal.dao.ContestSessionDao;
 import dal.dao.ProblemDao;
+import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
 import dal.dao.UserDao;
 import dal.dao.UserPoints;
@@ -14,8 +15,7 @@ import entities.ContestSession;
 import entities.ContestStatus;
 import entities.Entity;
 import entities.Problem;
-import entities.Submission;
-import entities.User;
+import entities.SubmissionResult;
 
 /**
  * Serves public information (client does not need to
@@ -53,6 +53,10 @@ public class PublicService {
     return this.contestDao.getContests(index, numContests, ContestStatus.ONGOING);
   }
 
+  public Entity<Problem> getProblem(long problemId) throws RecordNotFoundException {
+    return this.problemDao.get(problemId);
+  }
+
   /**
    * Get the upcoming contests ordered from earliest to latest.
    *
@@ -76,7 +80,7 @@ public class PublicService {
     return this.contestSessionDao.getLeaderboard(contestId, index, numUsers);
   }
 
-  public ArrayList<Entity<Submission>> getProblemLeaderboard(
+  public ArrayList<Entity<SubmissionResult>> getProblemLeaderboard(
     int problemId,
     int index,
     int numUsers
@@ -120,5 +124,9 @@ public class PublicService {
     int numProblems
   ) {
     return this.problemDao.getPracticeProblemsByNumSubmissions(min, max, index, numProblems);
+  }
+
+  public int getContestNumParticipants(long contestId) {
+    return this.contestSessionDao.getNumSessions(contestId);
   }
 }

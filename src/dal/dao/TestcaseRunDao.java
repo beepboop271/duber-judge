@@ -174,6 +174,32 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
     }
   }
 
+  public void deleteByProblem(long problemId) {
+    String sql =
+      "DELETE FROM testcase_runs"
+      +"  FROM testcase_runs"
+      +"    INNER JOIN submissions"
+      +"    ON testcase_runs.submission_id = submissions.id"
+      +"    WHERE submissions.problem_id = ?;";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, problemId);
+
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+  }
+
+
   private Entity<TestcaseRun> getTestcaseRunFromResultSet(ResultSet result)
     throws SQLException {
     return new Entity<TestcaseRun>(

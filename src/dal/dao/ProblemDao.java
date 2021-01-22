@@ -416,6 +416,26 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
     DaoHelper.deleteById("problems", id);
   }
 
+  public void deleteByContest(long contestId) {
+    String sql = "DELETE FROM problems WHERE contest_id = ?;";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, contestId);
+
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+  }
+
   private Entity<Problem> getProblemFromResultSet(ResultSet result) throws SQLException {
     Entity<Problem> problem = null;
     ProblemType type = ProblemType.valueOf(result.getString("problem_type"));

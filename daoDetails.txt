@@ -2,12 +2,11 @@ Unused Daos
 
 BatchDao - AC
 
-ClarificationDao 
-  x getByProblemAndUser
+ClarificationDao - AC
 
 ContestDao - AC
 
-ContestSessionDao 
+ContestSessionDao
   x updateByUser
   x getNumSessions
   x getNumContests
@@ -17,7 +16,6 @@ ContestSessionDao
 ProblemDao - AC
 
 SubmissionDao
-  x getByProblem
   x getByProblemAndStatus
 
 TestcaseDao

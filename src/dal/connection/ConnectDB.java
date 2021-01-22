@@ -89,7 +89,7 @@ public class ConnectDB {
         +"id          INTEGER PRIMARY KEY,"
         +"contest_id  INTEGER NOT NULL,"
         +"user_id     INTEGER NOT NULL,"
-        +"started_at  TEXT NOT NULL,"
+        +"created_at  TEXT NOT NULL,"
         +"status      TEXT NOT NULL,"
         +"score       INTEGER NOT NULL,"
         +"FOREIGN KEY(contest_id) REFERENCES contests(id) ON DELETE CASCADE,"
@@ -175,6 +175,7 @@ public class ConnectDB {
     String[] createIdxSql = new String[]{
       "CREATE INDEX IF NOT EXISTS idx_username      ON users(username)",
       "CREATE INDEX IF NOT EXISTS idx_user_id       ON contest_sessions(user_id)",
+      "CREATE INDEX IF NOT EXISTS idx_created_at    ON contest_sessions(created_at)",
       "CREATE INDEX IF NOT EXISTS idx_title         ON problems(title)",
       "CREATE INDEX IF NOT EXISTS idx_contest_id    ON problems(contest_id)",
       "CREATE INDEX IF NOT EXISTS idx_problem_user  ON clarifications(problem_id, user_id)",

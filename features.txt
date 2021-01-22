@@ -21,13 +21,14 @@ AdminService
   o- clarifyProblem
   - validateContest
   o- getUnresolvedClarifications
+  o- getContestParticipants
 
 ContestService
-  - validateContestSession
-  - startContest
-  - getProblems
+  o- validateContestSession
+  o- allowProblemViewing
+  o- startContest
+  o- getProblems
   o- getContest
-  - getParticipantSessions
   - updateUserScore
   - updateUserStatus
 
@@ -35,7 +36,11 @@ ProblemService
   - canSubmit
   o- submitSolution
   o- requestClarification
-  o- getSubmissions
+  o- getAllSubmissions
+  o- getClarifications
+  o- getProblem
+  o- getSubmission
+  o- validateSubmissionId
 
 PublicService
   o- getContests
@@ -47,6 +52,8 @@ PublicService
   o- getPracticeProblemsByCreator
   o- getPracticeProblemsByPoints
   o- getPracticeProblemsByNumSubmissions
+  o- getProblem
+  o- getContestNumParticipants
 
 SessionService
   - generateToken

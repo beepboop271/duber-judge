@@ -15,7 +15,7 @@ import entities.ContestSession;
 import entities.ContestStatus;
 import entities.ContestSessionStatus;
 import entities.Entity;
-import entities.Submission;
+import entities.SubmissionResult;
 import entities.User;
 import entities.UserType;
 import entities.entity_fields.UserField;
@@ -201,7 +201,7 @@ public class UserService {
    * @param numProblems the number of problems to retrieve
    * @return a list of problems
    */
-  public ArrayList<Entity<Submission>> getProblems(
+  public ArrayList<Entity<SubmissionResult>> getProblems(
     long userId,
     int index,
     int numProblems
@@ -219,7 +219,7 @@ public class UserService {
    *                       retrieve
    * @return a list of submissions
    */
-  public ArrayList<Entity<Submission>> getSubmissions(
+  public ArrayList<Entity<SubmissionResult>> getSubmissions(
     long userId,
     int index,
     int numSubmissions
@@ -237,7 +237,7 @@ public class UserService {
    *                       retrieve
    * @return a list of submissions
    */
-  public ArrayList<Entity<Submission>> getProblemSubmissions(
+  public ArrayList<Entity<SubmissionResult>> getProblemSubmissions(
     long userId,
     long problemId,
     int index,

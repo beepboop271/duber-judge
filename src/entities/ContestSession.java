@@ -17,7 +17,7 @@ public class ContestSession {
   /** The user id of the associated user. */
   private long userId;
   /** When the user started the contest. */
-  private Timestamp startedAt;
+  private Timestamp createdAt;
   /** The user's current status for the contest. */
   private ContestSessionStatus status;
   /** The user's current score for the contest. */
@@ -28,20 +28,20 @@ public class ContestSession {
    *
    * @param contestId the contest id of the associated contest.
    * @param userId    the user id of the associated user.
-   * @param startedAt when the user started the contest.
+   * @param createdAt when the user started the contest.
    * @param status    the user's current for during the contest.
    * @param score     the user's current score for the contest.
    */
   public ContestSession(
     long contestId,
     long userId,
-    Timestamp startedAt,
+    Timestamp createdAt,
     ContestSessionStatus status,
     int score
   ) {
     this.contestId = contestId;
     this.userId = userId;
-    this.startedAt = startedAt;
+    this.createdAt = createdAt;
     this.status = status;
     this.score = score;
   }
@@ -69,8 +69,8 @@ public class ContestSession {
    *
    * @return when the user started the contest.
    */
-  public Timestamp getStartedAt() {
-    return this.startedAt;
+  public Timestamp getCreatedAt() {
+    return this.createdAt;
   }
 
   /**
