@@ -149,6 +149,12 @@ public class CharArrayQueue implements CharSequence {
     return element;
   }
 
+  public void remove(int numToRemove) {
+    for (int i = 0; i < numToRemove; ++i) {
+      this.remove();
+    }
+  }
+
   public char element() throws NoSuchElementException {
     if (this.head == this.tail) {
       throw new NoSuchElementException();
@@ -159,6 +165,10 @@ public class CharArrayQueue implements CharSequence {
 
   public TextFilePosition getPosition() {
     return this.position.clone();
+  }
+
+  public CharArrayQueue.Iterator iterator() {
+    return new CharArrayQueue.Iterator();
   }
 
   // methods to implement CharSequence
@@ -201,6 +211,35 @@ public class CharArrayQueue implements CharSequence {
       sb.append(this.arr, head, this.capacity-head);
       sb.append(this.arr, 0, tail);
       return sb.toString();
+    }
+  }
+
+  // end charsequence methods
+
+  public class Iterator implements java.util.Iterator<Character> {
+    private int index;
+
+    public Iterator() {
+      this.index = 0;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return this.index < CharArrayQueue.this.length;
+    }
+
+    @Override
+    public Character next() {
+      try {
+        return CharArrayQueue.this.charAt(this.index++);
+      } catch (IndexOutOfBoundsException e) {
+        throw new NoSuchElementException();
+      }
+    }
+
+    public void consumeRead() {
+      CharArrayQueue.this.remove(this.index);
+      this.index = 0;
     }
   }
 }

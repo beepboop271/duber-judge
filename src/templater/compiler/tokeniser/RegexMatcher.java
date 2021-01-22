@@ -24,7 +24,7 @@ abstract class RegexMatcher extends TokenMatcher {
       // before consuming
       String result = m.group();
       TextFilePosition position = input.getPosition();
-      TokenMatcher.consumeInput(input, m.end());
+      input.remove(m.end());
       return new Token(result, this.kind, position);
     }
     return null;

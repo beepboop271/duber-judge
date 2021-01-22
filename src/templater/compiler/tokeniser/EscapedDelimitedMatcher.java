@@ -20,39 +20,43 @@ abstract class EscapedDelimitedMatcher extends TokenMatcher {
   @Override
   public Token tryMatch(CharArrayQueue input) {
     try {
-      int i = 0;
-      for (; i < this.startDelimiter.length(); ++i) {
-        if (input.charAt(i) != this.startDelimiter.charAt(i)) {
+      CharArrayQueue.Iterator it = input.iterator();
+      for (int i = 0; i < this.startDelimiter.length(); ++i) {
+        if (it.next() != this.startDelimiter.charAt(i)) {
           return null;
         }
       }
 
       StringBuilder sb = new StringBuilder();
-      char c = input.charAt(i++);
+      char c = it.next();
 
       while (c != this.endDelimiter) {
         while (c == '\\') {
           // skip the backslash (no sb.append(c)) and accept
           // the next character, no matter what it is
-          sb.append(input.charAt(i++));
-          c = input.charAt(i++);
+          sb.append(it.next());
+          c = it.next();
           if (c == this.endDelimiter) {
-            return this.end(input, sb, i);
+            return this.end(input, it, sb);
           }
         }
         sb.append(c);
-        c = input.charAt(i++);
+        c = it.next();
       }
-      return this.end(input, sb, i);
+      return this.end(input, it, sb);
 
     } catch (IndexOutOfBoundsException e) {
       return null;
     }
   }
 
-  private Token end(CharArrayQueue input, StringBuilder sb, int i) {
+  private Token end(
+    CharArrayQueue input,
+    CharArrayQueue.Iterator it,
+    StringBuilder sb
+  ) {
     TextFilePosition position = input.getPosition();
-    TokenMatcher.consumeInput(input, i);
+    it.consumeRead();
     return new Token(sb.toString(), this.kind, position);
   }
 }
