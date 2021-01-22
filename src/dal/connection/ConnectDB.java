@@ -165,11 +165,16 @@ public class ConnectDB {
         +"submission_id        INTEGER NOT NULL,"
         +"batch_id             INTEGER NOT NULL,"
         +"run_duration_millis  INTEGER NOT NULL,"
-        +"memory_usage_kb      INTEGER NOT NULL,"
+        +"memory_usage_b       INTEGER NOT NULL,"
         +"status               TEXT NOT NULL,"
         +"output               TEXT NOT NULL,"
         +"FOREIGN KEY(submission_id) REFERENCES submissions(id) ON DELETE CASCADE,"
         +"FOREIGN KEY(batch_id) REFERENCES batches(id) ON DELETE CASCADE"
+        +");",
+      "CREATE TABLE IF NOT EXISTS illegal_codes ("
+        +"id                   INTEGER PRIMARY KEY,"
+        +"language             TEXT NOT NULL,"
+        +"content              TEXT NOT NULL,"
         +");",
       };
     String[] createIdxSql = new String[]{

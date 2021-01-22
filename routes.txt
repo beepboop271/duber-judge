@@ -94,6 +94,10 @@
 /admin/clarifications/:clarificationId
   - clarifyProblem
 
+/admin/restrictions
+  - createRestriction
+  - updateRestriction
+  - deleteRestriction
 /admin/users
   - getUsers
   - removeUser

@@ -18,7 +18,7 @@ public class TestcaseRun {
   /** The total duration of this run, in ms. */
   private long runDurationMillis;
   /** The total amount of memory used, in kB. */
-  private long memoryUsageKb;
+  private long memoryUsageB;
   /** The current status of this run. */
   private ExecutionStatus status;
   /** The output generated from the submission for this run. */
@@ -26,11 +26,11 @@ public class TestcaseRun {
 
   /**
    * Constructs a new TestcaseRun.
-   * 
+   *
    * @param submissionId      the id of the associated submission.
    * @param batchId           the id of the associated batch.
    * @param runDurationMillis the total duration of this run, in ms.
-   * @param memoryUsageKb     the total amount of memory used, in kB.
+   * @param memoryUsageB     the total amount of memory used, in kB.
    * @param status            the current status of this run.
    * @param output            the output generated from the submission for this run.
    */
@@ -38,21 +38,21 @@ public class TestcaseRun {
     long submissionId,
     long batchId,
     long runDurationMillis,
-    long memoryUsageKb,
+    long memoryUsageB,
     ExecutionStatus status,
     String output
   ) {
     this.submissionId = submissionId;
     this.batchId = batchId;
     this.runDurationMillis = runDurationMillis;
-    this.memoryUsageKb = memoryUsageKb;
+    this.memoryUsageB = memoryUsageB;
     this.status = status;
     this.output = output;
   }
 
   /**
    * Retrieves this associated submission's id.
-   * 
+   *
    * @return this associated submission's id.
    */
   public long getSubmissionId() {
@@ -61,7 +61,7 @@ public class TestcaseRun {
 
   /**
    * Retrieves this associated batch's id.
-   * 
+   *
    * @return this associated batch's id.
    */
   public long getBatchId() {
@@ -70,7 +70,7 @@ public class TestcaseRun {
 
   /**
    * Retrieves the total amount of time this run took, in ms.
-   * 
+   *
    * @return the total amount of time this run took, in ms.
    */
   public long getRunDurationMillis() {
@@ -79,16 +79,16 @@ public class TestcaseRun {
 
   /**
    * Retrieves the total amount of memory used, in kB.
-   * 
+   *
    * @return the total amount of memory used, in kB.
    */
-  public long getMemoryUsageKb() {
-    return this.memoryUsageKb;
+  public long getMemoryUsageB() {
+    return this.memoryUsageB;
   }
 
   /**
    * Retrieves the current status of the run.
-   * 
+   *
    * @return the current status of the run.
    */
   public ExecutionStatus getStatus() {
@@ -97,7 +97,7 @@ public class TestcaseRun {
 
   /**
    * Retrieves the generated output for this run.
-   * 
+   *
    * @return the generated output for this run.
    */
   public String getOutput() {

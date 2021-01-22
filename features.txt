@@ -22,6 +22,9 @@ AdminService
   - validateContest
   o- getUnresolvedClarifications
   o- getContestParticipants
+  o- deleteRestriction
+  o- createRestriction
+  o- updateRestriction
 
 ContestService
   o- validateContestSession

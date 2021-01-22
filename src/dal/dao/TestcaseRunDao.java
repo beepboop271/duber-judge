@@ -26,7 +26,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
   @Override
   public long add(TestcaseRun testcaseRun) {
     String sql = "INSERT INTO testcase_runs"
-                +"(submission_id, batch_id, run_duration_millis, memory_usage_kb, status, output)"
+                +"(submission_id, batch_id, run_duration_millis, memory_usage_b, status, output)"
                 +" VALUES (" + DaoHelper.getParamString(6) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
@@ -38,7 +38,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
       ps.setLong(1, testcaseRun.getSubmissionId());
       ps.setLong(2, testcaseRun.getBatchId());
       ps.setLong(3, testcaseRun.getRunDurationMillis());
-      ps.setLong(4, testcaseRun.getMemoryUsageKb());
+      ps.setLong(4, testcaseRun.getMemoryUsageB());
       ps.setString(5, testcaseRun.getStatus().name());
       ps.setString(6, testcaseRun.getOutput());
 
@@ -208,7 +208,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
         result.getLong("submission_id"),
         result.getLong("batch_id"),
         result.getLong("run_duration_millis"),
-        result.getLong("memory_usage_kb"),
+        result.getLong("memory_usage_b"),
         ExecutionStatus.valueOf(result.getString("status")),
         result.getString("output")
       )

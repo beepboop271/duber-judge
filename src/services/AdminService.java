@@ -8,6 +8,7 @@ import dal.dao.BatchDao;
 import dal.dao.ClarificationDao;
 import dal.dao.ContestDao;
 import dal.dao.ContestSessionDao;
+import dal.dao.IllegalCodeDao;
 import dal.dao.ProblemDao;
 import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
@@ -22,6 +23,8 @@ import entities.ContestProblem;
 import entities.ContestSession;
 import entities.ContestSessionStatus;
 import entities.Entity;
+import entities.IllegalCode;
+import entities.Language;
 import entities.PracticeProblem;
 import entities.Problem;
 import entities.ProblemType;
@@ -31,6 +34,7 @@ import entities.entity_fields.BatchField;
 import entities.entity_fields.ClarificationField;
 import entities.entity_fields.ContestField;
 import entities.entity_fields.ContestSessionField;
+import entities.entity_fields.IllegalCodeField;
 import entities.entity_fields.ProblemField;
 import entities.entity_fields.TestcaseField;
 
@@ -53,6 +57,7 @@ public class AdminService {
   private ClarificationDao clarificationDao;
   private UserDao userDao;
   private SubmissionDao submissionDao;
+  private IllegalCodeDao illegalCodeDao;
 
   public AdminService() {
     this.contestDao = new ContestDao();
@@ -64,6 +69,7 @@ public class AdminService {
     this.clarificationDao = new ClarificationDao();
     this.userDao = new UserDao();
     this.submissionDao = new SubmissionDao();
+    this.illegalCodeDao = new IllegalCodeDao();
   }
 
   public void removeUser(long userId) {
@@ -396,5 +402,22 @@ public class AdminService {
     int numSessions
   ) {
     return this.contestSessionDao.getByContest(contestId, index, numSessions);
+  }
+
+
+  public <T> void updateRestriction(
+    long illegalCodeId,
+    IllegalCodeField field,
+    T value
+  ) throws RecordNotFoundException {
+    this.illegalCodeDao.update(illegalCodeId, field, value);
+  }
+
+  public long createRestriction(Language language, String content) {
+    return this.illegalCodeDao.add(new IllegalCode(language, content));
+  }
+
+  public void deleteRestriction(long id) {
+    this.illegalCodeDao.deleteById(id);
   }
 }
