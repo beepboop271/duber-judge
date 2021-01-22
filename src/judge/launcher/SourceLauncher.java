@@ -1,4 +1,4 @@
-package judge.entities;
+package judge.launcher;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -6,6 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import entities.Submission;
+import judge.CompileErrorException;
+import judge.InternalErrorException;
 
 /**
  * [description]
@@ -43,7 +45,7 @@ public abstract class SourceLauncher implements AutoCloseable {
     this.deleteTempFile();
   }
 
-  public void setup() throws InternalErrorException, UserException {
+  public void setup() throws InternalErrorException, CompileErrorException {
     try {
       this.source = this.createTempFile();
     } catch (IOException ioException) {

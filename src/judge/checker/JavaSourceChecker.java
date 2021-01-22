@@ -1,6 +1,4 @@
-package judge.entities;
-
-import java.util.ArrayList;
+package judge.checker;
 
 /**
  * [description]

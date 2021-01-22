@@ -16,8 +16,7 @@ public class Batch {
   }
   
   public Testcase[] getTestcases() {
-    Testcase[] caseArr = new Testcase[this.testcases.size()];
-    return this.testcases.toArray(caseArr);
+    return this.testcases.toArray(new Testcase[this.testcases.size()]);
   }
 
   public int getPoints() {

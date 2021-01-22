@@ -1,8 +1,8 @@
-package judge.entities;
+package judge;
 
-@SuppressWarnings("serial")
 public abstract class UserException extends Exception {
-
+  private static final long serialVersionUID = 1L;
+  
   public UserException() {
   }
 
@@ -17,6 +17,4 @@ public abstract class UserException extends Exception {
   public UserException(String message, Throwable cause) {
     super(message, cause);
   }
-  
-
 }

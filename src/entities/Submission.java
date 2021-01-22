@@ -6,10 +6,7 @@ public class Submission {
   private Problem problem;
   private String code;
   private Language language;
-  private ExecutionStatus status;
-  private int score;
-  private int runDurationMillis;
-  private double memoryUsageKb;
+  private Timestamp createdAt;
 
   public Submission(
     Problem problem,
@@ -20,30 +17,9 @@ public class Submission {
     this.problem = problem;
     this.code = code;
     this.language = language;
-    this.status = ExecutionStatus.PENDING;
-    this.score = 0;
-    this.runDurationMillis = 0;
+    this.createdAt = createdAt;
   }
 
-  public Submission(
-    Problem problem,
-    String code,
-    Language language,
-    Timestamp createdAt,
-    ExecutionStatus status,
-    int score,
-    int runDurationMillis,
-    int memoryUsageKb
-  ) {
-    this.problem = problem;
-    this.code = code;
-    this.language = language;
-    this.status = status;
-    this.score = score;
-    this.runDurationMillis = runDurationMillis;
-    this.memoryUsageKb = memoryUsageKb;
-  }
-  
   public Problem getProblem() {
     return this.problem;
   }
@@ -56,36 +32,7 @@ public class Submission {
     return this.language;
   }
 
-  public ExecutionStatus getStatus() {
-    return this.status;
+  public Timestamp getCreatedAt() {
+    return this.createdAt;
   }
-
-  public void setStatus(ExecutionStatus status) {
-    this.status = status;
-  }
-
-  public int getScore() {
-    return this.score;
-  }
-
-  public void setScore(int score) {
-    this.score = score;
-  }
-
-  public int getRunDurationMillis() {
-    return this.runDurationMillis;
-  }
-
-  public void setRunDuration(int runDurationMillis) {
-    this.runDurationMillis = runDurationMillis;
-  }
-
-  public double getMemoryUsageKb() {
-    return this.memoryUsageKb;
-  }
-
-  public void setMemoryUsageKb(double memoryUsageKb) {
-    this.memoryUsageKb = memoryUsageKb;
-  }
-
 }

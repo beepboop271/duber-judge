@@ -1,9 +1,9 @@
-package judge.entities;
+package judge;
 
 import entities.Language;
 
-@SuppressWarnings("serial")
 public class UnknownLanguageException extends UserException {
+  private static final long serialVersionUID = 1L;
   
   private final Language language;
   

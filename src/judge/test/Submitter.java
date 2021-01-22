@@ -1,9 +1,10 @@
 package judge.test;
 
 import entities.Submission;
-import judge.entities.Judger;
+import entities.SubmissionResult;
+import judge.Judger;
 
-public class Submitter implements Runnable{
+public class Submitter implements Runnable {
   private Submission submission;
   private Judger judger;
 
@@ -14,6 +15,12 @@ public class Submitter implements Runnable{
   
   @Override
   public void run() {
-    judger.judge(submission);
+    long start = System.currentTimeMillis();
+    SubmissionResult result = judger.judge(submission);
+    long end = System.currentTimeMillis();
+    System.out.println(
+      "Judging of submission " + submission.toString() + " done, duration: " + (end-start)
+    );
+    //Judger.display(result);
   }
 }

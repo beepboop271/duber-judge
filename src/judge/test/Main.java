@@ -10,17 +10,12 @@ import entities.Language;
 import entities.Problem;
 import entities.Submission;
 import entities.Testcase;
-import entities.TestcaseRun;
-import judge.entities.Judger;
-import judge.services.GlobalChildProcessService;
+import judge.ChildProcesses;
+import judge.Judger;
 
 public class Main {
-
-  public static ArrayList<TestcaseRun> runs = new ArrayList<TestcaseRun>();
-  public static ArrayList<Submission> submissions = new ArrayList<Submission>();
-
   public static void main(String[] args) {
-    GlobalChildProcessService.initialize();
+    ChildProcesses.initialize();
     // input format:
     // char
     // string
@@ -152,9 +147,9 @@ public class Main {
       new Timestamp(System.currentTimeMillis())
     );
 
-    File directory = new File("cache/judge/");
+    File directory = new File("temp/judge/");
     Judger judger = new Judger(
-      Runtime.getRuntime().availableProcessors(),
+      Runtime.getRuntime().availableProcessors()+1,
       directory
     );
     ArrayList<Submitter> submitters = new ArrayList<>();
@@ -179,25 +174,11 @@ public class Main {
     submitters.add(new Submitter(s7, judger));
     submitters.add(new Submitter(s8, judger));
     System.out.println("starting to judge");
-    long start = System.currentTimeMillis();
     for (Submitter s : submitters) {
-      s.run();
+      Thread t = new Thread(s);
+      t.start();
     }
-    // judger.judge(s1);
-    // judger.judge(s2);
-    // judger.judge(s3);
-    // judger.judge(s4);
-    // judger.judge(s5);
-    // judger.judge(s6);
-    // judger.judge(s7);
-    // judger.judge(s8);
-    long end = System.currentTimeMillis();
-    System.out.println("judging done, time: " + (end-start)/1000.0 + "seconds");
-    judger.shutdown();
-    GlobalChildProcessService.shutdown();
-
-    // for (Submission submission : Main.submissions) {
-    //   Judger.display(submission);
-    // }
+    // judger.shutdown();
+    // ChildProcesses.shutdown();
   }
 }

@@ -1,10 +1,12 @@
-package judge.entities;
+package judge.launcher;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 
 import entities.Submission;
+import judge.CompileErrorException;
+import judge.InternalErrorException;
 
 /**
  * [description]
@@ -25,16 +27,12 @@ public class JavaLauncher extends SourceLauncher {
   }
 
   @Override
-  public void setup() throws InternalErrorException, UserException {
+  public void setup() throws InternalErrorException, CompileErrorException {
     super.setup();
     try {
-      this.compileSource();
-      
-    } catch (InterruptedException interruptedException) {
-      throw new InternalErrorException(interruptedException);
-
-    } catch (IOException ioException) {
-      throw new InternalErrorException(ioException);
+      this.compileSource();      
+    } catch (InterruptedException | IOException e) {
+      throw new InternalErrorException(e);
     }
   }
 

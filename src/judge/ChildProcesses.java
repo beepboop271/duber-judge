@@ -1,4 +1,4 @@
-package judge.services;
+package judge;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -10,9 +10,7 @@ import com.jezhumble.javasysmon.JavaSysMon;
 import com.jezhumble.javasysmon.OsProcess;
 import com.jezhumble.javasysmon.ProcessInfo;
 
-import judge.entities.ChildProcess;
-import judge.entities.InternalErrorException;
-import judge.entities.SourceLauncher;
+import judge.launcher.SourceLauncher;
 
 /**
  * [description]
@@ -24,7 +22,7 @@ import judge.entities.SourceLauncher;
  * @since 1.0.0
  */
 
-public class GlobalChildProcessService {
+public class ChildProcesses {
   private static final int UPDATE_INTERVAL_MILLIS = 1000*1;
   private static final JavaSysMon SYSTEM_MONITOR = new JavaSysMon();
   private static final int CURRENT_PID = SYSTEM_MONITOR.currentPid();
@@ -34,7 +32,7 @@ public class GlobalChildProcessService {
     = new ConcurrentHashMap<>();
   
 
-  private GlobalChildProcessService() {
+  private ChildProcesses() {
   }
 
   public static void initialize() {
@@ -50,6 +48,7 @@ public class GlobalChildProcessService {
   @SuppressWarnings("unchecked")
   public static synchronized ChildProcess launchChildProcess(
     SourceLauncher launcher,
+    int timeLimitMillis,
     int memoryLimitKb
   ) throws InternalErrorException {
     validateActiveChildProcesses();
@@ -60,11 +59,13 @@ public class GlobalChildProcessService {
     for (OsProcess p : updatedProcesses) {
       updatedProcessPids.add(p.processInfo().getPid());
     }
-    int childProcessPid = GlobalChildProcessService.getNewPid(updatedProcessPids);
+    int childProcessPid = ChildProcesses.getNewPid(updatedProcessPids);
     ChildProcess childProcess = new ChildProcess(
       childProcessPid,
       process,
+      timeLimitMillis,
       memoryLimitKb,
+      0,
       0
     );
     activeChildProcesses.put(childProcessPid, childProcess);
@@ -105,10 +106,8 @@ public class GlobalChildProcessService {
 
       } else {
         ProcessInfo childInfo = childProcessTree.processInfo();
-        double memoryUsedKb = childInfo.getTotalBytes()/1024.0;
-        childProcess.setMemoryUsedKb(
-          Math.max(memoryUsedKb, childProcess.getMemoryUsedKb())
-        );
+        long memoryUsedBytes = childInfo.getResidentBytes();
+        childProcess.updateMemoryUsedBytes(memoryUsedBytes);
         // System.out.printf(
         //   "pid: %d, memory usage: %.2f\n", childInfo.getPid(), childProcess.getMemoryUsedKb()
         // );
@@ -116,7 +115,7 @@ public class GlobalChildProcessService {
         if (!childProcess.getProcess().isAlive()) {
           i.remove();
         // memory limit exceeded
-        } else if (memoryUsedKb > childProcess.getMemoryLimitKb()) {
+        } else if (memoryUsedBytes > childProcess.getMemoryLimitKb()*1024) {
           childProcess.getProcess().destroyForcibly();
           i.remove();
         }
@@ -136,7 +135,7 @@ public class GlobalChildProcessService {
     public void run() {
       while (running) {
         if (activeChildProcesses.size() > 0) {
-          GlobalChildProcessService.validateActiveChildProcesses();
+          ChildProcesses.validateActiveChildProcesses();
         }
         try {
           Thread.sleep(UPDATE_INTERVAL_MILLIS);

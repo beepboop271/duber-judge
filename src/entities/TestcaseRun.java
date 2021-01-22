@@ -4,7 +4,7 @@ public class TestcaseRun {
   private Testcase testcase;
   private Submission submission;
   private int runDurationMillis;
-  private double memoryUsageKb;
+  private long memoryUsedBytes;
   private ExecutionStatus status;
   private String output;
 
@@ -12,7 +12,7 @@ public class TestcaseRun {
     this.testcase = testcase;
     this.submission = null;
     this.runDurationMillis = 0;
-    this.memoryUsageKb = 0;
+    this.memoryUsedBytes = 0;
     this.status = ExecutionStatus.PENDING;
     this.output = "";
   }
@@ -21,14 +21,14 @@ public class TestcaseRun {
     Testcase testcase,
     Submission submission,
     int runDurationMillis,
-    double memoryUsageKb,
+    long memoryUsedBytes,
     ExecutionStatus status,
     String output
   ) {
     this.testcase = testcase;
     this.submission = submission;
     this.runDurationMillis = runDurationMillis;
-    this.memoryUsageKb = memoryUsageKb;
+    this.memoryUsedBytes = memoryUsedBytes;
     this.status = status;
     this.output = output;
   }
@@ -53,12 +53,12 @@ public class TestcaseRun {
     this.runDurationMillis = runDurationMillis;
   }
 
-  public double getMemoryUsageKb() {
-    return this.memoryUsageKb;
+  public long getMemoryUsedBytes() {
+    return this.memoryUsedBytes;
   }
 
-  public void setMemoryUsageKb(double memoryUsageKb) {
-    this.memoryUsageKb = memoryUsageKb;
+  public void setMemoryUsedBytes(long memoryUsedBytes) {
+    this.memoryUsedBytes = memoryUsedBytes;
   }
 
   public ExecutionStatus getStatus() {

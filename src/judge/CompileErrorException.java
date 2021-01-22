@@ -1,4 +1,4 @@
-package judge.entities;
+package judge;
 
 /**
  * [description]
@@ -10,8 +10,9 @@ package judge.entities;
  * @since 1.0.0
  */
 
-@SuppressWarnings("serial")
-public class CompileErrorException extends UserException {
+public class CompileErrorException extends Exception {
+  private static final long serialVersionUID = 1L;
+
   public CompileErrorException(String message) {
     super(message);
   }

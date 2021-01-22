@@ -1,9 +1,10 @@
-package judge.entities;
+package judge.launcher;
 
 import java.io.File;
 import java.io.IOException;
 
 import entities.Submission;
+import judge.InternalErrorException;
 
 /**
  * [description]

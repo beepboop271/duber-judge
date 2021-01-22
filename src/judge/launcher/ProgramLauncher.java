@@ -1,14 +1,13 @@
-package judge.services;
+package judge.launcher;
 
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 import entities.Submission;
-import judge.entities.JavaLauncher;
-import judge.entities.PythonLauncher;
-import judge.entities.SourceLauncher;
-import judge.entities.UnknownLanguageException;
+import judge.CompileErrorException;
+import judge.InternalErrorException;
+import judge.UnknownLanguageException;
 
 /**
  * [description]
@@ -20,8 +19,11 @@ import judge.entities.UnknownLanguageException;
  * @since 1.0.0
  */
 
-public class SourceLauncherService {
+public class ProgramLauncher {
 
+  private ProgramLauncher() {
+  }
+  
   public static CompletableFuture<SourceLauncher> getSourceLauncher(
     Submission submission,
     File tempFileDirectory,
@@ -63,13 +65,19 @@ public class SourceLauncherService {
           launcher = new JavaLauncher(submission, tempFileDirectory);
           break;
       }
-      
-      if (launcher != null) {
-        this.f.complete(launcher);
-      } else { // cannot find corresponding launcher
+
+      if (launcher == null) { // cannot find corresponding launcher
         this.f.completeExceptionally(new UnknownLanguageException(this.submission.getLanguage()));
+        return;
+      }
+
+      // setup the launcher
+      try {
+        launcher.setup();
+        this.f.complete(launcher);
+      } catch (InternalErrorException | CompileErrorException e) {
+        this.f.completeExceptionally(e);
       }
     }
   }
-
 }

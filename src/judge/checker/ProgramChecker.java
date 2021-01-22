@@ -1,6 +1,7 @@
-package judge.entities;
+package judge.checker;
 
 import entities.Submission;
+import judge.UnknownLanguageException;
 
 /**
  * [description]
