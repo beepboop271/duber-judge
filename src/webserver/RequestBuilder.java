@@ -63,13 +63,6 @@ public class RequestBuilder {
    */
   private int currentLength = -1;
 
-  /** Whether the request body is encoded in chunks or not. */
-  private boolean chunked = false;
-  /**
-   * If the body chunks have ended, used alongside
-   * {@link #chunked}.
-   */
-  private boolean chunkedEnd = false;
   /**
    * Whether the headers have been evaluated and body
    * existance/size determined or not.
@@ -126,9 +119,6 @@ public class RequestBuilder {
         // Once we get the first CRLF to indicate end of header we
         // need to parse headers to get the correct body
         this.evaluateHeaders();
-      } else if (this.chunked) {
-        // End of a chunked body is indicated by another CRLF
-        this.chunkedEnd = true;
       }
     } else if (contentLength > 0) {
       this.currentLength += seq.length();
@@ -139,13 +129,13 @@ public class RequestBuilder {
    * Does a preliminary parse and evaluation of the headers to
    * determine the kind of body this request will contain.
    * <p>
-   * Locating either the {@code Content-Length} header or
-   * {@code Transfer-Encoding} with value {@code chunked}
-   * indicate that this request should have a body (as
-   * specified in <a href=
+   * Locating the {@code Content-Length} header indicates that
+   * this request should have a body (as specified in <a href=
    * "https://tools.ietf.org/html/rfc7230#section-3.3">Section
    * 3.3 of RFC 7230</a>), and should be taken into account
    * when determining if the request is complete or not.
+   * {@code Transfer-Encoding} with value {@code chunked} will
+   * not be considered.
    * <p>
    * These headers are not checked for validity (eg. not empty
    * string, etc) and are not stored. They will be reparsed
@@ -166,11 +156,6 @@ public class RequestBuilder {
             header[0].equals("Content-Length") && header[1].matches("^\\d+$")
           ) {
             this.contentLength = Integer.parseInt(header[1]);
-          } else if (
-            header[0].equals("Transfer-Encoding")
-              && header[1].contains("chunked")
-          ) {
-            this.chunked = true;
           }
         }
 
@@ -204,16 +189,18 @@ public class RequestBuilder {
    */
   public boolean hasCompletedRequest() {
     if (this.evaluatedHeaders) {
-      if (chunked) {
-        return chunkedEnd;
-      } else if (contentLength > 0) {
-        if (this.currentLength >= contentLength) {
+      if (this.contentLength > 0) {
+        // If content length exist, make sure body is same length as
+        // content
+        if (this.currentLength >= this.contentLength) {
           return true;
         }
+        return false;
+      } else {
+        // If the above isn't true then there is no body, we
+        // are done
+        return true;
       }
-      // If neither of the above is true then there is no body, we
-      // are done
-      return true;
     }
 
     return false;

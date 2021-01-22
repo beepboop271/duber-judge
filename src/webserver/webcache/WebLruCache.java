@@ -221,6 +221,9 @@ public class WebLruCache {
   public void clearCache() {
     synchronized (this.listLock) {
       this.lookup.clear();
+      this.reverseLookup.clear();
+      this.head = null;
+      this.tail = null;
     }
   }
 
@@ -238,7 +241,7 @@ public class WebLruCache {
 
   /**
    * A runnable that handles cleanup of expired cached items
-   * with a 10 second delay between each check.
+   * with a 15 second delay between each check.
    * <p>
    * Created <b> 2021-01-19 </b>.
    *
@@ -257,6 +260,7 @@ public class WebLruCache {
               // Remove expired cache objects
               TimedNode<String> toRemove = WebLruCache.this.lookup.get(toCheck);
               WebLruCache.this.lookup.remove(toCheck);
+              WebLruCache.this.reverseLookup.remove(toRemove);
 
               if (toRemove.next != null) {
                 toRemove.next.prev = toRemove.prev;
