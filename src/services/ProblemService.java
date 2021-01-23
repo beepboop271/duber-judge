@@ -48,8 +48,7 @@ public class ProblemService {
       } else if (problem instanceof ContestProblem) {
         int submissionCount =
           this.userService.getSubmissionCount(userId, problemId);
-        return submissionCount
-          < ((ContestProblem)problem).getSubmissionsLimit();
+        return submissionCount < ((ContestProblem)problem).getSubmissionsLimit();
       }
     } catch (RecordNotFoundException e) {
       System.out.println(e.getMessage());
@@ -57,12 +56,22 @@ public class ProblemService {
     return false;
   }
 
+  /**
+   *
+   * @param userId
+   * @param problemId
+   * @param code
+   * @param language
+   * @return
+   * @throws InsufficientPermissionException    The user is unable to submit.
+   * @throws RecordNotFoundException            The problem is not found.
+   */
   public SubmissionResult submitSolution(
     long userId,
     long problemId,
     String code,
     Language language
-  ) throws InsufficientPermissionException {
+  ) throws InsufficientPermissionException, RecordNotFoundException {
     if (!this.canSubmit(userId, problemId)) {
       throw new InsufficientPermissionException();
     }
@@ -74,7 +83,9 @@ public class ProblemService {
       new Timestamp(System.currentTimeMillis())
     );
 
-    return Judger.judge(submission);
+    Entity<Problem> problem = this.problemDao.get(problemId);
+
+    return Judger.judge(submission, problem);
   }
 
   public void requestClarification(long userId, long problemId, String message)
