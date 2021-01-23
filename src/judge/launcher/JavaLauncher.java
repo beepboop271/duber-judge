@@ -22,6 +22,7 @@ import judge.InternalErrorException;
 public class JavaLauncher extends SourceLauncher {
 
   private static final String FILE_EXTENSION = ".java";
+  private static final String FILE_NAME = "Main";
 
   public JavaLauncher(Submission submission, File tempFileDirectory) {
     super(submission, tempFileDirectory);
@@ -39,7 +40,8 @@ public class JavaLauncher extends SourceLauncher {
 
   @Override
   public Process launch() throws InternalErrorException {
-    ProcessBuilder builder = new ProcessBuilder("java", this.getSource().getAbsolutePath());
+    ProcessBuilder builder = new ProcessBuilder("java", "Main");
+    builder.directory(this.getSource().getParentFile());
     try {
       return builder.start();
     } catch (IOException ioException) {
@@ -50,6 +52,11 @@ public class JavaLauncher extends SourceLauncher {
   @Override
   public String getTempFileExtension() {
     return JavaLauncher.FILE_EXTENSION;
+  }
+
+  @Override
+  public String getTempFileName() {
+    return JavaLauncher.FILE_NAME;
   }
 
   @Override

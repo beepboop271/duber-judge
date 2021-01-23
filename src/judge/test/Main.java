@@ -147,32 +147,59 @@ public class Main {
       new Timestamp(System.currentTimeMillis())
     );
 
+    Submission s9 = new Submission(
+      p1,
+      "import java.util.Scanner;\n"
+      +"public class Main {\n"
+      +"\tpublic static void main(String[] args) {\n"
+      +"\t\tScanner input = new Scanner(System.in);\n"
+      +"\t\tString sub = input.nextLine().trim();\n"
+      +"\t\tString full = input.nextLine().trim();\n"
+      +"\t\tSystem.out.println(count(sub, full));\n"
+      +"\t\tinput.close();\n"
+      +"\t}\n"
+      +"\tpublic static int count(String sub, String full) {\n"
+      +"\t\tint c = 0;\n"
+      +"\t\tfor (int i = 0; i < full.length() - sub.length(); i++) {\n"
+      +"\t\t\tif (full.substring(i, i + sub.length()).equals(sub)) {\n"
+      +"\t\t\t\tc++;\n"
+      +"\t\t\t}\n"
+      +"\t\t}\n"
+      +"\t\treturn c;\n"
+      +"\t}\n"
+      +"}\n",
+      Language.JAVA,
+      new Timestamp(System.currentTimeMillis())
+    );
+
     File directory = new File("temp/judge/");
     Judger judger = new Judger(
       Runtime.getRuntime().availableProcessors()+1,
       directory
     );
     ArrayList<Submitter> submitters = new ArrayList<>();
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s1, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s2, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s3, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s4, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s5, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s6, judger));
-    }
-    submitters.add(new Submitter(s7, judger));
-    submitters.add(new Submitter(s8, judger));
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s1, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s2, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s3, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s4, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s5, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s6, judger));
+    // }
+    // submitters.add(new Submitter(s7, judger));
+    // submitters.add(new Submitter(s8, judger));
+    submitters.add(new Submitter(s1, judger));
+    submitters.add(new Submitter(s9, judger));
     System.out.println("starting to judge");
     for (Submitter s : submitters) {
       Thread t = new Thread(s);

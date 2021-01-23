@@ -20,6 +20,7 @@ import judge.InternalErrorException;
 public class PythonLauncher extends SourceLauncher {
 
   private static final String FILE_EXTENSION = ".py";
+  private static final String FILE_NAME = "main";
 
   public PythonLauncher(Submission submission, File tempFileDirectory) {
     super(submission, tempFileDirectory);
@@ -39,6 +40,11 @@ public class PythonLauncher extends SourceLauncher {
   @Override
   public String getTempFileExtension() {
     return PythonLauncher.FILE_EXTENSION;
+  }
+
+  @Override
+  public String getTempFileName() {
+    return PythonLauncher.FILE_NAME;
   }
   
   @Override

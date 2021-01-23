@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import entities.Language;
 import entities.Submission;
@@ -22,18 +23,19 @@ import judge.InternalErrorException;
 
 public abstract class SourceLauncher implements AutoCloseable {
 
-  private static final String TEMP_FILE_PREFIX = "submission"; // At least 3 chars long
+  private static final String TEMP_DIR_PREFIX = "submission"; // At least 3 chars long
 
   private final Submission submission;
 
   private File source;
-  private File directory;
+  private File rootDirectory;
+  private File programDirectory;
   
   public SourceLauncher(Submission submission, File tempFileDirectory) {
     this.submission = submission;
-    this.directory = tempFileDirectory;
-    if (!this.directory.exists()) {
-      this.directory.mkdirs();
+    this.rootDirectory = tempFileDirectory;
+    if (!this.rootDirectory.exists()) {
+      this.rootDirectory.mkdirs();
     }
   }
 
@@ -41,16 +43,19 @@ public abstract class SourceLauncher implements AutoCloseable {
 
   public abstract String getTempFileExtension();
 
+  public abstract String getTempFileName();
+
   public abstract Language getLanguage();
   
   @Override
   public void close() {
-    this.deleteTempFile();
+    this.deleteTempDirectory();
   }
 
   public void setup() throws InternalErrorException, CompileErrorException {
     try {
-      this.source = this.createTempFile();
+      this.programDirectory = this.createTempDirectory();
+      this.source = this.createTempFile(programDirectory);
     } catch (IOException ioException) {
       throw new InternalErrorException(ioException);
     }
@@ -60,13 +65,18 @@ public abstract class SourceLauncher implements AutoCloseable {
     return this.source;
   }
 
-  private File createTempFile() throws IOException {
-    File tempFile = File.createTempFile(
-      SourceLauncher.TEMP_FILE_PREFIX,
-      this.getTempFileExtension(),
-      this.directory
-    );
+  private File createTempDirectory() throws IOException {
+    return Files.createTempDirectory(
+      rootDirectory.toPath(),
+      SourceLauncher.TEMP_DIR_PREFIX
+    ).toFile();
+  }
 
+  private File createTempFile(File directory) throws IOException {
+    File tempFile = new File(
+      directory.toString() + File.separator + this.getTempFileName() + this.getTempFileExtension()
+    );
+    
     BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
     writer.write(this.submission.getCode());
     writer.close();
@@ -74,11 +84,17 @@ public abstract class SourceLauncher implements AutoCloseable {
     return tempFile;
   }
 
-  private boolean deleteTempFile() {
-    if (this.source == null) {
+  private boolean deleteTempDirectory() {
+    if (this.programDirectory == null) {
       return false;
     }
-    return this.source.delete();
+    // files in the directory needs to be deleted first
+    File[] files = this.programDirectory.listFiles();
+    if (files != null) {
+      for (File f : files) {
+        f.delete();
+      }
+    }
+    return this.programDirectory.delete();
   }
-
 }
