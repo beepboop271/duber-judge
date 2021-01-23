@@ -76,6 +76,7 @@ public class ProgramLauncher {
         launcher.setup();
         this.f.complete(launcher);
       } catch (InternalErrorException | CompileErrorException e) {
+        launcher.close();
         this.f.completeExceptionally(e);
       }
     }

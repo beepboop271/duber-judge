@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 
+import entities.Language;
 import entities.Submission;
 import judge.CompileErrorException;
 import judge.InternalErrorException;
@@ -49,6 +50,11 @@ public class JavaLauncher extends SourceLauncher {
   @Override
   public String getTempFileExtension() {
     return JavaLauncher.FILE_EXTENSION;
+  }
+
+  @Override
+  public Language getLanguage() {
+    return Language.PYTHON;
   }
 
   private void compileSource() throws IOException, InterruptedException, CompileErrorException {

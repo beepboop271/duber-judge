@@ -1,5 +1,7 @@
 package judge.checker;
 
+import entities.Language;
+
 /**
  * [description]
  * <p>
@@ -12,4 +14,6 @@ package judge.checker;
 
 public interface SourceChecker {
   public boolean isClean(String source);
+  
+  public Language getLanguage();
 }

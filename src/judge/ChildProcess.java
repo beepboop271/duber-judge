@@ -15,8 +15,6 @@ public class ChildProcess {
   private final Process process;
   private final int timeLimitMillis;
   private final int memoryLimitKb;
-  
-  private int runDurationMillis;
   private long memoryUsedBytes;
   
   public ChildProcess(
@@ -24,14 +22,12 @@ public class ChildProcess {
     Process process,
     int timeLimitMillis,
     int memoryLimitKb,
-    int runDurationMillis,
     long memoryUsedBytes
   ) {
     this.pid = pid;
     this.process = process;
     this.timeLimitMillis = timeLimitMillis;
     this.memoryLimitKb = memoryLimitKb;
-    this.runDurationMillis = runDurationMillis;
     this.memoryUsedBytes = memoryUsedBytes;
   }
 
@@ -53,14 +49,6 @@ public class ChildProcess {
 
   public int getMemoryLimitKb() {
     return this.memoryLimitKb;
-  }
-
-  public int getRunDurationMillis() {
-    return this.runDurationMillis;
-  }
-
-  public void setRunDurationMillis(int runDurationMillis) {
-    this.runDurationMillis = runDurationMillis;
   }
 
   public long getMemoryUsedBytes() {

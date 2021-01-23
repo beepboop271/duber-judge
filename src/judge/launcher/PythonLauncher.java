@@ -3,6 +3,7 @@ package judge.launcher;
 import java.io.File;
 import java.io.IOException;
 
+import entities.Language;
 import entities.Submission;
 import judge.InternalErrorException;
 
@@ -40,4 +41,8 @@ public class PythonLauncher extends SourceLauncher {
     return PythonLauncher.FILE_EXTENSION;
   }
   
+  @Override
+  public Language getLanguage() {
+    return Language.PYTHON;
+  }
 }

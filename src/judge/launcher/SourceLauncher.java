@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import entities.Language;
 import entities.Submission;
 import judge.CompileErrorException;
 import judge.InternalErrorException;
@@ -40,6 +41,8 @@ public abstract class SourceLauncher implements AutoCloseable {
 
   public abstract String getTempFileExtension();
 
+  public abstract Language getLanguage();
+  
   @Override
   public void close() {
     this.deleteTempFile();

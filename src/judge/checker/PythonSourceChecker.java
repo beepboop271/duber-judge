@@ -1,5 +1,7 @@
 package judge.checker;
 
+import entities.Language;
+
 /**
  * [description]
  * <p>
@@ -15,8 +17,9 @@ public class PythonSourceChecker implements SourceChecker {
   public PythonSourceChecker() {
   }
 
+  @Override
   public boolean isClean(String source) {
-    //TODO: get list from db
+    //TODO: get list externally
     String[] illegalSegments = new String[] {
       "import os"
     };
@@ -28,4 +31,8 @@ public class PythonSourceChecker implements SourceChecker {
     return true;
   }
   
+  @Override
+  public Language getLanguage() {
+    return Language.PYTHON;
+  }
 }

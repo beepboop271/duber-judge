@@ -94,7 +94,6 @@ public class Tester {
 
     private TestcaseRun test(Testcase testcase) {
       TestcaseRun runToReturn = new TestcaseRun(testcase);
-      runToReturn.setStatus(ExecutionStatus.PENDING);
       String input = testcase.getInput();
       if (!input.endsWith("\n")) { // make sure the input ends with a newline character
         input += "\n";
@@ -113,8 +112,11 @@ public class Tester {
         program = childProcess.getProcess();
         stdin = program.getOutputStream();
         stdout = program.getInputStream();
+
       } catch (InternalErrorException e) {
         return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, runToReturn);
+      } catch (ProcessNotFoundException e) {
+        return this.fail(ExecutionStatus.WRONG_ANSWER, e, false, runToReturn);
       }
 
       int runDurationMillis = 0;
@@ -127,10 +129,11 @@ public class Tester {
         program.waitFor(this.timeLimitMillis, TimeUnit.MILLISECONDS);
         long end = System.currentTimeMillis();
         runDurationMillis = (int)(end - start);
-      } catch (IOException | InterruptedException e) {
+      } catch (IOException e) {
+        return this.fail(ExecutionStatus.WRONG_ANSWER, e, false, runToReturn);
+      } catch (InterruptedException e) {
         return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, runToReturn);
       }
-      // childProcess.setRunDurationMillis(runDurationMillis);
       runToReturn.setRunDurationMillis(runDurationMillis);
       runToReturn.setMemoryUsedBytes(childProcess.getMemoryUsedBytes());
 

@@ -21,6 +21,6 @@ public class Submitter implements Runnable {
     System.out.println(
       "Judging of submission " + submission.toString() + " done, duration: " + (end-start)
     );
-    //Judger.display(result);
+    Judger.display(result);
   }
 }

@@ -1,9 +1,6 @@
 package entities;
 
 public enum ExecutionStatus {
-
-  PENDING,
-
   // the judge has encountered an error
   INTERNAL_ERROR,
 
@@ -23,6 +20,7 @@ public enum ExecutionStatus {
   // untested due to failure of previous testcases in the same batch
   SKIPPED,
 
-  ALL_CLEAR
+  ALL_CLEAR,
 
+  PENDING,
 }

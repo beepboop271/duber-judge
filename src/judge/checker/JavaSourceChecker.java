@@ -1,5 +1,7 @@
 package judge.checker;
 
+import entities.Language;
+
 /**
  * [description]
  * <p>
@@ -16,7 +18,7 @@ public class JavaSourceChecker implements SourceChecker {
   }
 
   public boolean isClean(String source) {
-    //TODO: get list from db
+    //TODO: get list externally
     String[] illegalSegments = new String[] {
       "ProcessBuilder",
       "Process"
@@ -28,5 +30,9 @@ public class JavaSourceChecker implements SourceChecker {
     }
     return true;
   }
-  
+
+  @Override
+  public Language getLanguage() {
+    return Language.JAVA;
+  }
 }
