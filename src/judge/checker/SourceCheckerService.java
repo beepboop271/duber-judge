@@ -13,10 +13,13 @@ import judge.UnknownLanguageException;
  * @since 1.0.0
  */
 
-public class ProgramChecker {
+public class SourceCheckerService {
+
+  private SourceCheckerService() {
+  }
 
   public static boolean isClean(Submission submission) throws UnknownLanguageException {
-    SourceChecker checker = ProgramChecker.getChecker(submission);
+    SourceChecker checker = SourceCheckerService.getChecker(submission);
     return checker.isClean(submission.getCode());
   }
 
@@ -30,5 +33,4 @@ public class ProgramChecker {
         throw new UnknownLanguageException(submission.getLanguage());
     }
   }
-
 }

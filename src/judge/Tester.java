@@ -51,7 +51,7 @@ public class Tester {
 
   private static class BatchRunner implements Runnable {
     private final Batch batch;
-    private final SourceLauncher programLauncher;
+    private final SourceLauncher launcher;
     private final int timeLimitMillis;
     private final int memoryLimitKb;
     private final int outputLimitKb;
@@ -61,14 +61,14 @@ public class Tester {
     public BatchRunner(
       CompletableFuture<TestcaseRun[]> f,
       Batch batch,
-      SourceLauncher programLauncher,
+      SourceLauncher launcher,
       int timeLimitMillis,
       int memoryLimitKb,
       int outputLimitKb
     ) {
       this.f = f;
       this.batch = batch;
-      this.programLauncher = programLauncher;
+      this.launcher = launcher;
       this.timeLimitMillis = timeLimitMillis;
       this.memoryLimitKb = memoryLimitKb;
       this.outputLimitKb = outputLimitKb;
@@ -105,7 +105,7 @@ public class Tester {
       // launch program
       try {
         childProcess = ChildProcesses.launchChildProcess(
-          this.programLauncher,
+          this.launcher,
           this.timeLimitMillis,
           this.memoryLimitKb
         );
@@ -185,7 +185,9 @@ public class Tester {
           testcaseRun.setStatus(ExecutionStatus.WRONG_ANSWER);
         }
       }
-      String programOutput = sb.toString().trim(); //TODO: document whitespace trimming
+      // TODO: Don't forget to document somewhere that
+      // leading and trailing whitespaces are not significant, but whitespace between is.
+      String programOutput = sb.toString().trim(); 
       
       // compare with expected output if submission hasn't received a status
       if (testcaseRun.getStatus() == ExecutionStatus.PENDING) { 

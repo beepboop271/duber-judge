@@ -13,9 +13,9 @@ import entities.Problem;
 import entities.Submission;
 import entities.SubmissionResult;
 import entities.TestcaseRun;
-import judge.checker.ProgramChecker;
-import judge.launcher.ProgramLauncher;
+import judge.checker.SourceCheckerService;
 import judge.launcher.SourceLauncher;
+import judge.launcher.SourceLauncherService;
 
 /**
  * [description]
@@ -41,7 +41,7 @@ public class Judger {
     SubmissionResult result = new SubmissionResult(submission);
     // check if code is clean
     try {
-      if (!ProgramChecker.isClean(submission)) {
+      if (!SourceCheckerService.isClean(submission)) {
         result.setStatus(ExecutionStatus.ILLEGAL_CODE);
         return result;
       }
@@ -51,7 +51,7 @@ public class Judger {
     }
     // get launcher
     CompletableFuture<SourceLauncher> launcherFuture =
-      ProgramLauncher.getSourceLauncher(
+      SourceLauncherService.getSourceLauncher(
         submission, 
         this.tempFileDirectory,
         this.pool

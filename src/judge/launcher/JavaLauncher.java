@@ -20,9 +20,9 @@ import judge.InternalErrorException;
  */
 
 public class JavaLauncher extends SourceLauncher {
-
+  //TODO: document that java files has to have "Main" as the class name
   private static final String FILE_EXTENSION = ".java";
-  private static final String FILE_NAME = "Main";
+  private static final String FILE_NAME = "Main"; 
 
   public JavaLauncher(Submission submission, File tempFileDirectory) {
     super(submission, tempFileDirectory);

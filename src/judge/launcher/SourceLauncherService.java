@@ -19,9 +19,9 @@ import judge.UnknownLanguageException;
  * @since 1.0.0
  */
 
-public class ProgramLauncher {
+public class SourceLauncherService {
 
-  private ProgramLauncher() {
+  private SourceLauncherService() {
   }
   
   public static CompletableFuture<SourceLauncher> getSourceLauncher(
