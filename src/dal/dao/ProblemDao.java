@@ -8,6 +8,8 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 
+import org.sqlite.SQLiteErrorCode;
+
 import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
 import entities.Batch;
@@ -19,6 +21,7 @@ import entities.Problem;
 import entities.ProblemType;
 import entities.Testcase;
 import entities.entity_fields.ProblemField;
+import services.InvalidArguments;
 
 /**
  * [description]
@@ -130,7 +133,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
         element = "editorial";
         break;
     }
-    String sql = "UPDATE contests SET " + element + " = ? WHERE id = ?;";
+    String sql = "UPDATE problems SET " + element + " = ? WHERE id = ?;";
     PreparedStatement ps = null;
     Connection connection = null;
     try {
@@ -152,7 +155,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           ps.setString(1, ((Timestamp)value).toString());
           break;
         case TITLE:
-          ps.setInt(1, (int)value);
+          ps.setString(1, (String)value);
           break;
         case DESCRIPTION:
           ps.setString(1, (String)value);
@@ -201,7 +204,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   }
 
   @Override
-  public long add(Problem data) {
+  public long add(Problem data) throws IllegalArgumentException  {
     String sql = "INSERT INTO problems"
                 +"(problem_type, category, creator_id, created_at, last_modified_at,"
                 +" title, description, points, time_limit_millis, memory_limit_kb, output_limit_kb,"
@@ -257,7 +260,10 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
       key.next();
       id = key.getLong(1);
     } catch (SQLException e) {
-      e.printStackTrace();
+      if (SQLiteErrorCode.getErrorCode(e.getErrorCode())
+          == SQLiteErrorCode.SQLITE_CONSTRAINT) {
+        throw new IllegalArgumentException(InvalidArguments.TITLE_TAKEN.toString());
+      }
     } finally {
       ConnectDB.close(ps);
       ConnectDB.close(key);
@@ -514,9 +520,9 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
 
   public ArrayList<Entity<Problem>> getPracticeProblems(int index, int numProblems) {
     String sql = String.format(
-                "SELECT * FROM problems"
-                +"WHERE problem_type = %s"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM problems\n"
+                +"WHERE problem_type = '%s'\n"
+                +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
       ProblemType.PRACTICE.toString(), numProblems, index
     );
@@ -545,9 +551,9 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   public ArrayList<Entity<Problem>>
     getPracticeProblemsByCategory(Category category, int index, int numProblems) {
     String sql = String.format(
-                "SELECT * FROM problems"
-                +"WHERE problem_type = %s, category = ?"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM problems\n"
+                +"WHERE problem_type = '%s' AND category = ?\n"
+                +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
       ProblemType.PRACTICE.toString(), numProblems, index
     );
@@ -577,9 +583,9 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   public ArrayList<Entity<Problem>>
     getPracticeProblemsByCreator(long creatorId, int index, int numProblems) {
     String sql = String.format(
-                "SELECT * FROM problems"
-                +"WHERE problem_type = %s, creator_id = ?"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM problems\n"
+                +"WHERE problem_type = '%s' AND creator_id = ?\n"
+                +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
       ProblemType.PRACTICE.toString(), numProblems, index
     );
@@ -609,9 +615,9 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   public ArrayList<Entity<Problem>>
     getPracticeProblemsByPoints(int min, int max, int index, int numProblems) {
     String sql = String.format(
-                "SELECT * FROM problems"
-                +"WHERE problem_type = %s, points > ?, points < ?"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM problems\n"
+                +"WHERE problem_type = '%s' AND points > ? AND points < ?\n"
+                +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
       ProblemType.PRACTICE.toString(), numProblems, index
     );
@@ -642,9 +648,9 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   public ArrayList<Entity<Problem>>
     getPracticeProblemsByNumSubmissions(int min, int max, int index, int numProblems) {
     String sql = String.format(
-                "SELECT * FROM problems"
-                +"WHERE problem_type = %s, num_submissions > ?, num_submissions < ?"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM problems\n"
+                +"WHERE problem_type = '%s' AND num_submissions > ? AND num_submissions < ?\n"
+                +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
       ProblemType.PRACTICE.toString(), numProblems, index
     );

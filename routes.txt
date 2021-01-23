@@ -30,7 +30,8 @@
 
 
 /contests
-  - getContests
+  - getOngoingContests
+  - getUpcomingContests
   - getActiveContests
   - startContest
 /contest/:contestId -> /contest/:contestId/problems

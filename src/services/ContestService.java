@@ -36,12 +36,12 @@ public class ContestService {
     this.contestDao = new ContestDao();
   }
 
-  public boolean validateContestSession(long userId, long contestId) {
+  private boolean validateContestSession(long userId, long contestId) {
     try {
       ContestSession contestSession = this.contestSessionDao.get(contestId, userId).getContent();
       return contestSession.getStatus() == ContestSessionStatus.ONGOING;
     } catch (RecordNotFoundException e) {
-      return false;
+      return true;
     }
   }
 
@@ -71,16 +71,38 @@ public class ContestService {
     );
   }
 
-  public void updateUserStatus(long userId, ContestStatus value)
+  public void updateUserStatus(
+    long userId,
+    long contestId,
+    ContestSessionStatus value
+  )
     throws RecordNotFoundException {
-    this.contestSessionDao
-      .updateByUser(userId, ContestSessionField.STATUS, value);
+
+    long contestSessionId = this.contestSessionDao.get(contestId, userId).getId();
+    this.contestSessionDao.updateByUser(
+      userId,
+      contestSessionId,
+      ContestSessionField.STATUS,
+      value
+    );
   }
 
-  public void updateUserScore(long userId, int score)
+  public void updateUserScore(
+    long userId,
+    long contestId,
+    int score
+  )
     throws RecordNotFoundException {
-    this.contestSessionDao
-      .updateByUser(userId, ContestSessionField.SCORE, score);
+    Entity<ContestSession> session = this.contestSessionDao.get(contestId, userId);
+    if (score < session.getContent().getScore()) {
+      return;
+    }
+    this.contestSessionDao.updateByUser(
+      userId,
+      session.getId(),
+      ContestSessionField.SCORE,
+      score
+    );
   }
 
 

@@ -1,7 +1,7 @@
 package services;
 
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import entities.Session;
 
@@ -19,6 +19,6 @@ public class Sessions {
   public static ConcurrentHashMap<String, Session> tokenToSessions =
     new ConcurrentHashMap<>();
   /** Sessions ordered by time. */
-  public static TreeSet<Session> sessions =
-    new TreeSet<>();
+  public static ConcurrentSkipListSet<Session> sessions =
+    new ConcurrentSkipListSet<>();
 }

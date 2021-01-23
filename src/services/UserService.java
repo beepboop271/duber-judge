@@ -154,7 +154,6 @@ public class UserService {
     switch (field) {
       case USERNAME:
         this.validateUsername((String)value);
-        System.out.println("LSKDFJ");
         break;
     }
     this.userDao.update(userId, field, value);
@@ -254,8 +253,8 @@ public class UserService {
    * @param userId the user's ID
    * @return a list of active contests
    */
-  public ArrayList<Entity<Contest>> getActiveContests(long userId) {
-    return this.contestDao.getContestsByStatus(userId, ContestSessionStatus.ONGOING);
+  public ArrayList<Entity<ContestSession>> getActiveContests(long userId) {
+    return this.contestSessionDao.getContestsByStatus(userId, ContestSessionStatus.ONGOING);
   }
 
   public int getNumActiveContests(long userId) {
@@ -276,8 +275,8 @@ public class UserService {
    * @param userId the user's ID
    * @return a list of all contests a user participated in
    */
-  public ArrayList<Entity<Contest>> getParticipatedContests(long userId) {
-    return this.contestDao.getContestsByStatus(userId, ContestSessionStatus.OVER);
+  public ArrayList<Entity<ContestSession>> getParticipatedContests(long userId) {
+    return this.contestSessionDao.getContestsByStatus(userId, ContestSessionStatus.OVER);
   }
 
   /**

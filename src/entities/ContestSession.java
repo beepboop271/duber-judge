@@ -23,6 +23,8 @@ public class ContestSession {
   /** The user's current score for the contest. */
   private int score;
 
+  private Contest contest;
+
   /**
    * Constructs a new ContestSession.
    *
@@ -44,6 +46,33 @@ public class ContestSession {
     this.createdAt = createdAt;
     this.status = status;
     this.score = score;
+  }
+
+
+  /**
+   * Constructs a new ContestSession.
+   *
+   * @param contestId the contest id of the associated contest.
+   * @param userId    the user id of the associated user.
+   * @param createdAt when the user started the contest.
+   * @param status    the user's current for during the contest.
+   * @param score     the user's current score for the contest.
+   * @param contest   the contest this session corresponds to
+   */
+  public ContestSession(
+    long contestId,
+    long userId,
+    Timestamp createdAt,
+    ContestSessionStatus status,
+    int score,
+    Contest contest
+  ) {
+    this.contestId = contestId;
+    this.userId = userId;
+    this.createdAt = createdAt;
+    this.status = status;
+    this.score = score;
+    this.contest = contest;
   }
 
   /**
@@ -89,6 +118,10 @@ public class ContestSession {
    */
   public int getScore() {
     return this.score;
+  }
+
+  public Contest getContest() {
+    return this.contest;
   }
 
 }

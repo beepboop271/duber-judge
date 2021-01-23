@@ -12,6 +12,7 @@ import dal.connection.GlobalConnectionPool;
 import entities.Entity;
 import entities.ExecutionStatus;
 import entities.Language;
+import entities.ProblemType;
 import entities.Submission;
 import entities.SubmissionResult;
 
@@ -161,9 +162,9 @@ public class SubmissionDao implements Dao<SubmissionResult> {
    */
   public ArrayList<Entity<SubmissionResult>> getByProblem(long problemId, int index, int numSubmissions) {
     String sql = String.format(
-                "SELECT * FROM submissions"
-                +"WHERE problem_id = ?"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM submissions\n"
+                +"WHERE problem_id = ?\n"
+                +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s", numSubmissions, index);
     PreparedStatement ps = null;
     Connection connection = null;
@@ -201,20 +202,17 @@ public class SubmissionDao implements Dao<SubmissionResult> {
   public ArrayList<Entity<SubmissionResult>>
     getUniqueSubmissions(long userId, int index, int numSubmissions) {
     String sql = String.format(
-      "SELECT submissions.*"
-      +"FROM submissions"
-      +"  INNER JOIN ("
-      +"    SELECT submissions.problem_id AS problem_id, MAX(submissions.score) AS highest_score"
-      +"      FROM submissions"
-      +"        INNER JOIN problems ON submissions.problem_id = problems.id"
-      +"    WHERE submissions.user_id = ? AND problems.problem_type = 'PRACTICE'"
-      +"    GROUP BY submissions.problem_id"
-      +"    ORDER BY highest_score DESC"
-      +"    LIMIT %s OFFSET %s"
-      +"  ) AS a"
-      +"        ON submissions.problem_id = a.problem_id"
-      +"        AND submissions.score = a.highest_score;",
-      numSubmissions, index);
+       "SELECT submissions.*\n"
+      +"FROM submissions\n"
+      +"INNER JOIN (\n"
+      +"  SELECT submissions.id AS sid\n"
+      +"  FROM submissions INNER JOIN problems ON submissions.problem_id = problems.id\n"
+      +"  WHERE submissions.user_id = ? AND problems.type = '%s'\n"
+      +"  GROUP BY submissions.problem_id\n"
+      +"  ORDER BY MAX(submissions.score) DESC\n"
+      +") AS a ON submissions.id = a.sid\n"
+      +"LIMIT %s OFFSET %s;",
+      ProblemType.PRACTICE, numSubmissions, index);
 
 
 
@@ -297,9 +295,9 @@ public class SubmissionDao implements Dao<SubmissionResult> {
     int numSubmissions
   ) {
     String sql = String.format(
-                "SELECT * FROM submissions"
-                +"WHERE user_id = ? AND problem_id = ?"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM submissions\n"
+                +"WHERE user_id = ? AND problem_id = ?\n"
+                +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s", numSubmissions, index);
     PreparedStatement ps = null;
     Connection connection = null;

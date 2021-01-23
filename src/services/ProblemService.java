@@ -4,11 +4,13 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import dal.dao.ClarificationDao;
+import dal.dao.ContestSessionDao;
 import dal.dao.ProblemDao;
 import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
 import entities.Clarification;
 import entities.ContestProblem;
+import entities.ContestSession;
 import entities.Entity;
 import entities.ExecutionStatus;
 import entities.Language;
@@ -17,6 +19,8 @@ import entities.Problem;
 import entities.Submission;
 import entities.SubmissionResult;
 import judge.Judger;
+import entities.entity_fields.ContestSessionField;
+import entities.entity_fields.ProblemField;
 
 /**
  * [description]
@@ -32,12 +36,14 @@ public class ProblemService {
   private ClarificationDao clarificationDao;
   private UserService userService;
   private SubmissionDao submissionDao;
+  private ContestSessionDao contestSessionDao;
 
   public ProblemService() {
     this.problemDao = new ProblemDao();
     this.clarificationDao = new ClarificationDao();
     this.userService = new UserService();
     this.submissionDao = new SubmissionDao();
+    this.contestSessionDao = new ContestSessionDao();
   }
 
   private boolean canSubmit(long userId, long problemId) {
@@ -84,8 +90,33 @@ public class ProblemService {
     );
 
     Entity<Problem> problem = this.problemDao.get(problemId);
+    SubmissionResult result = Judger.judge(submission, problem);
+    long submissionId = this.submissionDao.add(result);
 
-    return Judger.judge(submission, problem);
+    Problem pContent = problem.getContent();
+    if (pContent instanceof ContestProblem) {
+      long sessionId = this.contestSessionDao.get(
+        ((ContestProblem)pContent).getContestId(),
+        userId
+      ).getId();
+      this.contestSessionDao.updateLatestScore(userId, sessionId);
+    }
+
+    this.problemDao.update(
+      problem.getId(),
+      ProblemField.NUM_SUBMISSIONS,
+      pContent.getNumSubmissions()+1
+    );
+
+    if (result.getStatus() == ExecutionStatus.ALL_CLEAR) {
+      this.problemDao.update(
+        problem.getId(),
+        ProblemField.CLEARED_SUBMISSIONS,
+        pContent.getClearedSubmissions()+1
+      );
+    }
+
+    return result;
   }
 
   public void requestClarification(long userId, long problemId, String message)

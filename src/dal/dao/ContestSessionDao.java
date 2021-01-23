@@ -9,8 +9,10 @@ import java.util.ArrayList;
 
 import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
+import entities.Contest;
 import entities.ContestSession;
 import entities.ContestSessionStatus;
+import entities.ContestStatus;
 import entities.Entity;
 import entities.entity_fields.ContestSessionField;
 
@@ -65,8 +67,12 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
 
   }
 
-  //TODO: figure out a way to clean expired contest sessions
-  public <V> void updateByUser(long userId, ContestSessionField field, V value)
+  public <V> void updateByUser(
+    long userId,
+    long contestSessionId,
+    ContestSessionField field,
+    V value
+  )
     throws RecordNotFoundException {
     String element = "";
     switch (field) {
@@ -77,7 +83,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
         element = "score";
         break;
     }
-    String sql = "UPDATE contest_sessions SET " + element + " = ? WHERE user_id = ?;";
+    String sql = "UPDATE contest_sessions SET " + element + " = ? WHERE id = ? AND user_id = ?;";
     PreparedStatement ps = null;
     Connection connection = null;
     try {
@@ -91,8 +97,8 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
           ps.setInt(1, (Integer)value);
           break;
       }
-
-      ps.setLong(2, userId);
+      ps.setLong(2, contestSessionId);
+      ps.setLong(3, userId);
       ps.executeUpdate();
 
     } catch (SQLException e) {
@@ -171,7 +177,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
 
   public Entity<ContestSession> get(long contestId, long userId)
     throws RecordNotFoundException {
-    String sql = "SELECT * FROM contest_sessions WHERE contest_id = ?, user_id = ?;";
+    String sql = "SELECT * FROM contest_sessions WHERE contest_id = ? AND user_id = ?;";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet result = null;
@@ -237,15 +243,17 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
   }
 
   public void updateStatus() {
-    String sql =
+    String sql = String.format(
       "UPDATE contest_sessions"
-      +"  SET status = 'OVER'"
+      +"  SET status = '%s'"
       +"  WHERE (datetime('now') - created_at < duration)"
       +"    FROM ("
       +"      SELECT duration_minutes AS duration"
       +"      FROM contest_sessions INNER JOIN contests"
       +"      ON contest_session.id = contests.id"
-      +"    );";
+      +"    );",
+      ContestSessionStatus.OVER
+    );
 
     PreparedStatement ps = null;
     Connection connection = null;
@@ -270,7 +278,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
       new ContestSession(
         result.getLong("contest_id"),
         result.getLong("user_id"),
-        Timestamp.valueOf(result.getString("started_at")),
+        Timestamp.valueOf(result.getString("created_at")),
         ContestSessionStatus.valueOf(result.getString("status")),
         result.getInt("score")
       )
@@ -342,9 +350,9 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
   public ArrayList<Entity<ContestSession>>
     getByContest(long contestId, int index, int numSessions) {
     String sql = String.format(
-                "SELECT * FROM contest_sessions"
-                +"WHERE contest_id = ?"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM contest_sessions\n"
+                +"WHERE contest_id = ?\n"
+                +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s", numSessions, index);
     PreparedStatement ps = null;
     Connection connection = null;
@@ -447,5 +455,93 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
   }
 
 
+  public ArrayList<Entity<ContestSession>> getContestsByStatus(
+    long userId,
+    ContestSessionStatus status
+  ) {
+    String sql = String.format(
+      "SELECT s, c FROM contest_sessions s\n"
+      +"  INNER JOIN contests c ON s.contest_id = c.id\n"
+      +"  WHERE s.user_id = ? AND s.status = '%s';\n",
+      status.toString()
+    );
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<ContestSession>> contestSessions = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        Contest contest = new Contest(
+          results.getLong("c.creator_id"),
+          results.getString("c.description"),
+          results.getString("c.title"),
+          Timestamp.valueOf(results.getString("c.start_time")),
+          Timestamp.valueOf(results.getString("c.end_time")),
+          ContestStatus.valueOf(results.getString("c.status")),
+          results.getInt("c.duration_minutes")
+        );
+
+
+        contestSessions.add(new Entity<ContestSession>(
+          results.getLong("s.id"),
+          new ContestSession(
+            results.getLong("s.contest_id"),
+            results.getLong("s.user_id"),
+            Timestamp.valueOf(results.getString("s.created_at")),
+            ContestSessionStatus.valueOf(results.getString("s.status")),
+            results.getInt("s.score"),
+            contest
+          ))
+        );
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return contestSessions;
+  }
+
+
+  public void updateLatestScore(long userId, long sessionId) {
+    String sql =
+      "UPDATE contest_sessions cs\n"
+      +"  SET score = (\n"
+      +"    SELECT MAX(s.score) AS score\n"
+      +"    FROM submissions s\n"
+      +"    WHERE s.user_id = ? AND s.problem_id IN (\n"
+      +"      SELECT id FROM problems\n"
+      +"      WHERE problems.contest_id = (\n" //the problem belong in the contest
+      +"        SELECT contest_id FROM contest_sessions cs WHERE cs.id = ?\n"
+      +"      )\n"
+      +"    )\n"
+      +"    GROUP BY s.problem_id\n"
+      +"  )\n"
+      +"  WHERE cs.user_id = ? AND cs.id = ?;\n";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+  }
 
 }

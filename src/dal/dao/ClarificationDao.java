@@ -177,7 +177,7 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
   }
 
   public ArrayList<Entity<Clarification>> getByProblemAndUser(long problemId, long userId) {
-    String sql = "SELECT * FROM clarifications WHERE problem_id = ?, user_id = ?;";
+    String sql = "SELECT * FROM clarifications WHERE problem_id = ? AND user_id = ?;";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet result = null;
@@ -211,11 +211,11 @@ public class ClarificationDao implements Dao<Clarification>, Updatable<Clarifica
     int numClarifications
   ) {
     String sql = String.format(
-      "SELECT clarifications.*"
-      +"  FROM clarifications INNER JOIN problems"
-      +"    ON clarifications.problem_id = problems.id"
-      +"    WHERE problems.creator_id = ?"
-      +"ORDER BY clarifications.created_at ASC"
+      "SELECT clarifications.*\n"
+      +"  FROM clarifications INNER JOIN problems\n"
+      +"    ON clarifications.problem_id = problems.id\n"
+      +"    WHERE problems.creator_id = ? AND clarifications.response IS NULL\n"
+      +"ORDER BY clarifications.created_at ASC\n"
       +"LIMIT %s OFFSET %s;", numClarifications, index);
 
     PreparedStatement ps = null;

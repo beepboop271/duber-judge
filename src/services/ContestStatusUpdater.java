@@ -1,12 +1,12 @@
 package services;
 
-import java.sql.Timestamp;
-
+import dal.dao.ContestDao;
 import dal.dao.ContestSessionDao;
 
 
 /**
  * Updates status for contest sessions that are over.
+ * Updates contest status as well.
  * <p>
  * Created on 2021.01.22.
  *
@@ -14,7 +14,7 @@ import dal.dao.ContestSessionDao;
  * @version 1.0.0
  * @since 1.0.0
  */
-public class ContestSessionCleaner {
+public class ContestStatusUpdater {
   /** The interval at which this thread runs. */
   private static final int RUN_INTERVAL = 1000*60;
   /** The running background thread. */
@@ -25,8 +25,8 @@ public class ContestSessionCleaner {
   /**
    * Constructs a new session cleaner.
    */
-  public ContestSessionCleaner() {
-    this.thread = new Thread(new SessionHandler());
+  public ContestStatusUpdater() {
+    this.thread = new Thread(new StatusUpdater());
   }
 
   /**
@@ -48,24 +48,21 @@ public class ContestSessionCleaner {
     this.running = false;
   }
 
-  private class SessionHandler implements Runnable {
+  private class StatusUpdater implements Runnable {
     private ContestSessionDao contestSessionDao;
+    private ContestDao contestDao;
 
-    public SessionHandler() {
+    public StatusUpdater() {
       this.contestSessionDao = new ContestSessionDao();
-    }
-
-
-    private void updateSessions() {
-      this.contestSessionDao.updateStatus();
     }
 
     @Override
     public void run() {
-      while (ContestSessionCleaner.this.running) {
-        this.updateSessions();
+      while (ContestStatusUpdater.this.running) {
+        this.contestSessionDao.updateStatus();
+        this.contestDao.updateStatus();
         try {
-          Thread.sleep(ContestSessionCleaner.RUN_INTERVAL);
+          Thread.sleep(ContestStatusUpdater.RUN_INTERVAL);
         } catch (Exception e) {
           e.printStackTrace();
         }

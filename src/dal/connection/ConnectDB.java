@@ -102,7 +102,7 @@ public class ConnectDB {
         +"creator_id            INTEGER NOT NULL,"
         +"created_at            TEXT NOT NULL,"
         +"last_modified_at      TEXT NOT NULL,"
-        +"title                 TEXT NOT NULL,"
+        +"title                 TEXT UNIQUE NOT NULL,"
         +"description           TEXT NOT NULL,"
         +"points                INTEGER NOT NULL,"
         +"time_limit_millis     INTEGER NOT NULL,"
@@ -174,7 +174,7 @@ public class ConnectDB {
       "CREATE TABLE IF NOT EXISTS illegal_codes ("
         +"id                   INTEGER PRIMARY KEY,"
         +"language             TEXT NOT NULL,"
-        +"content              TEXT NOT NULL,"
+        +"content              TEXT NOT NULL"
         +");",
       };
     String[] createIdxSql = new String[]{

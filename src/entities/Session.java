@@ -66,8 +66,8 @@ public class Session implements Comparable<Session> {
    *
    * @param lastActive        the last active time.
    */
-  public void updateLastActive(Timestamp lastActive) {
-    this.lastActive = lastActive;
+  public void updateLastActive(long time) {
+    this.lastActive.setTime(time);
   }
 
   /**
@@ -99,7 +99,32 @@ public class Session implements Comparable<Session> {
 
   @Override
   public int compareTo(Session other) {
-    return this.lastActive.compareTo(other.getLastActive());
+    int diff = this.lastActive.compareTo(other.getLastActive());
+    if (diff != 0) {
+      return diff;
+    }
+    return this.token.compareTo(other.getToken());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Session)) {
+      return false;
+    }
+    return this.token.equals(((Session)o).getToken());
+  }
+
+  @Override
+  public int hashCode() {
+    return this.token.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+      "{\n  token: %s,\n  userId: %d\n  lastActive: %s\n}",
+      this.token, this.userId, this.lastActive
+    );
   }
 
 }

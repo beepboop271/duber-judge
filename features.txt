@@ -1,71 +1,77 @@
-a list of methods:
+
 AdminService
-  o- removeUser
-  o- getUsers
-  o- createContest
-  o- updateContest
-  o- deleteContest
-  o- kickUserFromContest
-  o- createProblem
-  - validateProblem
-  o- updateProblem
-  o- deleteProblem
-  - validateBatch
-  o- createBatch
-  o- updateBatch
-  o- deleteBatch
-  - validateTestcase
-  o- createTestcase
-  o- updateTestcase
-  o- deleteTestcase
-  o- clarifyProblem
-  - validateContest
-  o- getUnresolvedClarifications
-  o- getContestParticipants
-  o- deleteRestriction
-  o- createRestriction
-  o- updateRestriction
+ ✓ o- removeUser
+ x o- getUsers
+ ✓ o- createContest
+ ✓ o- updateContest
+ ✓ o- deleteContest
+ ✓ o- kickUserFromContest
+ ✓ o- createPracticeProblem
+ ✓ o- createContestProblem
+ y - validateProblem
+ ✓ o- updateProblem
+  o- deleteProblem   < add testcase runs
+ y - validateBatch
+ ✓ o- createBatch
+ ✓ o- updateBatch
+ ✓ o- deleteBatch
+ y - validateTestcase
+ ✓ o- createTestcase
+ ✓ o- updateTestcase
+ ✓ o- deleteTestcase
+ ✓ o- clarifyProblem
+ y - validateContest
+ ✓ o- getUnresolvedClarifications
+ ✓ o- getContestParticipants
+ ✓ o- deleteRestriction
+ ✓ o- createRestriction
+ ✓ o- updateRestriction
 
 ContestService
-  o- validateContestSession
-  o- allowProblemViewing
-  o- startContest
-  o- getProblems
-  o- getContest
-  - updateUserScore
-  - updateUserStatus
+ ✓ o- validateContestSession
+ ✓ o- allowProblemViewing
+ ✓ o- startContest
+ ✓ o- getProblems
+ ✓ o- getContest
+ ✓ - updateUserScore
+ ✓ - updateUserStatus
 
 ProblemService
-  - canSubmit
-  o- submitSolution
-  o- requestClarification
-  o- getAllSubmissions
-  o- getClarifications
-  o- getProblem
-  o- getSubmission
-  o- validateSubmissionId
+ ~ o- submitSolution
+ ✓ o- requestClarification
+ x o- getAllSubmissions
+ ✓ o- getClarifications
+ ✓ o- getProblem
+ ✓ o- getSubmission
+ y o- validateSubmissionId
 
 PublicService
-  o- getContests
-  o- getLeaderboard
-  o- getContestLeaderboard
-  o- getProblemLeaderboard
-  o- getPracticeProblems
-  o- getPracticeProblemsByCategory
-  o- getPracticeProblemsByCreator
-  o- getPracticeProblemsByPoints
-  o- getPracticeProblemsByNumSubmissions
-  o- getProblem
-  o- getContestNumParticipants
+ ~ o- getContests
+ ✓~ o- getLeaderboard  < test with submission, testcase
+ ✓ o- getContestLeaderboard
+ ✓ o- getProblemLeaderboard < test with submission, testcase
+ ✓ o- getPracticeProblems
+ ✓ o- getPracticeProblemsByCategory
+ ✓ o- getPracticeProblemsByCreator
+ ✓ o- getPracticeProblemsByPoints
+ ✓ o- getPracticeProblemsByNumSubmissions
+ ✓ o- getProblem
+ ✓ o- getContestNumParticipants
 
-SessionService
-  - generateToken
-  - createSession(userId)
-  o- createSession()
-  - getSession
-  o- updateSession
-  - updateLastActive
-  - deleteFromBefore
+SessionService - ?
+ ✓ - createSession(userId)
+ ✓ o- createSession()
+ ✓ - getSession
+ ✓ o- updateSession
+ ? - updateLastActive
+ ? - deleteFromBefore
+
+SessionCleaner
+  o- run
+
+ContestStatusUpdater
+  o- run
+
 
 UserService
  ✓ - generateSalt
@@ -76,13 +82,24 @@ UserService
  ✓ o- createUser
  ✓ o- createAdmin
  ✓ o- login
-  o- updateUserProfile
-  o- updateUserPassword
-  o- isSameUser
-  - isAdmin
-  o- getProblems <- problems the user has attempted, not contest
-  o- getSubmissions <- all submissions
-  o- getProblemSubmissions <- submission by problem
-  o- getActiveContests
-  o- getParticipatedContests
-  o- getSubmissionCount
+ ✓ o- updateUserProfile
+ ✓ o- updateUserPassword
+ ✓ o- isSameUser
+ ✓ - isAdmin
+ x o- getProblems <- problems the user has attempted, not contest
+ x o- getSubmissions <- all submissions
+ x o- getProblemSubmissions <- submission by problem
+ x o- getActiveContests
+ x o- getParticipatedContests
+ ✓ o- getSubmissionCount
+
+
+
+
+x || failed qa (error or logic)
+✓ || everything looks fine
+~ || a missing function,
+y || not manually tested but can be assumed to work based on code/other functions,
+  || not tested yet,
+? || idk whats happening here buddy,
+✓~ || needs more testing but seems to work

@@ -43,6 +43,7 @@ public class Contest {
     String title,
     Timestamp startTime,
     Timestamp endTime,
+    ContestStatus status,
     int durationMinutes
   ) {
     this.creatorId = creatorId;
@@ -50,8 +51,8 @@ public class Contest {
     this.title = title;
     this.startTime = startTime;
     this.endTime = endTime;
+    this.status = status;
     this.durationMinutes = durationMinutes;
-    this.status = ContestStatus.UPCOMING;
   }
 
   /**

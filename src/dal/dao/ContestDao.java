@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import org.sqlite.SQLiteErrorCode;
+
 import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
 import entities.Contest;
@@ -14,6 +16,7 @@ import entities.ContestSessionStatus;
 import entities.ContestStatus;
 import entities.Entity;
 import entities.entity_fields.ContestField;
+import services.InvalidArguments;
 
 /**
  * [description]
@@ -47,6 +50,9 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
       case DURATION_MINUTES:
         element = "duration_minutes";
         break;
+      case STATUS:
+        element = "status";
+        break;
     }
     String sql = "UPDATE contests SET " + element + " = ? WHERE id = ?;";
     PreparedStatement ps = null;
@@ -70,6 +76,8 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
         case DURATION_MINUTES:
           ps.setInt(1, (int)value);
           break;
+        case STATUS:
+          ps.setString(1, ((ContestStatus)value).toString());
       }
 
       ps.setLong(2, id);
@@ -84,10 +92,10 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
   }
 
   @Override
-  public long add(Contest data) {
+  public long add(Contest data) throws IllegalArgumentException {
     String sql = "INSERT INTO contests"
-                +"(creator_id, description, title, start_time, end_time, duration_minutes)"
-                +" VALUES (" + DaoHelper.getParamString(6) + ");";
+                +"(creator_id, description, title, start_time, end_time, status, duration_minutes)"
+                +" VALUES (" + DaoHelper.getParamString(7) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -100,7 +108,8 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
       ps.setString(3, data.getTitle());
       ps.setString(4, data.getStartTime().toString());
       ps.setString(5, data.getEndTime().toString());
-      ps.setInt(6, data.getDurationMinutes());
+      ps.setString(6, data.getStatus().toString());
+      ps.setInt(7, data.getDurationMinutes());
 
       ps.executeUpdate();
       key = ps.getGeneratedKeys();
@@ -110,7 +119,12 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
 
 
     } catch (SQLException e) {
-      e.printStackTrace();
+      if (SQLiteErrorCode.getErrorCode(e.getErrorCode())
+          == SQLiteErrorCode.SQLITE_CONSTRAINT) {
+        throw new IllegalArgumentException(InvalidArguments.TITLE_TAKEN.toString());
+      } else {
+        e.printStackTrace();
+      }
     } finally {
       ConnectDB.close(ps);
       ConnectDB.close(key);
@@ -185,36 +199,6 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
     DaoHelper.deleteById("contests", id);
   }
 
-
-  public ArrayList<Entity<Contest>> getContestsByStatus(long userId, ContestSessionStatus status) {
-    String sql = String.format(
-      "SELECT * FROM contests WHERE user_id = ? AND status = %s;",
-      status.toString()
-    );
-
-    PreparedStatement ps = null;
-    Connection connection = null;
-    ResultSet results = null;
-    ArrayList<Entity<Contest>> contests = new ArrayList<>();
-    try {
-      connection = GlobalConnectionPool.pool.getConnection();
-      ps = connection.prepareStatement(sql);
-      ps.setLong(1, userId);
-
-      results = ps.executeQuery();
-      while (results.next()) {
-        contests.add(this.getContestFromResultSet(results));
-      }
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
-      ConnectDB.close(ps);
-      ConnectDB.close(results);
-      GlobalConnectionPool.pool.releaseConnection(connection);
-    }
-    return contests;
-  }
-
   public ArrayList<Entity<Contest>> getContests(int index, int numContests, ContestStatus status) {
     String sql = String.format(
       "SELECT * FROM contests"
@@ -255,8 +239,44 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
         result.getString("title"),
         Timestamp.valueOf(result.getString("start_time")),
         Timestamp.valueOf(result.getString("end_time")),
+        ContestStatus.valueOf(result.getString("status")),
         result.getInt("duration_minutes")
       )
     );
+  }
+
+  public void updateStatus() {
+    String sql = String.format(
+      "UPDATE contests"
+      +"SET status = '%s'"
+      +"WHERE (datetime('now') >= start_time)",
+      ContestStatus.ONGOING
+    );
+
+    String sql2 = String.format(
+      "UPDATE contests"
+      +"SET status = '%s'"
+      +"WHERE (datetime('now') >= end_time)",
+      ContestStatus.PAST
+    );
+
+    PreparedStatement ps = null;
+    PreparedStatement ps2 = null;
+    Connection connection = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps2 = connection.prepareStatement(sql2);
+
+      ps.executeUpdate();
+      ps2.executeUpdate();
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(ps2);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
   }
 }

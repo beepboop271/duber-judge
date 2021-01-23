@@ -225,18 +225,18 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
    */
   public ArrayList<UserPoints> getByPoints(int index, int numUsers) {
     String sql = String.format(
-                 "SELECT users.*, total_score"
-                +"FROM users"
-                +"  INNER JOIN ("
-                +"    SELECT user_id, SUM(score) AS total_score"
-                +"    FROM ("
-                +"        SELECT user_id, MAX(score) AS score"
-                +"        FROM submissions"
-                +"        GROUP BY (user_id, problem_id)"
-                +"      )"
-                +"    GROUP BY (user_id)"
-                +"  ) ON users.id = user_id"
-                +"ORDER BY total_score DESC"
+                 "SELECT users.*, total_score\n"
+                +"FROM users\n"
+                +"  INNER JOIN (\n"
+                +"    SELECT user_id, SUM(score) AS total_score\n"
+                +"    FROM (\n"
+                +"        SELECT user_id, MAX(score) AS score\n"
+                +"        FROM submissions\n"
+                +"        GROUP BY user_id, problem_id\n"
+                +"      )\n"
+                +"    GROUP BY user_id\n"
+                +"  ) ON users.id = user_id\n"
+                +"ORDER BY total_score DESC\n"
                 +"LIMIT %s OFFSET %s;", numUsers, index);
 
     PreparedStatement ps = null;
@@ -268,8 +268,8 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
 
   public ArrayList<Entity<User>> getUsers(int index, int numUsers) {
     String sql = String.format(
-                "SELECT * FROM users"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM users\n"
+                +"ORDER BY username ASC\n"
                 +"LIMIT %s OFFSET %s", numUsers, index);
     PreparedStatement ps = null;
     Connection connection = null;

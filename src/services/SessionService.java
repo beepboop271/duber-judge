@@ -101,8 +101,8 @@ public class SessionService {
       return;
     }
     Session session = Sessions.tokenToSessions.get(token);
-    session.updateLastActive(new Timestamp(System.currentTimeMillis()));
     Sessions.sessions.remove(session);
+    session.updateLastActive(System.currentTimeMillis());
     Sessions.sessions.add(session);
   }
 

@@ -15,4 +15,5 @@ public enum ContestField implements EntityField {
   START_TIME,
   END_TIME,
   DURATION_MINUTES,
+  STATUS,
 }
