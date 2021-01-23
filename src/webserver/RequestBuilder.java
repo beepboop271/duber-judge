@@ -1,8 +1,6 @@
 package webserver;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.util.HashMap;
 
 /**
  * A class designed to build a Request, string by string.
@@ -17,7 +15,13 @@ import java.io.StringReader;
  * request should be timed out. Knowledge about the assembly
  * status for the request can be used to determine if a
  * request is finished, and when handling of the request can
- * occur.
+ * occur. This class will evaluate headers if a call to
+ * {@link #hasCompletedRequest()} is made, as a completed
+ * request can only be determined once the headers have been
+ * evaluated once and the {@code Content-Length} header is
+ * checked for. Once the headers have been evaluated, they
+ * are stored and used for construction so that only one
+ * parse is required.
  * <p>
  * Timing out functionality is mainly to handle scenarios
  * where the connection stream may be done sending data, but
@@ -36,7 +40,7 @@ import java.io.StringReader;
  * will yield a different request.
  *
  * @since 0.0.4
- * @version 0.0.4
+ * @version 0.0.5
  * @author Joseph Wang
  * @see Request
  */
@@ -46,6 +50,12 @@ public class RequestBuilder {
    */
   public static final int TIMEOUT_TIME_MS = 10_000;
 
+  private String method;
+  private String path;
+  private String protocol;
+  private HashMap<String, String> headers;
+  private StringBuilder body;
+
   /** The string with the request. */
   private StringBuilder requestString;
   /** When this RequestBuilder was constructed. */
@@ -54,14 +64,10 @@ public class RequestBuilder {
   private int timeoutLimit;
 
   /**
-   * The content length specified in the header, if present.
+   * The content length specified in the header, if present,
+   * or {@code -1} if not evaluated or doesn't exist.
    */
   private int contentLength = -1;
-  /**
-   * The current length of the body, used alongside
-   * {@link #contentLength}.
-   */
-  private int currentLength = -1;
 
   /**
    * Whether the headers have been evaluated and body
@@ -101,33 +107,34 @@ public class RequestBuilder {
    */
   public RequestBuilder(int timeoutInSeconds) {
     this.requestString = new StringBuilder();
+    this.body = new StringBuilder("");
+    this.headers = new HashMap<>();
+
     this.startTime = System.currentTimeMillis();
     this.timeoutLimit = timeoutInSeconds;
   }
 
   /**
-   * Appends a string as it is to the currently
-   * in-construction request.
+   * Appends a string to the currently in-construction
+   * request.
    *
-   * @param seq The string to add.
+   * @param str The string to add.
    */
-  public void append(String seq) {
-    this.requestString.append(seq);
+  public void append(String str) {
+    this.requestString.append(str);
 
-    if (seq.equals("\r\n")) {
-      if (!this.evaluatedHeaders) {
-        // Once we get the first CRLF to indicate end of header we
-        // need to parse headers to get the correct body
-        this.evaluateHeaders();
-      }
-    } else if (contentLength > 0) {
-      this.currentLength += seq.length();
+    // If the header is properly evaluated then we need to
+    // append this string to the body
+    if (this.evaluatedHeaders) {
+      this.body.append(str);
     }
   }
 
   /**
-   * Does a preliminary parse and evaluation of the headers to
-   * determine the kind of body this request will contain.
+   * Does a preliminary parse and evaluation of the required
+   * properties of the request to determine the kind of body
+   * this request will contain, and stores the evaluated
+   * results for future use.
    * <p>
    * Locating the {@code Content-Length} header indicates that
    * this request should have a body (as specified in <a href=
@@ -137,36 +144,100 @@ public class RequestBuilder {
    * {@code Transfer-Encoding} with value {@code chunked} will
    * not be considered.
    * <p>
-   * These headers are not checked for validity (eg. not empty
-   * string, etc) and are not stored. They will be reparsed
-   * once {@link #construct()} is called due to
-   * {@link #construct()} implementation.
+   * For efficiency, the status line and headers calculated
+   * will be stored and will be used in {@link #construct()}.
+   *
+   * @throws HttpSyntaxException if one of the properties
+   *                             (headers, status, body, etc)
+   *                             is invalid.
    */
-  private void evaluateHeaders() {
-    String req = this.requestString.toString();
-    BufferedReader requestReader = new BufferedReader(new StringReader(req));
+  private void evaluateProperties() throws HttpSyntaxException {
+    if (this.requestString.length() == 0) {
+      this.failSyntax("Request not fully formed.");
+    }
 
-    try {
-      String headerString = requestReader.readLine();
-      while (headerString != null) {
-        String[] header = headerString.split(": ?");
+    String[] reqTokens = this.requestString.toString().split("\r\n\r\n");
 
-        if (header.length == 2) {
-          if (
-            header[0].equals("Content-Length") && header[1].matches("^\\d+$")
-          ) {
-            this.contentLength = Integer.parseInt(header[1]);
-          }
-        }
+    if (reqTokens.length == 1) {
+      this.evaluateHeaders(reqTokens[0]);
+    } else if (reqTokens.length == 2) {
+      this.evaluateHeaders(reqTokens[0]);
+      this.evaluateBody(reqTokens[1]);
+    } else {
+      this.failSyntax("Too many CRLF in request.");
+    }
+  }
 
-        headerString = requestReader.readLine();
+  /**
+   * Does a preliminary parse and evaluation of the provided
+   * header string, and stores the status line and headers for
+   * future use.
+   * <p>
+   *
+   * @param headerInfo The string with the status line and
+   *                   headers.
+   * @throws HttpSyntaxException if the request isn't fully
+   *                             loaded, or a header or status
+   *                             is invalid.
+   */
+  private void evaluateHeaders(String headerInfo) throws HttpSyntaxException {
+    // Since body is not guaranteed to have a trailing CRLF, we
+    // can't use BufferedReader to read next line or else it
+    // will keep looping
+    String[] headerStrings = headerInfo.split("\r\n");
+    if (headerStrings.length <= 1) {
+      this.failSyntax("Request not fully formed.");
+    }
+
+    String[] statusTokens = headerStrings[0].split(" ");
+    if (statusTokens.length != 3) {
+      this.failSyntax("Status string invalid.");
+    }
+
+    // Parse status details
+    this.method = statusTokens[0];
+    this.path = statusTokens[1];
+    this.protocol = statusTokens[2];
+
+    for (int i = 1; i < headerStrings.length; i++) {
+      String[] headerTokens = headerStrings[i].split(": ");
+      if (headerTokens.length != 2) {
+        this.failSyntax("Malformed header.");
       }
 
-      this.evaluatedHeaders = true;
+      // Set the content length token, important for body
+      if (
+        headerTokens[0].equals("Content-Length")
+          && headerTokens[1].matches("^\\d+$")
+      ) {
+        this.contentLength = Integer.parseInt(headerTokens[1]);
+      }
 
-    } catch (IOException e) {
-      System.out.println("An error occured while reading the headers.");
+      this.headers.put(headerTokens[0], headerTokens[1]);
     }
+
+    this.evaluatedHeaders = true;
+  }
+
+  /**
+   * Does a preliminary parse and evaluation of the provided
+   * body.
+   * <p>
+   * If the request does not have a valid content length, this
+   * method will throw an exception. Otherwise, it will simply
+   * append the body to this builder's body string.
+   *
+   * @param bodyInfo The string with this request's body.
+   * @throws HttpSyntaxException if there is no
+   *                             {@code Content-Length}
+   *                             header.
+   */
+  private void evaluateBody(String bodyInfo) throws HttpSyntaxException {
+    if (this.contentLength == -1) {
+      this.failSyntax("Body exists but no Content-Length header found.");
+    }
+
+    this.body.append(bodyInfo);
   }
 
   /**
@@ -180,6 +251,13 @@ public class RequestBuilder {
    * <a href= "https://tools.ietf.org/html/rfc7230">RFC
    * 7230.</a>
    * <p>
+   * This method will first attempt to evaluate the headers of
+   * the request as well as the body before determining if the
+   * request is completed. This is done because the request
+   * cannot be properly determined as completed until the
+   * headers have been parsed and associated headers
+   * extracted.
+   * <p>
    * If this method returns {@code false} and
    * {@link #construct()} is called, {@link #construct()} will
    * throw an {@code HttpSyntaxException}.
@@ -188,22 +266,48 @@ public class RequestBuilder {
    * @return true if this request is a valid HTTP request.
    */
   public boolean hasCompletedRequest() {
-    if (this.evaluatedHeaders) {
-      if (this.contentLength > 0) {
-        // If content length exist, make sure body is same length as
-        // content
-        if (this.currentLength >= this.contentLength) {
-          return true;
-        }
-        return false;
-      } else {
-        // If the above isn't true then there is no body, we
-        // are done
+    // First attempt evaluation if needed
+    if (this.attemptEvaluation() == false) {
+      return false;
+    }
+
+    if (this.contentLength > -1) {
+      // If content length exist, make sure body is same length as
+      // content
+      if (this.body.length() >= this.contentLength) {
         return true;
+      }
+      return false;
+    } else {
+      // If the above isn't true then there is no body, we
+      // are done
+      return true;
+    }
+  }
+
+  /**
+   * Checks to see if the headers are evaluated. If they are
+   * not, attempts to evaluate the header and body.
+   *
+   * @return true if the headers were or have been evaluated.
+   */
+  private boolean attemptEvaluation() {
+    if (!this.evaluatedHeaders) {
+      // Always evaluate properties if haven't evaluated
+      try {
+        this.evaluateProperties();
+      } catch (HttpSyntaxException e) {
+        return false;
+      }
+
+      // If they still haven't been properly evaluated, return
+      // false as this request is still being built
+      if (!this.evaluatedHeaders) {
+        return false;
       }
     }
 
-    return false;
+    return true;
   }
 
   /**
@@ -259,65 +363,33 @@ public class RequestBuilder {
    * http format is incorrect, this method will throw an
    * {@code HttpSyntaxException}.
    * <p>
-   * This method should only be called once an request has
-   * been assembled through {@link #append(String)} and is a
+   * If the headers and body have not been evaluated yet, they
+   * will be evaluated in this method. If the request is not
+   * complete, this method will throw an exception.
+   * <p>
+   * This method should only be called once an request is a
    * valid request according to
    * {@link #hasCompletedRequest()}.
    *
    * @return the constructed request object.
-   * @throws HttpSyntaxException if the request syntax of the
-   *                             constructed request is
-   *                             incomplete or invalid.
+   * @throws HttpSyntaxException if the request is incomplete
+   *                             or the syntax of the request
+   *                             is incomplete or invalid.
    */
   public Request construct() throws HttpSyntaxException {
     if (!this.hasCompletedRequest()) {
-      throw new HttpSyntaxException("Request incomplete.");
+      this.failSyntax("The request is incomplete.");
     }
 
-    // Initialize the request and the reader
-    String req = this.requestString.toString();
-    BufferedReader requestReader = new BufferedReader(new StringReader(req));
-
+    Request req = new Request(this.method, this.path, this.protocol);
     try {
-      // Get status string
-      String statusString = requestReader.readLine();
-      String[] statusTokens = statusString.split(" ");
-      if (statusTokens.length != 3) {
-        throw new HttpSyntaxException("Status string invalid.");
-      }
-
-      // Parse and add status details
-      String method = statusTokens[0];
-      String path = statusTokens[1];
-      String protocol = statusTokens[2];
-      Request newRequest = new Request(method, path, protocol);
-
-      // Add headers
-      String header = requestReader.readLine();
-      // Stop when we hit the empty line
-      while (header.length() > 0) {
-        try {
-          newRequest.addHeader(header);
-          header = requestReader.readLine();
-        } catch (InvalidHeaderException e) {
-          throw new HttpSyntaxException("Malformed header.", e);
-        }
-      }
-
-      // Add the body, accounting for new lines
-      String body = requestReader.readLine();
-      StringBuilder bodyString = new StringBuilder("");
-      while (body != null) {
-        bodyString.append(body);
-      }
-      newRequest.body = bodyString.toString();
-
-      return newRequest;
-    } catch (IOException e) {
-      // This catch should never happen
-      System.out.println("An error occured while reading the request.");
-      return null;
+      req.addHeaders(this.headers);
+      req.body = this.body.toString();
+    } catch (InvalidHeaderException e) {
+      this.failSyntax("A header was invalid.", e);
     }
+
+    return req;
   }
 
   /**
@@ -328,5 +400,29 @@ public class RequestBuilder {
    */
   public boolean isEmpty() {
     return this.requestString.length() == 0;
+  }
+
+  /**
+   * Throws an exception with the provided message.
+   *
+   * @param message The detail message for the exception.
+   * @throws HttpSyntaxException always, according to the
+   *                             message.
+   */
+  private void failSyntax(String message) throws HttpSyntaxException {
+    throw new HttpSyntaxException(message);
+  }
+
+  /**
+   * Throws an exception with the provided message and cause.
+   *
+   * @param message The detail message for the exception.
+   * @param e       The cause of the exception.
+   * @throws HttpSyntaxException always, according to the
+   *                             message.
+   */
+  private void failSyntax(String message, Throwable e)
+    throws HttpSyntaxException {
+    throw new HttpSyntaxException(message, e);
   }
 }

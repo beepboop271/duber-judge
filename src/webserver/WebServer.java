@@ -1,9 +1,8 @@
 package webserver;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -41,7 +40,7 @@ import webserver.webcache.WebLruCache;
  * Created <b> 2020-12-28 </b>
  *
  * @since 0.0.4
- * @version 0.0.4
+ * @version 0.0.5
  * @author Joseph Wang, Shari Sun
  */
 public class WebServer {
@@ -395,7 +394,7 @@ public class WebServer {
     /** The client to handle. */
     private Socket client;
     /** The input stream from the client. */
-    private BufferedReader input;
+    private BufferedInputStream input;
     /** The output stream for the client. */
     private PrintWriter output;
     /** Determines if the connection loop should run. */
@@ -412,9 +411,11 @@ public class WebServer {
 
       try {
         // Initialize proper input and output
-        InputStreamReader clientInput =
-          new InputStreamReader(this.client.getInputStream());
-        this.input = new BufferedReader(clientInput);
+        // We use a buffered input stream instead of a buffered
+        // reader because the body is not required to have a
+        // trailing CRLF, which would cause the
+        // BufferedReader.nextLine() to forever read
+        this.input = new BufferedInputStream(this.client.getInputStream());
 
         OutputStreamWriter utfWriter =
           new OutputStreamWriter(
@@ -453,7 +454,7 @@ public class WebServer {
           // Wait for initial request
           boolean waitingForConnection = true;
           while (waitingForConnection) {
-            if (this.input.ready()) {
+            if (this.input.available() > 0) {
               this.assembleRequest(rb);
 
               waitingForConnection = false;
@@ -588,9 +589,11 @@ public class WebServer {
       rb.resetTimeoutStart();
 
       while (!rb.hasCompletedRequest()) {
-        while (this.input.ready()) {
-          String reqString = input.readLine();
-          rb.append(reqString+"\r\n");
+        if (this.input.available() > 0) {
+          byte[] buffArr = new byte[this.input.available()];
+          this.input.read(buffArr, 0, this.input.available());
+
+          rb.append(new String(buffArr, StandardCharsets.UTF_8));
 
           // Make sure to exit if we complete the request
           if (rb.hasCompletedRequest()) {
