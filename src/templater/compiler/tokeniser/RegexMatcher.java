@@ -15,7 +15,7 @@ abstract class RegexMatcher extends TokenMatcher {
   }
 
   @Override
-  public Token tryMatch(CharArrayQueue input) {
+  public Token tryMatch(CharListQueue input) {
     Matcher m = this.regex.matcher(input);
     if (m.lookingAt()) {
       // need to extract the group before consuming because

@@ -6,10 +6,10 @@ import java.util.NoSuchElementException;
 
 public class Tokeniser {
   private final List<TokenMatcher> tokenMatchers;
-  private final CharArrayQueue input;
+  private final CharListQueue input;
 
   public Tokeniser(String template) {
-    this.input = new CharArrayQueue(template);
+    this.input = new CharListQueue(template);
     this.tokenMatchers = new ArrayList<>();
     this.registerTokens();
   }

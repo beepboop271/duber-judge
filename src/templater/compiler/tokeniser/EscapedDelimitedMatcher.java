@@ -18,9 +18,9 @@ abstract class EscapedDelimitedMatcher extends TokenMatcher {
   }
 
   @Override
-  public Token tryMatch(CharArrayQueue input) {
+  public Token tryMatch(CharListQueue input) {
     try {
-      CharArrayQueue.Iterator it = input.iterator();
+      CharListQueue.Iterator it = input.iterator();
       for (int i = 0; i < this.startDelimiter.length(); ++i) {
         if (it.next() != this.startDelimiter.charAt(i)) {
           return null;
@@ -51,8 +51,8 @@ abstract class EscapedDelimitedMatcher extends TokenMatcher {
   }
 
   private Token end(
-    CharArrayQueue input,
-    CharArrayQueue.Iterator it,
+    CharListQueue input,
+    CharListQueue.Iterator it,
     StringBuilder sb
   ) {
     TextFilePosition position = input.getPosition();
