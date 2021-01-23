@@ -313,7 +313,7 @@ public class Response extends HttpMessage {
     StringBuilder responseString = new StringBuilder(this.statusString+"\r\n");
     responseString.append(this.getHeadersString());
 
-    if (this.body != "") {
+    if (!this.body.equals("")) {
       responseString.append(this.getBody());
     }
 
