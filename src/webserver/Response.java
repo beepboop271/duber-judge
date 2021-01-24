@@ -95,15 +95,31 @@ public class Response extends HttpMessage {
    * Generates a {@code 405 Method Not Allowed} HTTP response
    * with the appropriate {@code Allow} header detailing
    * allowed methods.
+   * <p>
+   * This should never be returned on a {@code GET} or
+   * {@code HEAD} method.
+   * <p>
+   * Allowed methods can be provided. Note that {@code GET}
+   * and {@code HEAD} are already included as they should
+   * never return a 405. They do not need to be re-included,
    *
-   * @param allowedMethods An array of methods that this
-   *                       resource allows. This must include
-   *                       GET and HEAD.
+   * @param allowedMethods Methods that this resource allows,
+   *                       with exception to {@code GET} and
+   *                       {@code HEAD} as they are already
+   *                       included.
    * @return a 405 HTTP response object.
    */
-  public static Response methodNotAllowed(String[] allowedMethods) {
+  public static Response methodNotAllowed(String... allowedMethods) {
+    StringBuilder allow = new StringBuilder("GET, HEAD");
+    for (String s : allowedMethods) {
+      // If GET or HEAD are re-included we do not need to fail
+      if (!s.equals("GET") && !s.equals("HEAD")) {
+        allow.append(", "+s);
+      }
+    }
+
     Response response = new Response(405);
-    response.headers.put("Allow", String.join(", ", allowedMethods));
+    response.headers.put("Allow", allow.toString());
 
     return response;
   }
@@ -157,8 +173,8 @@ public class Response extends HttpMessage {
 
   /**
    * Generates a {@code 200 OK} html HTTP response with the
-   * appropriate headers and body, and informs the
-   * browser not to cache this page.
+   * appropriate headers and body, and informs the browser not
+   * to cache this page.
    *
    * @param html The html file to send in the Response.
    * @return a 200 HTTP response object.
@@ -168,9 +184,9 @@ public class Response extends HttpMessage {
   }
 
   /**
-   * Generates a {@code 200 OK} html HTTP response with the
-   * appropriate headers, and informs the browser not to
-   * cache this page.
+   * Gener tes a {@code 200 OK} html HTTP response with the
+   * appropriate headers, and informs the browser not to cache
+   * this page.
    * <p>
    * The html can be set as the body of the request by setting
    * {@code hasBody} to true. However, the client may simply
