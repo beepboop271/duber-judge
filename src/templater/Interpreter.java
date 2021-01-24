@@ -74,6 +74,8 @@ public class Interpreter {
       while (classes.hasNext()) {
         interpreted.append(resolveStrings(classes.next())+" ");
       }
+      // get rid of trailing whitespace
+      interpreted.deleteCharAt(interpreted.length() - 1);
       interpreted.append("'");
     }
 
@@ -86,12 +88,11 @@ public class Interpreter {
       );
     }
 
+    interpreted.append(">");
+    
     if (elem.isEmpty()) {
-      interpreted.append("/>");
       return interpreted;
     }
-
-    interpreted.append(">");
 
     Iterator<LanguageElement> children = elem.getChildren();
     while (children.hasNext()) {
