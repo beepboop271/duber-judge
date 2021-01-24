@@ -1,5 +1,6 @@
 package services;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -30,11 +31,14 @@ import judge.Judger;
  * @since 1.0.0
  */
 public class ProblemService {
+  private static final File tempFileDirectory = new File("temp/judge/");
+
   private ProblemDao problemDao;
   private ClarificationDao clarificationDao;
   private UserService userService;
   private SubmissionDao submissionDao;
   private ContestSessionDao contestSessionDao;
+  private Judger judger;
 
   public ProblemService() {
     this.problemDao = new ProblemDao();
@@ -42,6 +46,10 @@ public class ProblemService {
     this.userService = new UserService();
     this.submissionDao = new SubmissionDao();
     this.contestSessionDao = new ContestSessionDao();
+    this.judger = new Judger(
+      Runtime.getRuntime().availableProcessors(),
+      ProblemService.tempFileDirectory
+    );
   }
 
   private boolean canSubmit(long userId, long problemId) {
@@ -61,14 +69,15 @@ public class ProblemService {
   }
 
   /**
-   *
    * @param userId
    * @param problemId
    * @param code
    * @param language
    * @return
-   * @throws InsufficientPermissionException    The user is unable to submit.
-   * @throws RecordNotFoundException            The problem is not found.
+   * @throws InsufficientPermissionException The user is
+   *                                         unable to submit.
+   * @throws RecordNotFoundException         The problem is
+   *                                         not found.
    */
   public Entity<SubmissionResult> submitSolution(
     long userId,
@@ -90,8 +99,8 @@ public class ProblemService {
     Entity<Submission> submissionEntity = new Entity<Submission>(submissionId, submission);
 
     Entity<Problem> problem = this.problemDao.getNested(problemId);
-    Entity<SubmissionResult> result = Judger.judge(submissionEntity, problem);
-    this.submissionDao.updateResult(submissionId, result.getContent());
+    SubmissionResult result = judger.judge(submissionEntity, problem);
+    this.submissionDao.updateResult(submissionId, result);
 
     Problem pContent = problem.getContent();
     if (pContent instanceof ContestProblem) {
@@ -116,7 +125,7 @@ public class ProblemService {
       );
     }
 
-    return result;
+    return new Entity<SubmissionResult>(submissionId, result);
   }
 
   public void requestClarification(long userId, long problemId, String message)

@@ -69,7 +69,7 @@ public class Judger {
    *                    the judge result.
    */
   public SubmissionResult judge(Entity<Submission> submission, Entity<Problem> problem) {
-    SubmissionResult result = new SubmissionResult(submission);
+    SubmissionResult result = new SubmissionResult(submission.getContent());
     // check if code is clean
     try {
       if (!SourceCheckerService.isClean(submission.getContent())) {
@@ -201,7 +201,7 @@ public class Judger {
       // update run duration
       result.addRunDurationMillis(run.getRunDurationMillis());
       // update memory usage
-      result.updateMemoryUsedBytes(run.getMemoryUsageB());
+      result.updateMemoryUsageBytes(run.getMemoryUsageBytes());
     }
     // update score
     if (batchPassed) {

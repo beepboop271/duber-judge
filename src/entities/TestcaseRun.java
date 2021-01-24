@@ -17,8 +17,8 @@ public class TestcaseRun {
   private long batchId;
   /** The total duration of this run, in ms. */
   private int runDurationMillis;
-  /** The total amount of memory used, in kB. */
-  private long memoryUsageB;
+  /** The total amount of memory used, in bytes. */
+  private long memoryUsageBytes;
   /** The current status of this run. */
   private ExecutionStatus status;
   /** The output generated from the submission for this run. */
@@ -27,25 +27,29 @@ public class TestcaseRun {
   /**
    * Constructs a new {@code TestcaseRun}.
    *
-   * @param submissionId      the id of the associated submission.
+   * @param submissionId      the id of the associated
+   *                          submission.
    * @param batchId           the id of the associated batch.
-   * @param runDurationMillis the total duration of this run, in ms.
-   * @param memoryUsageB     the total amount of memory used, in kB.
+   * @param runDurationMillis the total duration of this run,
+   *                          in ms.
+   * @param memoryUsageBytes  the total amount of memory used,
+   *                          in bytes.
    * @param status            the current status of this run.
-   * @param output            the output generated from the submission for this run.
+   * @param output            the output generated from the
+   *                          submission for this run.
    */
   public TestcaseRun(
     long submissionId,
     long batchId,
     int runDurationMillis,
-    long memoryUsageB,
+    long memoryUsageBytes,
     ExecutionStatus status,
     String output
   ) {
     this.submissionId = submissionId;
     this.batchId = batchId;
     this.runDurationMillis = runDurationMillis;
-    this.memoryUsageB = memoryUsageB;
+    this.memoryUsageBytes = memoryUsageBytes;
     this.status = status;
     this.output = output;
   }
@@ -63,7 +67,7 @@ public class TestcaseRun {
     this.submissionId = submissionId;
     this.batchId = batchId;
     this.runDurationMillis = 0;
-    this.memoryUsageB = 0;
+    this.memoryUsageBytes = 0;
     this.status = ExecutionStatus.PENDING;
     this.output = "";
   }
@@ -110,18 +114,18 @@ public class TestcaseRun {
    *
    * @return the total amount of memory used, in bytes.
    */
-  public long getMemoryUsageB() {
-    return this.memoryUsageB;
+  public long getMemoryUsageBytes() {
+    return this.memoryUsageBytes;
   }
 
   /**
    * Sets the total amount of memory used, in bytes.
    *
-   * @param memoryUsageB The total amount of memory used, in
+   * @param memoryUsageBytes The total amount of memory used, in
    *                     bytes.
    */
-  public void setMemoryUsageB(long memoryUsageB) {
-    this.memoryUsageB = memoryUsageB;
+  public void setMemoryUsageBytes(long memoryUsageBytes) {
+    this.memoryUsageBytes = memoryUsageBytes;
   }
 
   /**

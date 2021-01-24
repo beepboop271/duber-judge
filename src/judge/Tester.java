@@ -208,14 +208,14 @@ public class Tester {
         return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, result);
       }
       result.setRunDurationMillis(runDurationMillis);
-      result.setMemoryUsageB(childProcess.getMemoryUsedBytes());
+      result.setMemoryUsageBytes(childProcess.getMemoryUsedBytes());
 
       // timed out
       if (program.isAlive()) {
         result.setStatus(ExecutionStatus.TIME_LIMIT_EXCEEDED);
         program.destroyForcibly();
       // memory limit exceeded
-      } else if (result.getMemoryUsageB() > this.memoryLimitKb*1024) {
+      } else if (result.getMemoryUsageBytes() > this.memoryLimitKb*1024) {
         result.setStatus(ExecutionStatus.MEMORY_LIMIT_EXCEEDED);
       // invalid return code
       } else if (program.exitValue() != 0) {

@@ -13,7 +13,7 @@ import java.util.ArrayList;
  */
 public class SubmissionResult {
   /** The original submission. */
-  private Entity<Submission> submission;
+  private Submission submission;
   /** The current status of the submission. */
   private ExecutionStatus status;
   /** The score of the submission. */
@@ -50,7 +50,7 @@ public class SubmissionResult {
    *                          submission.
    */
   public SubmissionResult(
-    Entity<Submission> submission,
+    Submission submission,
     ExecutionStatus status,
     int score,
     int runDurationMillis,
@@ -81,7 +81,7 @@ public class SubmissionResult {
    *                          bytes.
    */
   public SubmissionResult(
-    Entity<Submission> submission,
+    Submission submission,
     ExecutionStatus status,
     int score,
     int runDurationMillis,
@@ -100,7 +100,7 @@ public class SubmissionResult {
    *
    * @param submission The submission.
    */
-  public SubmissionResult(Entity<Submission> submission) {
+  public SubmissionResult(Submission submission) {
     this.submission = submission;
     this.status = ExecutionStatus.PENDING;
     this.score = 0;
@@ -149,7 +149,7 @@ public class SubmissionResult {
    *                         with the current maximum memory
    *                         usage, in bytes.
    */
-  public void updateMemoryUsedBytes(long memoryUsageBytes) {
+  public void updateMemoryUsageBytes(long memoryUsageBytes) {
     this.memoryUsageBytes = Math.max(this.memoryUsageBytes, memoryUsageBytes);
   }
 
@@ -170,16 +170,16 @@ public class SubmissionResult {
   /**
    * Gets the original submission.
    *
-   * @return        The submission.
+   * @return The submission.
    */
-  public Entity<Submission> getSubmission() {
+  public Submission getSubmission() {
     return this.submission;
   }
 
   /**
    * Retrieves the current status of this submission.
    *
-   * @return       The current status of this submission.
+   * @return The current status of this submission.
    */
   public ExecutionStatus getStatus() {
     return this.status;
@@ -197,7 +197,7 @@ public class SubmissionResult {
   /**
    * Retrieves the score of this submission.
    *
-   * @return       The score of this submission.
+   * @return The score of this submission.
    */
   public int getScore() {
     return this.score;
@@ -206,7 +206,7 @@ public class SubmissionResult {
   /**
    * Retrieves the total runtime of this submission, in ms.
    *
-   * @return    The total runtime of this submission, in ms.
+   * @return The total runtime of this submission, in ms.
    */
   public int getRunDurationMillis() {
     return this.runDurationMillis;
@@ -216,12 +216,19 @@ public class SubmissionResult {
   /**
    * Retrieves the testcase runs.
    *
-   * @return     The testcase runs.
+   * @return The testcase runs.
    */
   public ArrayList<TestcaseRun> getTestcaseRuns() {
     return this.testcaseRuns;
   }
 
+  /**
+   * Returns the maximum amount of memory used among its
+   * testcase runs, in bytes.
+   *
+   * @return The maximum amount of memory used among its
+   *         testcase runs, in bytes.
+   */
   public long getMemoryUsageBytes() {
     return this.memoryUsageBytes;
   }
