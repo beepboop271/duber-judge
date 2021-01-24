@@ -3,9 +3,11 @@ package judge.test;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import entities.Batch;
 import entities.ContestProblem;
+import entities.Entity;
 import entities.Language;
 import entities.Problem;
 import entities.Submission;
@@ -20,58 +22,35 @@ public class Main {
     // char
     // string
     // output the occurrences of char in string
-    Problem p1 = new ContestProblem(10, 0, 0, 1000*5, 1024*100, 1, 5);
-
-    Batch p1b1 = new Batch(5);
-    p1b1.addTestcase(
-      new Testcase(
-        0,
-        "a\nasdasdasd",
-        "3"
-      )
-    );
-    p1.addBatch(p1b1);
-
-    Batch p1b2 = new Batch(3);
-    p1b2.addTestcase(
-      new Testcase(
-        0,
-        "a\nasdasdasd",
-        "3"
-      )
-    );
-    p1b2.addTestcase(
-      new Testcase(
-        0,
-        "a\nasdasdasd",
-        "3"
-      )
-    );
-    p1b2.addTestcase(
-      new Testcase(
-        0,
-        "a\nasdasdasd",
-        "3"
-      )
-    );
-    p1.addBatch(p1b2);
-
-    Batch p1b3 = new Batch(2);
-    p1b3.addTestcase(
-      new Testcase(
-        1,
-        "A\nAsdasdasd",
-        "1"
-      )
-    );
-    p1b3.addTestcase(
-      new Testcase(
-        2,
-        "D\nasdasdasfasfnakjhiahioqnfkjansvkjasnvkajnskcnjaskbcksabkxbasjkxnaskjxnjasnjxnasknxnjksxnkanxjksxnkjasxkasnxnasjkxnaskjnckjasvjsabvausdhasd",
-        "0"
-      )
-    );
-    p1.addBatch(p1b3);
+    // Problem p1 = new ContestProblem(10, 0, 0, 1000*5, 1024*100, 1, 5);
+    Problem p1 =
+      new ContestProblem(
+        null, 0L, null, null, null, null, 10, 5000, 100*1024, 1, 0, 5, 0L, 0,
+        Arrays.asList(
+          new Entity<>(0, new Batch(
+            0L, 0L, 1, 5,
+            Arrays.asList(
+              new Entity<>(0, new Testcase(0, "a\nasdasdasd", "3"))
+            )
+          )),
+          new Entity<>(0, new Batch(
+            0L, 0L, 2, 3,
+            Arrays.asList(
+              new Entity<>(0, new Testcase(0, "a\nasdasdasd", "3")),
+              new Entity<>(0, new Testcase(0, "a\nasdasdasd", "3")),
+              new Entity<>(0, new Testcase(0, "a\nasdasdasd", "3"))
+            )
+          )),
+          new Entity<>(0, new Batch(
+            0L, 0L, 3, 2,
+            Arrays.asList(
+              new Entity<>(0, new Testcase(1, "A\nAsdasdasd", "1")),
+              new Entity<>(0, new Testcase(2, "D\nasdasdasfasfnakjhiahioqnfkjansvkjasnvkajnskcnjaskbcksabkxbasjkxnaskjxnjasnjxnasknxnjksxnkanxjksxnkjasxkasnxnasjkxnaskjnckjasvjsabvausdhasd", "0"))
+            )
+          ))
+        ),
+        null
+      );
 
     // should receive ALL_CLEAR
     Submission s1 = new Submission(
