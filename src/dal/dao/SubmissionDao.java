@@ -69,6 +69,72 @@ public class SubmissionDao implements Dao<SubmissionResult> {
     return id;
   }
 
+  public long add(Submission data) {
+    String sql =
+      "INSERT INTO submissions"
+      +"(problem_id, user_id, code, language, created_at)"
+      +" VALUES (" + DaoHelper.getParamString(5) + ");";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet key = null;
+    long id = -1;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, data.getProblemId());
+      ps.setLong(2, data.getUserId());
+      ps.setString(3, data.getCode());
+      ps.setString(4, data.getLanguage().name());
+      ps.setString(5, data.getCreatedAt().toString());
+
+      ps.executeUpdate();
+      key = ps.getGeneratedKeys();
+      key.next();
+      id = key.getLong(1);
+      ps.close();
+
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(key);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return id;
+  }
+
+  public void updateResult(long id, SubmissionResult result) {
+    String sql =
+       "UPDATE submissions\n"
+      +"  SET\n"
+      +"    status = ?,\n"
+      +"    score = ?,\n"
+      +"    run_duration_millis = ?,\n"
+      +"    memory_usage_b = ?\n"
+      +"  WHERE id = ?;";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet key = null;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setString(1, result.getStatus().toString());
+      ps.setInt(2, result.getScore());
+      ps.setLong(3, result.getRunDurationMillis());
+      ps.setLong(4, result.getMemoryUsageBytes());
+      ps.setLong(5, id);
+
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(key);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+  }
+
   @Override
   public Entity<SubmissionResult> get(long id) throws RecordNotFoundException {
     String sql = "SELECT * FROM submissions WHERE id = ?;";

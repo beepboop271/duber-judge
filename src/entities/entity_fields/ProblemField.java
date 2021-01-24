@@ -30,6 +30,10 @@ public enum ProblemField implements EntityField {
 
   // practice problems only
   EDITORIAL,
-  
-  
+
+
+  //admin
+  PUBLISHING_STATE,
+
+
 }

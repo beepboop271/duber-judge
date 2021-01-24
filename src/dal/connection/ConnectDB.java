@@ -83,6 +83,7 @@ public class ConnectDB {
         +"end_time              TEXT NOT NULL,"
         +"status                TEXT NOT NULL,"
         +"duration_minutes      INTEGER NOT NULL,"
+        +"publishing_state      TEXT NOT NULL,"
         +"FOREIGN KEY(creator_id) REFERENCES users(id) ON DELETE CASCADE"
         +");",
       "CREATE TABLE IF NOT EXISTS contest_sessions ("
@@ -113,6 +114,7 @@ public class ConnectDB {
         +"contest_id            INTEGER,"
         +"submissions_limit     INTEGER,"
         +"editorial             TEXT,"
+        +"publishing_state      TEXT NOT NULL,"
         +"FOREIGN KEY(contest_id) REFERENCES contests(id) ON DELETE CASCADE,"
         +"FOREIGN KEY(creator_id) REFERENCES users(id)"
         +");",
@@ -154,10 +156,10 @@ public class ConnectDB {
         +"code                TEXT NOT NULL,"
         +"language            TEXT NOT NULL,"
         +"created_at          TEXT NOT NULL,"
-        +"status              TEXT NOT NULL,"
-        +"score               INTEGER NOT NULL,"
-        +"run_duration_millis INTEGER NOT NULL,"
-        +"memory_usage_b      INTEGER NOT NULL,"
+        +"status              TEXT DEFAULT '',"
+        +"score               INTEGER DEFAULT 0,"
+        +"run_duration_millis INTEGER DEFAULT 0,"
+        +"memory_usage_b      INTEGER DEFAULT 0,"
         +"FOREIGN KEY(problem_id) REFERENCES problems(id) ON DELETE CASCADE,"
         +"FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"
         +");",

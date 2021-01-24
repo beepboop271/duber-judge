@@ -51,7 +51,8 @@ public class ContestProblem extends Problem {
     int numSubmissions,
     int submissionsLimit,
     long contestId,
-    int clearedSubmissions
+    int clearedSubmissions,
+    PublishingState state
   ) {
     super(
       ProblemType.CONTEST,
@@ -66,7 +67,8 @@ public class ContestProblem extends Problem {
       memoryLimitKb,
       outputLimitKb,
       numSubmissions,
-      clearedSubmissions
+      clearedSubmissions,
+      state
     );
 
     this.submissionsLimit = submissionsLimit;
@@ -107,7 +109,8 @@ public class ContestProblem extends Problem {
     int submissionsLimit,
     long contestId,
     int clearedSubmissions,
-    ArrayList<Entity<Batch>> batches
+    ArrayList<Entity<Batch>> batches,
+    PublishingState state
   ) {
     super(
       ProblemType.CONTEST,
@@ -123,7 +126,8 @@ public class ContestProblem extends Problem {
       outputLimitKb,
       numSubmissions,
       clearedSubmissions,
-      batches
+      batches,
+      state
     );
 
     this.submissionsLimit = submissionsLimit;
