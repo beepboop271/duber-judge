@@ -1,0 +1,105 @@
+
+AdminService
+ ✓ o- removeUser
+ ✓ o- getUsers
+ ✓ o- createContest
+ ✓ o- updateContest
+ ✓ o- deleteContest
+ ✓ o- kickUserFromContest
+ ✓ o- createPracticeProblem
+ ✓ o- createContestProblem
+ y - validateProblem
+ ✓ o- updateProblem
+ ✓ o- deleteProblem
+ y - validateBatch
+ ✓ o- createBatch
+ ✓ o- updateBatch
+ ✓ o- deleteBatch
+ y - validateTestcase
+ ✓ o- createTestcase
+ ✓ o- updateTestcase
+ ✓ o- deleteTestcase
+ ✓ o- clarifyProblem
+ y - validateContest
+ ✓ o- getUnresolvedClarifications
+ ✓ o- getContestParticipants
+ ✓ o- deleteRestriction
+ ✓ o- createRestriction
+ ✓ o- updateRestriction
+
+ContestService
+ ✓ o- validateContestSession
+ ✓ o- allowProblemViewing
+ ✓ o- startContest
+ ✓ o- getProblems
+ ✓ o- getContest
+ ✓ - updateUserScore
+ ✓ - updateUserStatus
+
+ProblemService
+ ~ o- submitSolution
+ ✓ o- requestClarification
+ ✓ o- getAllSubmissions
+ ✓ o- getClarifications
+ ✓ o- getProblem
+ ✓ o- getSubmission
+ y o- validateSubmissionId
+
+PublicService
+ ~ o- getContests
+ ✓ o- getOngoingContests
+ ✓ o- getUpcomingContests
+ ✓ o- getLeaderboard  < test with submission, testcase
+ ✓ o- getContestLeaderboard
+ ✓ o- getProblemLeaderboard < test with submission, testcase
+ ✓ o- getPracticeProblems
+ ✓ o- getPracticeProblemsByCategory
+ ✓ o- getPracticeProblemsByCreator
+ ✓ o- getPracticeProblemsByPoints
+ ✓ o- getPracticeProblemsByNumSubmissions
+ ✓ o- getProblem
+ ✓ o- getContestNumParticipants
+
+SessionService - ✓
+ ✓ - createSession(userId)
+ ✓ o- createSession()
+ ✓ - getSession
+ ✓ o- updateSession
+ ✓ - updateLastActive
+ ✓ - deleteFromBefore
+
+SessionCleaner
+ ✓ o- start
+
+ContestStatusUpdater
+ ✓ o- start
+
+UserService
+ ✓ - generateSalt
+ ✓ - hashPassword
+ ✓ - validatePassword(username)
+ ✓ - validatePassword(password)
+ ✓ - validateUser
+ ✓ o- createUser
+ ✓ o- createAdmin
+ ✓ o- login
+ ✓ o- updateUserProfile
+ ✓ o- updateUserPassword
+ ✓ o- isSameUser
+ ✓ o- getPoints
+ ✓ - isAdmin
+ ✓ o- getProblems <- problems the user has attempted, not contest
+ ✓ o- getSubmissions <- all submissions
+ ✓ o- getProblemSubmissions <- submission by problem
+ ✓ o- getActiveContests
+ ✓ o- getParticipatedContests
+ ✓ o- getSubmissionCount
+
+
+x || failed qa (error or logic)
+✓ || everything looks fine
+~ || a missing function,
+y || not manually tested but can be assumed to work based on code/other functions,
+  || not tested yet,
+? || idk whats happening here buddy,
+✓~ || needs more testing but seems to work
