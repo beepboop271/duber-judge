@@ -16,7 +16,8 @@ import entities.TestcaseRun;
 import judge.launcher.SourceLauncher;
 
 /**
- * [description]
+ * Contains a static method that tests a batch of testcases and returns a
+ * {@code CompletableFuture} of the testcase runs.
  * <p>
  * Created on 2021.01.08.
  *
@@ -24,9 +25,19 @@ import judge.launcher.SourceLauncher;
  * @version 1.0.0
  * @since 1.0.0
  */
-
 public class Tester {
-
+  /**
+   * Tests a batch of testcases and returns a {@code CompletableFuture} of the
+   * testcase runs.
+   *
+   * @param batch           The {@code Batch} to be tested.
+   * @param launcher        The {@code SourceLauncher} to launch the program.
+   * @param pool            The {@code ExecutorService} to submit the task.
+   * @param timeLimitMillis The time limit of each testcase, in milliseconds.
+   * @param memoryLimitKb   The memory limit of each testcase, in kilobytes.
+   * @param outputLimitKb   The output limit of each testcase, in kilobytes.
+   * @return                A {@code CompletableFuture} of the testcase runs.
+   */
   public static CompletableFuture<TestcaseRun[]> testBatch(
     Batch batch,
     SourceLauncher launcher,
@@ -49,15 +60,39 @@ public class Tester {
     return f;
   }
 
+  /**
+   * A {@Runnable} object that tests a batch of testcases and completes the given
+   * {@code CompletableFuture} with testcase runs.
+   */
   private static class BatchRunner implements Runnable {
+    private static final int BUF_SIZE = 8192;
+
+    /** The {@code Batch} to be tested. */
     private final Batch batch;
+    /** The {@code SourceLauncher} to launch the program. */
     private final SourceLauncher launcher;
+    /** The time limit of each testcase, in milliseconds. */
     private final int timeLimitMillis;
+    /** The memory limit of each testcase, in kilobytes. */
     private final int memoryLimitKb;
+    /** The output limit of each testcase, in kilobytes. */
     private final int outputLimitKb;
 
+    /** The {@code CompletableFuture} to be completed with testcase runs. */
     private CompletableFuture<TestcaseRun[]> f;
 
+    /**
+     * Creates a new {@code BatchRunner} instance with time, memory and output
+     * restrictions that apply to each testcase.
+     *
+     * @param f               The {@code CompletableFuture} to be completed with
+     *                        testcase runs.
+     * @param batch           The {@code Batch} to be tested.
+     * @param launcher        The {@code SourceLauncher} to launch the program.
+     * @param timeLimitMillis The time limit of each testcase, in milliseconds.
+     * @param memoryLimitKb   The memory limit of each testcase, in kilobytes.
+     * @param outputLimitKb   The output limit of each testcase, in kilobytes.
+     */
     public BatchRunner(
       CompletableFuture<TestcaseRun[]> f,
       Batch batch,
@@ -74,6 +109,10 @@ public class Tester {
       this.outputLimitKb = outputLimitKb;
     }
 
+    /**
+     * Tests each of the testcase in the batch, and completes the given
+     * {@code CompletableFuture} with testcase runs.
+     */
     @Override
     public void run() {
       Testcase[] testcases = batch.getTestcases();
@@ -95,6 +134,13 @@ public class Tester {
       this.f.complete(testcaseRuns);
     }
 
+    /**
+     * Tests a given testcase and returns a {@code TestcaseRun} object representing
+     * the result.
+     *
+     * @param testcase The {@code Testcase} to be tested.
+     * @return         A {@code TestcaseRun} object representing the result.
+     */
     private TestcaseRun test(Testcase testcase) {
       TestcaseRun runToReturn = new TestcaseRun(testcase);
       String input = testcase.getInput();
@@ -141,7 +187,7 @@ public class Tester {
       runToReturn.setMemoryUsedBytes(childProcess.getMemoryUsedBytes());
 
       // timed out
-      if (program.isAlive()) { 
+      if (program.isAlive()) {
         runToReturn.setStatus(ExecutionStatus.TIME_LIMIT_EXCEEDED);
         program.destroyForcibly();
       // memory limit exceeded
@@ -152,26 +198,43 @@ public class Tester {
         runToReturn.setStatus(ExecutionStatus.INVALID_RETURN);
       }
 
-      runToReturn = this.judgeOutput(stdin, stdout, testcase, runToReturn);
-      
-      // end of testing
-      this.closeResources(program, stdin, stdout);
+      runToReturn = this.judgeOutput(stdout, testcase.getOutput(), runToReturn);
+
+      // end of testing, close resources
+      program.destroyForcibly();
+      try {
+        stdin.close();
+        stdout.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
       return runToReturn;
     }
 
+    /**
+     * Compares the output of the program's process to the expected output
+     * and updates the {@code TestcaseRun} result accordingly.
+     * <p>
+     * Note: while judging the output, leading and trailing whitespaces are
+     * not significant, but whitespace between is.
+     *
+     * @param stdout          The {@code InputStream} of the program's process.
+     * @param expectedOutput  The expected output of the program.
+     * @param testcaseRun     The {@code TestcaseRun} to be updated.
+     * @return                The updated {@code TestcaseRun}.
+     */
     private TestcaseRun judgeOutput(
-      OutputStream stdin,
       InputStream stdout,
-      Testcase testcase,
+      String expectedOutput,
       TestcaseRun testcaseRun
     ) {
-      String expectedOutput = testcase.getOutput();
       StringBuilder sb = new StringBuilder();
       // read output
       try {
         InputStreamReader reader = new InputStreamReader(stdout);
-        char[] buf = new char[8192];
-        int read = reader.read(buf, 0, 8192);
+        char[] buf = new char[BatchRunner.BUF_SIZE];
+        int read = reader.read(buf, 0, BatchRunner.BUF_SIZE);
         int byteCount = 0;
         long outputLimitBytes = this.outputLimitKb*1024;
         while (read != -1) {
@@ -180,20 +243,18 @@ public class Tester {
             testcaseRun.setStatus(ExecutionStatus.OUTPUT_LIMIT_EXCEEDED);
             break;
           }
-          sb.append(buf, 0, 8192);
-          read = reader.read(buf, 0, 8192);
+          sb.append(buf, 0, BatchRunner.BUF_SIZE);
+          read = reader.read(buf, 0, BatchRunner.BUF_SIZE);
         }
       } catch (IOException e) {
         if (testcaseRun.getStatus() == ExecutionStatus.PENDING) {
           testcaseRun.setStatus(ExecutionStatus.WRONG_ANSWER);
         }
       }
-      // TODO: Don't forget to document somewhere that
-      // leading and trailing whitespaces are not significant, but whitespace between is.
-      String programOutput = sb.toString().trim(); 
-      
+      String programOutput = sb.toString().trim();
+
       // compare with expected output if submission hasn't received a status
-      if (testcaseRun.getStatus() == ExecutionStatus.PENDING) { 
+      if (testcaseRun.getStatus() == ExecutionStatus.PENDING) {
         if (programOutput.equals(expectedOutput.trim())) {
           testcaseRun.setStatus(ExecutionStatus.ALL_CLEAR);
         } else {
@@ -204,6 +265,18 @@ public class Tester {
       return testcaseRun;
     }
 
+    /**
+     * Updates and returns the given {@code TestcaseRun} object upon the fail of
+     * the judging process (can be caused either by the judge or the submitted
+     * program).
+     *
+     * @param status          The status of the {@code TestcaseRun}.
+     * @param exception       The exception that caused the failing.
+     * @param printStackTrace Whether or not the stack trace of the exception
+     *                        should be printed.
+     * @param run             The {@code TestcaseRun} to be updated.
+     * @return                The updated {@code TestcaseRun}.
+     */
     private TestcaseRun fail(
       ExecutionStatus status,
       Exception exception,
@@ -215,20 +288,6 @@ public class Tester {
         exception.printStackTrace();
       }
       return run;
-    }
-    
-    private void closeResources(
-      Process program,
-      OutputStream stdin,
-      InputStream stdout
-    ) {
-      program.destroyForcibly();
-      try {
-        stdin.close();
-        stdout.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
     }
   }
 }
