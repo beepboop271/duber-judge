@@ -1,20 +1,19 @@
 package judge;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import entities.Language;
+import judge.launcher.SourceLauncher;
 import oshi.SystemInfo;
 import oshi.software.os.OSProcess;
 import oshi.software.os.OperatingSystem;
 
-import entities.Language;
-import judge.launcher.SourceLauncher;
-
 /**
- * [description]
+ * This class consists exclusively of static methods that
+ * initializes and shuts down the child process pool, and
+ * launches child processes.
  * <p>
  * Created on 2021.01.17.
  *
@@ -24,22 +23,42 @@ import judge.launcher.SourceLauncher;
  */
 
 public class ChildProcesses {
+  /** The operating system of this computer. */
   private static final OperatingSystem OS = new SystemInfo().getOperatingSystem();
+  /** The process id of the current process. */
   private static final int CURRENT_PID = ChildProcesses.OS.getProcessId();
 
+  /**
+   * The {@code ChildProcessMonitor} that tracks active child
+   * processes.
+   */
   private static final ChildProcessMonitor childProcessMonitor = new ChildProcessMonitor();
+  /**
+   * A {@code ConcurrentHashMap} that maps process ids of
+   * active child processes to the corresponding
+   * {@code ChildProcess} object.
+   */
   private static final ConcurrentHashMap<Integer, ChildProcess> activeChildProcesses
     = new ConcurrentHashMap<>();
 
 
+  // prevent instantiation of class
   private ChildProcesses() {
   }
 
+  /**
+   * Initializes the {@code ChildProcessMonitor} that tracks
+   * active child processes.
+   */
   public static void initialize() {
     Thread processMonitorThread = new Thread(ChildProcesses.childProcessMonitor);
     processMonitorThread.start();
   }
 
+  /**
+   * Shuts down the {@code ChildProcessMonitor} and destroys
+   * all active child processes.
+   */
   public static void shutdown() {
     synchronized (ChildProcesses.childProcessMonitor) {
       ChildProcesses.childProcessMonitor.notify();
@@ -52,6 +71,23 @@ public class ChildProcesses {
   }
 
 
+  /**
+   * Launches a child process and returns a corresponding
+   * {@code ChildProcess} object.
+   *
+   * @param launcher        The {@code SourceLauncher} used to
+   *                        launch the process.
+   * @param timeLimitMillis The maximum duration the process
+   *                        is allowed to run for, in
+   *                        milliseconds.
+   * @param memoryLimitKb   The maximum amount of memory the
+   *                        process is allowed to use, in
+   *                        kilobytes.
+   * @throws InternalErrorException   if an internal error
+   *                                  occurs.
+   * @throws ProcessNotFoundException if the process cannot be
+   *                                  found in after launching.
+   */
   public static synchronized ChildProcess launchChildProcess(
     SourceLauncher launcher,
     int timeLimitMillis,
@@ -78,6 +114,12 @@ public class ChildProcesses {
     return childProcess;
   }
 
+  /**
+   * Checks each of the activate child processes, updates the
+   * maximum amount of memory it has used, and terminates the
+   * process if it uses more memory than the maximum amount it
+   * is allowed to use.
+   */
   public static void validateActiveChildProcesses() {
     List<OSProcess> children =
       ChildProcesses.OS.getChildProcesses(ChildProcesses.CURRENT_PID, 0, null);
@@ -100,6 +142,19 @@ public class ChildProcesses {
     }
   }
 
+  /**
+   * Returns the process id of the newly launched child
+   * process.
+   *
+   * @param launcher The {@code SourceLauncher} used to launch
+   *                 the process.
+   * @return The process id of the newly launched child
+   *         process.
+   * @throws InternalErrorException   if an internal error
+   *                                  occurs.
+   * @throws ProcessNotFoundException if the process cannot be
+   *                                  found after launching.
+   */
   private static int getNewPid(SourceLauncher launcher)
     throws InternalErrorException, ProcessNotFoundException {
     List<OSProcess> updatedProcesses =
@@ -134,6 +189,15 @@ public class ChildProcesses {
     throw new ProcessNotFoundException("Failed to track child pid");
   }
 
+  /**
+   * Returns the name of the process depending on the
+   * programming language it uses.
+   *
+   * @param language The programming language of the launched
+   *                 program.
+   * @throws InternalErrorException if an internal error
+   *                                occurs.
+   */
   private static String getProcessName(Language language) throws InternalErrorException {
     switch (language) {
       case PYTHON:
@@ -145,13 +209,26 @@ public class ChildProcesses {
     }
   }
 
+  /**
+   * A {@code Runnable} object that repeatedly validates
+   * active child processes with a fixed interval.
+   */
   private static class ChildProcessMonitor implements Runnable {
+    /** Whether or not the {@code ChildProcessMonitor} should keep running.  */
     private boolean running;
 
+    /**
+     * Creates a new {@code ChildProcessMonitor} instance.
+     */
     public ChildProcessMonitor() {
       this.running = true;
     }
 
+    /**
+     * Validates active child processes with a fixed interval.
+     * If there are no active child processes, makes the thread
+     * wait to be notified.
+     */
     @Override
     public void run() {
       while (running) {
@@ -171,6 +248,9 @@ public class ChildProcesses {
       }
     }
 
+    /**
+     * Stops this {@code ChildProcessMonitor} from running.
+     */
     public void stop() {
       this.running = false;
     }

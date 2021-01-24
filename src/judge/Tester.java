@@ -184,7 +184,7 @@ public class Tester {
         return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, runToReturn);
       }
       runToReturn.setRunDurationMillis(runDurationMillis);
-      runToReturn.setMemoryUsedBytes(childProcess.getMemoryUsedBytes());
+      runToReturn.setMemoryUsedBytes(childProcess.getMemoryUsageBytes());
 
       // timed out
       if (program.isAlive()) {
