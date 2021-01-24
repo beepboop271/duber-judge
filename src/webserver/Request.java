@@ -401,7 +401,7 @@ public class Request extends HttpMessage {
    *
    * @return this request's requested resource.
    */
-  public String returnEndResource() {
+  public String getEndResource() {
     return this.endResource;
   }
 }

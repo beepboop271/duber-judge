@@ -92,14 +92,79 @@ public class Response extends HttpMessage {
   }
 
   /**
+   * Generates a {@code 405 Method Not Allowed} HTTP response
+   * with the appropriate {@code Allow} header detailing
+   * allowed methods.
+   * <p>
+   * This should never be returned on a {@code GET} or
+   * {@code HEAD} method.
+   * <p>
+   * Allowed methods can be provided. Note that {@code GET}
+   * and {@code HEAD} are already included as they should
+   * never return a 405. They do not need to be re-included,
+   *
+   * @param allowedMethods Methods that this resource allows,
+   *                       with exception to {@code GET} and
+   *                       {@code HEAD} as they are already
+   *                       included.
+   * @return a 405 HTTP response object.
+   */
+  public static Response methodNotAllowed(String... allowedMethods) {
+    StringBuilder allow = new StringBuilder("GET, HEAD");
+    for (String s : allowedMethods) {
+      // If GET or HEAD are re-included we do not need to fail
+      if (!s.equals("GET") && !s.equals("HEAD")) {
+        allow.append(", "+s);
+      }
+    }
+
+    Response response = new Response(405);
+    response.headers.put("Allow", allow.toString());
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 403 Forbidden} HTTP response.
+   *
+   * @return a 403 HTTP response object.
+   */
+  public static Response forbidden() {
+    return new Response(403);
+  }
+
+  /**
    * Generates a {@code 200 OK} html HTTP response with the
-   * appropriate headers.
+   * appropriate headers and body.
    *
    * @param html The html file to send in the Response.
    * @return a 200 HTTP response object.
    */
   public static Response okHtml(String html) {
-    Response response = new Response(200, html);
+    return Response.okHtml(html, true);
+  }
+
+  /**
+   * Generates a {@code 200 OK} html HTTP response with the
+   * appropriate headers.
+   * <p>
+   * The html can be set as the body of the request by setting
+   * {@code hasBody} to true. However, the client may simply
+   * want the headers and nothing more, in which case
+   * {@code hasBody} should be set to false.
+   *
+   * @param html    The html file to send in the Response.
+   * @param hasBody Whether this request has a body or not.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okHtml(String html, boolean hasBody) {
+    Response response;
+    if (hasBody) {
+      response = new Response(200, html);
+    } else {
+      response = new Response(200);
+    }
+
     response.headers.put("Content-Type", "text/html");
     response.headers.put("Content-Length", Integer.toString(html.length()));
 
@@ -108,14 +173,32 @@ public class Response extends HttpMessage {
 
   /**
    * Generates a {@code 200 OK} html HTTP response with the
-   * appropriate headers, and informing the browser not to
-   * cache this page.
+   * appropriate headers and body, and informs the browser not
+   * to cache this page.
    *
    * @param html The html file to send in the Response.
    * @return a 200 HTTP response object.
    */
   public static Response okNoCacheHtml(String html) {
-    Response response = Response.okHtml(html);
+    return Response.okNoCacheHtml(html, true);
+  }
+
+  /**
+   * Gener tes a {@code 200 OK} html HTTP response with the
+   * appropriate headers, and informs the browser not to cache
+   * this page.
+   * <p>
+   * The html can be set as the body of the request by setting
+   * {@code hasBody} to true. However, the client may simply
+   * want the headers and nothing more, in which case
+   * {@code hasBody} should be set to false.
+   *
+   * @param html    The html file to send in the Response.
+   * @param hasBody Whether this request has a body or not.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okNoCacheHtml(String html, boolean hasBody) {
+    Response response = Response.okHtml(html, hasBody);
     response.headers.put("Cache-Control", "no-store, max-age=0");
 
     return response;
@@ -123,9 +206,9 @@ public class Response extends HttpMessage {
 
   /**
    * Generates a {@code 200 OK} html HTTP response with the
-   * appropriate headers, and sets the specified cookie in the
-   * as a session cookie, which is removed upon client
-   * shutdown.
+   * appropriate headers and body, and sets the specified
+   * cookie in the as a session cookie, which is removed upon
+   * client shutdown.
    *
    * @param html  The html file to send in the Response.
    * @param name  The name of the cookie.
@@ -137,26 +220,50 @@ public class Response extends HttpMessage {
     String name,
     String value
   ) {
-    if (name.equals("") || value.equals("")) {
-      throw new IllegalArgumentException("The provided cookie is invalid.");
-    }
-
-    Response response = Response.okHtml(html);
-    response.headers.put("Set-Cookie", name+"="+value);
-
-    return response;
+    return Response.okSetCookieHtml(html, name, value, -1, true);
   }
 
   /**
    * Generates a {@code 200 OK} html HTTP response with the
    * appropriate headers, and sets the specified cookie in the
-   * as a cookie, with the provided max age.
+   * as a session cookie, which is removed upon client
+   * shutdown.
+   * <p>
+   * The html can be set as the body of the request by setting
+   * {@code hasBody} to true. However, the client may simply
+   * want the headers and nothing more, in which case
+   * {@code hasBody} should be set to false.
+   *
+   * @param html  The html file to send in the Response.
+   * @param name  The name of the cookie.
+   * @param value The value of the cookie.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okSetCookieHtml(
+    String html,
+    String name,
+    String value,
+    boolean hasBody
+  ) {
+    return Response.okSetCookieHtml(html, name, value, -1, hasBody);
+  }
+
+  /**
+   * Generates a {@code 200 OK} html HTTP response with the
+   * appropriate headers and body, and sets the specified
+   * cookie in the as a cookie, with the provided max age.
+   * <p>
+   * If {@code maxAge} is provided as {@code -1}, the
+   * specified cookie will be a session cookie, which is
+   * removed upon client shutdown. To have a cookie that
+   * expires immediately, set {@code maxAge} to {@code 0};
    *
    * @param html   The html file to send in the Response.
    * @param name   The name of the cookie.
    * @param value  The value of the cookie.
    * @param maxAge The amount of time for the cookie to live,
-   *               in seconds.
+   *               in seconds, or -1 if this cookie should be
+   *               a session cookie.
    * @return a 200 HTTP response object.
    */
   public static Response okSetCookieHtml(
@@ -165,12 +272,50 @@ public class Response extends HttpMessage {
     String value,
     int maxAge
   ) {
+    return Response.okSetCookieHtml(html, name, value, maxAge, true);
+  }
+
+  /**
+   * Generates a {@code 200 OK} html HTTP response with the
+   * appropriate headers, and sets the specified cookie in the
+   * as a cookie, with the provided max age.
+   * <p>
+   * If {@code maxAge} is provided as {@code -1}, the
+   * specified cookie will be a session cookie, which is
+   * removed upon client shutdown. To have a cookie that
+   * expires immediately, set {@code maxAge} to {@code 0};
+   * <p>
+   * The html can be set as the body of the request by setting
+   * {@code hasBody} to true. However, the client may simply
+   * want the headers and nothing more, in which case
+   * {@code hasBody} should be set to false.
+   *
+   * @param html    The html file to send in the Response.
+   * @param name    The name of the cookie.
+   * @param value   The value of the cookie.
+   * @param maxAge  The amount of time for the cookie to live,
+   *                in seconds, or -1 if this cookie should be
+   *                a session cookie.
+   * @param hasBody Whether this request has a body or not.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okSetCookieHtml(
+    String html,
+    String name,
+    String value,
+    int maxAge,
+    boolean hasBody
+  ) {
     if (name.equals("") || value.equals("")) {
       throw new IllegalArgumentException("The provided cookie is invalid.");
     }
 
-    Response response = Response.okHtml(html);
-    response.headers.put("Set-Cookie", name+"="+value+"; Max-Age="+maxAge);
+    Response response = Response.okHtml(html, hasBody);
+    if (maxAge == -1) {
+      response.headers.put("Set-Cookie", name+"="+value);
+    } else {
+      response.headers.put("Set-Cookie", name+"="+value+"; Max-Age="+maxAge);
+    }
 
     return response;
   }
@@ -181,7 +326,7 @@ public class Response extends HttpMessage {
    * to the provided URI.
    *
    * @param newUri The new URI to redirect the client to.
-   * @return a 308 HTTP tesponse object.
+   * @return a 308 HTTP response object.
    */
   public static Response permanentRedirect(String newUri) {
     if (newUri == null || newUri.equals("")) {
@@ -203,7 +348,7 @@ public class Response extends HttpMessage {
    * or PUT to redirect to another page, etc.
    *
    * @param newUri The new URI to redirect the client to.
-   * @return a 303 HTTP tesponse object.
+   * @return a 303 HTTP response object.
    */
   public static Response seeOther(String newUri) {
     if (newUri == null || newUri.equals("")) {
