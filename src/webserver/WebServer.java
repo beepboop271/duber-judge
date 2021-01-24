@@ -694,9 +694,13 @@ public class WebServer {
      * @return an HTTP response to return to the user.
      */
     private Response generateResponseFromRequest(Request request) {
-      if (cache.checkCache(request.getFullPath())) {
+      String cachedBody = cache.getCachedObject(request.getFullPath());
+      if (cachedBody != null) {
         // Retrieve the cached object
-        return Response.okHtml(cache.getCachedObject(request.getFullPath()));
+        if (request.getMethod().equals("HEAD")) {
+          return Response.okHtml(cachedBody, false);
+        }
+        return Response.okHtml(cachedBody);
       }
 
       RouteTarget handler = WebServer.this.getRoute(request);

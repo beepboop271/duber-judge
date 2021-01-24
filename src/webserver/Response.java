@@ -332,6 +332,20 @@ public class Response extends HttpMessage {
   }
 
   /**
+   * Generates a {@code 201 Created} html HTTP response with the
+   * appropriate headers, and sets the resource link to a provided link.
+   *
+   * @param resourceLink The link to the newly created resource.
+   * @return a 201 HTTP response object.
+   */
+  public static Response created(String resourceLink) {
+    Response response = new Response(201);
+    response.headers.put("Location", resourceLink);
+
+    return response;
+  }
+
+  /**
    * Generates a {@code 308 Permanent Redirect} HTTP response
    * with the appropriate {@code Location} header, redirecting
    * to the provided URI.
