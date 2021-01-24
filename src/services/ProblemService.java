@@ -10,7 +10,6 @@ import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
 import entities.Clarification;
 import entities.ContestProblem;
-import entities.ContestSession;
 import entities.Entity;
 import entities.ExecutionStatus;
 import entities.Language;
@@ -18,9 +17,8 @@ import entities.PracticeProblem;
 import entities.Problem;
 import entities.Submission;
 import entities.SubmissionResult;
-import judge.Judger;
-import entities.entity_fields.ContestSessionField;
 import entities.entity_fields.ProblemField;
+import judge.Judger;
 
 /**
  * [description]
@@ -72,7 +70,7 @@ public class ProblemService {
    * @throws InsufficientPermissionException    The user is unable to submit.
    * @throws RecordNotFoundException            The problem is not found.
    */
-  public SubmissionResult submitSolution(
+  public Entity<SubmissionResult> submitSolution(
     long userId,
     long problemId,
     String code,
@@ -88,10 +86,12 @@ public class ProblemService {
       language,
       new Timestamp(System.currentTimeMillis())
     );
+    long submissionId = this.submissionDao.add(submission);
+    Entity<Submission> submissionEntity = new Entity<Submission>(submissionId, submission);
 
     Entity<Problem> problem = this.problemDao.getNested(problemId);
-    SubmissionResult result = Judger.judge(submission, problem);
-    long submissionId = this.submissionDao.add(result);
+    Entity<SubmissionResult> result = Judger.judge(submissionEntity, problem);
+    this.submissionDao.updateResult(submissionId, result.getContent());
 
     Problem pContent = problem.getContent();
     if (pContent instanceof ContestProblem) {
