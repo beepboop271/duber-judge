@@ -173,7 +173,6 @@ ContestProblemSubmissionHandler:
   - /contest/:contestId/problem/:problemId/submissions
   - /contest/:contestId/problem/:problemId/submissions/:submissionId
 
-
 AdminHandler:
   - /admin -> /admin/users
   - /admin/clarifications

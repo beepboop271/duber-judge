@@ -6,6 +6,8 @@ import webserver.RouteTarget;
 
 public class StaticHandler implements RouteTarget {
   public Response accept(Request req) {
-    return new Response(200);
+    String body =
+      "<html><head><title>a</title></head><body>static</body></html>";
+    return Response.okHtml(body);
   }
 }
