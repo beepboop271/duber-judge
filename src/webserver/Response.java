@@ -176,6 +176,47 @@ public class Response extends HttpMessage {
   }
 
   /**
+   * Generates a {@code 308 Permanent Redirect} HTTP response
+   * with the appropriate {@code Location} header, redirecting
+   * to the provided URI.
+   *
+   * @param newUri The new URI to redirect the client to.
+   * @return a 308 HTTP tesponse object.
+   */
+  public static Response permanentRedirect(String newUri) {
+    if (newUri == null || newUri.equals("")) {
+      throw new IllegalArgumentException("A uri must be provided.");
+    }
+
+    Response response = new Response(308);
+    response.headers.put("Location", newUri);
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 303 See Other} HTTP response with the
+   * appropriate {@code Location} header, redirecting to the
+   * provided URI that has another page.
+   * <p>
+   * This should normally be sent back as a result of a POST
+   * or PUT to redirect to another page, etc.
+   *
+   * @param newUri The new URI to redirect the client to.
+   * @return a 303 HTTP tesponse object.
+   */
+  public static Response seeOther(String newUri) {
+    if (newUri == null || newUri.equals("")) {
+      throw new IllegalArgumentException("A uri must be provided.");
+    }
+
+    Response response = new Response(303);
+    response.headers.put("Location", newUri);
+
+    return response;
+  }
+
+  /**
    * Constructs a new Response, without any body or headers.
    * <p>
    * The body will be initialized as an empty string.
