@@ -76,5 +76,4 @@ public class Testcase {
   public String getOutput() {
     return this.output;
   }
-
 }

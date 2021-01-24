@@ -103,6 +103,4 @@ public class TestcaseRun {
   public String getOutput() {
     return this.output;
   }
-
-
 }

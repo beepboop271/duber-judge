@@ -2,6 +2,7 @@
 /bin
 /lib
 /database
+/temp
 .project
 .classpath
 queries.sql
