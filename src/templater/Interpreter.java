@@ -14,10 +14,7 @@ public class Interpreter {
   public String resolveString(StringResolvable s) {
     if (s.isTemplate()) {
       Object content = this.namespace.get(s.getContent());
-      if (content instanceof String) {
-        return (String) content;
-      }
-      // TODO: else exception???
+      return content.toString();
     }
     return s.getContent();
   }
