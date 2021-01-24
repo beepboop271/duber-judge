@@ -8,7 +8,9 @@ import entities.Submission;
 import judge.InternalErrorException;
 
 /**
- * [description]
+ * A {@code SourceLauncher} for launching python programs.
+ * Temporary files and directories are created when necessary, and are destroyed
+ * upon closing.
  * <p>
  * Created on 2021.01.08.
  *
@@ -16,14 +18,21 @@ import judge.InternalErrorException;
  * @version 1.0.0
  * @since 1.0.0
  */
-
-public class PythonLauncher extends SourceLauncher {
-
+public class PythonSourceLauncher extends SourceLauncher {
+  /** The file extension for program files. */
   private static final String FILE_EXTENSION = ".py";
+  /** The default name for program files. */
   private static final String FILE_NAME = "main";
 
-  public PythonLauncher(Submission submission, File tempFileDirectory) {
-    super(submission, tempFileDirectory);
+  /**
+   * Creates a new {@code PythonSourceLauncher} instance with the given submission
+   * and parent directory.
+   *
+   * @param submission      The submission that contains the program.
+   * @param parentDirectory The parent directory of the program's temporary directory.
+   */
+  public PythonSourceLauncher(Submission submission, File parentDirectory) {
+    super(submission, parentDirectory);
   }
 
   @Override
@@ -39,14 +48,14 @@ public class PythonLauncher extends SourceLauncher {
 
   @Override
   public String getTempFileExtension() {
-    return PythonLauncher.FILE_EXTENSION;
+    return PythonSourceLauncher.FILE_EXTENSION;
   }
 
   @Override
   public String getTempFileName() {
-    return PythonLauncher.FILE_NAME;
+    return PythonSourceLauncher.FILE_NAME;
   }
-  
+
   @Override
   public Language getLanguage() {
     return Language.PYTHON;

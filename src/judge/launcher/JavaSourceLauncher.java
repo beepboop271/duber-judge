@@ -10,7 +10,12 @@ import judge.CompileErrorException;
 import judge.InternalErrorException;
 
 /**
- * [description]
+ * A {@code SourceLauncher} for compiling and launching java programs.
+ * Temporary files and directories are created when necessary, and are destroyed
+ * upon closing.
+ * <p>
+ * Note: in order for the launcher to compile, all submitted programs should have
+ * "Main" as the main class's name.
  * <p>
  * Created on 2021.01.08.
  *
@@ -18,21 +23,31 @@ import judge.InternalErrorException;
  * @version 1.0.0
  * @since 1.0.0
  */
-
-public class JavaLauncher extends SourceLauncher {
-  //TODO: document that java files has to have "Main" as the class name
+public class JavaSourceLauncher extends SourceLauncher {
+  /** The file extension for program files. */
   private static final String FILE_EXTENSION = ".java";
-  private static final String FILE_NAME = "Main"; 
+  /** The default name for program files. */
+  private static final String FILE_NAME = "Main";
 
-  public JavaLauncher(Submission submission, File tempFileDirectory) {
-    super(submission, tempFileDirectory);
+  /**
+   * Creates a new {@code JavaSourceLauncher} instance with the given submission
+   * and parent directory.
+   * <P>
+   * Note: in order for the launcher to compile, all submitted programs should have
+   * "Main" as the main class's name.
+   *
+   * @param submission      The submission that contains the program.
+   * @param parentDirectory The parent directory of the program's temporary directory.
+   */
+  public JavaSourceLauncher(Submission submission, File parentDirectory) {
+    super(submission, parentDirectory);
   }
 
   @Override
   public void setup() throws InternalErrorException, CompileErrorException {
     super.setup();
     try {
-      this.compileSource();      
+      this.compileSource();
     } catch (InterruptedException | IOException e) {
       throw new InternalErrorException(e);
     }
@@ -51,12 +66,12 @@ public class JavaLauncher extends SourceLauncher {
 
   @Override
   public String getTempFileExtension() {
-    return JavaLauncher.FILE_EXTENSION;
+    return JavaSourceLauncher.FILE_EXTENSION;
   }
 
   @Override
   public String getTempFileName() {
-    return JavaLauncher.FILE_NAME;
+    return JavaSourceLauncher.FILE_NAME;
   }
 
   @Override
@@ -64,6 +79,14 @@ public class JavaLauncher extends SourceLauncher {
     return Language.PYTHON;
   }
 
+  /**
+   * Compiles the program file.
+   *
+   * @throws IOException           if an I/O error occurs while checking
+   *                               if there is an error message.
+   * @throws InterruptedException  if the program process's thread is interrupted.
+   * @throws CompileErrorException if a compile error occurs.
+   */
   private void compileSource() throws IOException, InterruptedException, CompileErrorException {
     ProcessBuilder builder = new ProcessBuilder("javac", this.getSource().getAbsolutePath());
     Process process = builder.start();
@@ -75,6 +98,12 @@ public class JavaLauncher extends SourceLauncher {
     }
   }
 
+  /**
+   * Reads the content in an {@code BufferedInputStream} and returns the result as a String.
+   *
+   * @param stream The {@code BufferedInputStream} to read.
+   * @throws IOException if an I/O error occurs while reading the stream.
+   */
   private String readStream(BufferedInputStream stream) throws IOException {
     StringBuilder sb = new StringBuilder();
     int curByte = stream.read();

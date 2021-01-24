@@ -3,7 +3,8 @@ package judge.checker;
 import entities.Language;
 
 /**
- * [description]
+ * An {@code SourceChecker} that checks if a given piece of python code
+ * contains language-specific illegal segments.
  * <p>
  * Created on 2021.01.08.
  *
@@ -11,9 +12,8 @@ import entities.Language;
  * @version 1.0.0
  * @since 1.0.0
  */
-
 public class PythonSourceChecker implements SourceChecker {
-
+  // prevent instantiation of class
   public PythonSourceChecker() {
   }
 
@@ -30,7 +30,7 @@ public class PythonSourceChecker implements SourceChecker {
     }
     return true;
   }
-  
+
   @Override
   public Language getLanguage() {
     return Language.PYTHON;
