@@ -42,7 +42,10 @@ public class ChildProcesses {
 
   public static void shutdown() {
     childProcessMonitor.stop();
-    SYSTEM_MONITOR.killProcessTree(ChildProcesses.CURRENT_PID, true); 
+    // kill all active child processes
+    for (ChildProcess p : ChildProcesses.activeChildProcesses.values()) {
+      p.getProcess().destroyForcibly();
+    }
   }
 
   
