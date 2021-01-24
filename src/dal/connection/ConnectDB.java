@@ -157,6 +157,7 @@ public class ConnectDB {
         +"status              TEXT NOT NULL,"
         +"score               INTEGER NOT NULL,"
         +"run_duration_millis INTEGER NOT NULL,"
+        +"memory_usage_b      INTEGER NOT NULL,"
         +"FOREIGN KEY(problem_id) REFERENCES problems(id) ON DELETE CASCADE,"
         +"FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"
         +");",

@@ -293,6 +293,41 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
     return users;
   }
 
+  public int getPoints(long userId) {
+    String sql =
+      "SELECT SUM(score) AS points\n"
+      +"FROM (\n"
+      +"  SELECT MAX(score) AS score\n"
+      +"  FROM submissions s\n"
+      +"  WHERE s.user_id = ?\n"
+      +"  GROUP BY s.problem_id\n"
+      +");";
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet result = null;
+    int points = 0;
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      result = ps.executeQuery();
+      if (!result.next()) {
+        return points;
+      }
+
+      points = result.getInt("points");
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(result);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return points;
+  }
+
   private Entity<User> getUserFromResultSet(ResultSet result) throws SQLException {
     return new Entity<User>(
       result.getLong("id"),

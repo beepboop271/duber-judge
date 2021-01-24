@@ -322,6 +322,7 @@ public class AdminService {
     this.problemDao.deleteById(problemId);
     ArrayList<Entity<Batch>> batches = this.batchDao.getByProblem(problemId);
     for (Entity<Batch> batch : batches) {
+      this.batchDao.deleteById(batch.getId());
       this.testcaseDao.deleteByBatch(batch.getId());
     }
 
@@ -411,7 +412,6 @@ public class AdminService {
   public void deleteTestcase(long adminId, long testcaseId)
     throws InsufficientPermissionException {
     this.validateTestcase(adminId, testcaseId);
-    System.out.println("delete");
     this.testcaseDao.deleteById(testcaseId);
   }
 

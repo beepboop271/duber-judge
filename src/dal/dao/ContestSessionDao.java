@@ -244,14 +244,15 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
 
   public void updateStatus() {
     String sql = String.format(
-      "UPDATE contest_sessions"
-      +"  SET status = '%s'"
-      +"  WHERE (datetime('now') - created_at < duration)"
-      +"    FROM ("
-      +"      SELECT duration_minutes AS duration"
-      +"      FROM contest_sessions INNER JOIN contests"
-      +"      ON contest_session.id = contests.id"
-      +"    );",
+       "UPDATE contest_sessions\n"
+      +"SET status = '%s'\n"
+      +"WHERE ((STRFTIME('%%s','now', 'localtime')"
+      +" - STRFTIME('%%s',contest_sessions.created_at)) / 60 > (\n"
+      +"  SELECT duration_minutes AS duration\n"
+      +"  FROM contest_sessions INNER JOIN contests\n"
+      +"  ON contest_sessions.contest_id = contests.id\n"
+      +"  )\n"
+      +");",
       ContestSessionStatus.OVER
     );
 
@@ -455,14 +456,21 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
   }
 
 
+  /**
+   * Retrieves a version of ContestSession (ContestSession has Contest)
+   *
+   * @param userId
+   * @param status
+   * @return
+   */
   public ArrayList<Entity<ContestSession>> getContestsByStatus(
     long userId,
     ContestSessionStatus status
   ) {
     String sql = String.format(
-      "SELECT s, c FROM contest_sessions s\n"
-      +"  INNER JOIN contests c ON s.contest_id = c.id\n"
-      +"  WHERE s.user_id = ? AND s.status = '%s';\n",
+      "SELECT c.*, s.*, c.status AS cstatus, s.status AS sstatus\n"
+      +"FROM contest_sessions s INNER JOIN contests c ON s.contest_id = c.id\n"
+      +"WHERE s.user_id = ? AND s.status = '%s';\n",
       status.toString()
     );
 
@@ -478,24 +486,24 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
       results = ps.executeQuery();
       while (results.next()) {
         Contest contest = new Contest(
-          results.getLong("c.creator_id"),
-          results.getString("c.description"),
-          results.getString("c.title"),
-          Timestamp.valueOf(results.getString("c.start_time")),
-          Timestamp.valueOf(results.getString("c.end_time")),
-          ContestStatus.valueOf(results.getString("c.status")),
-          results.getInt("c.duration_minutes")
+          results.getLong("creator_id"),
+          results.getString("description"),
+          results.getString("title"),
+          Timestamp.valueOf(results.getString("start_time")),
+          Timestamp.valueOf(results.getString("end_time")),
+          ContestStatus.valueOf(results.getString("cstatus")),
+          results.getInt("duration_minutes")
         );
 
 
         contestSessions.add(new Entity<ContestSession>(
-          results.getLong("s.id"),
+          results.getLong("id"),
           new ContestSession(
-            results.getLong("s.contest_id"),
-            results.getLong("s.user_id"),
-            Timestamp.valueOf(results.getString("s.created_at")),
-            ContestSessionStatus.valueOf(results.getString("s.status")),
-            results.getInt("s.score"),
+            results.getLong("contest_id"),
+            results.getLong("user_id"),
+            Timestamp.valueOf(results.getString("created_at")),
+            ContestSessionStatus.valueOf(results.getString("sstatus")),
+            results.getInt("score"),
             contest
           ))
         );

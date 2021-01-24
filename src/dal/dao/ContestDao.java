@@ -201,11 +201,11 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
 
   public ArrayList<Entity<Contest>> getContests(int index, int numContests, ContestStatus status) {
     String sql = String.format(
-      "SELECT * FROM contests"
-      +"WHERE status = %s"
-      +"LIMIT %s OFFSET %s"
-      +"ORDER BY start_time ACS",
-      status.toString(), numContests, index
+      "SELECT * FROM contests\n"
+      +"WHERE status = ?\n"
+      +"ORDER BY start_time ASC\n"
+      +"LIMIT %s OFFSET %s",
+      numContests, index
     );
 
     PreparedStatement ps = null;
@@ -215,6 +215,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
+      ps.setString(1, status.toString());
 
       results = ps.executeQuery();
       while (results.next()) {
@@ -247,17 +248,19 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
 
   public void updateStatus() {
     String sql = String.format(
-      "UPDATE contests"
-      +"SET status = '%s'"
-      +"WHERE (datetime('now') >= start_time)",
-      ContestStatus.ONGOING
+      "UPDATE contests\n"
+      +"SET status = '%s'\n"
+      +"WHERE ('%s' >= start_time);",
+      ContestStatus.ONGOING,
+      new Timestamp(System.currentTimeMillis()).toString()
     );
 
     String sql2 = String.format(
-      "UPDATE contests"
-      +"SET status = '%s'"
-      +"WHERE (datetime('now') >= end_time)",
-      ContestStatus.PAST
+      "UPDATE contests\n"
+      +"SET status = '%s'\n"
+      +"WHERE ('%s' >= end_time);",
+      ContestStatus.PAST,
+      new Timestamp(System.currentTimeMillis()).toString()
     );
 
     PreparedStatement ps = null;

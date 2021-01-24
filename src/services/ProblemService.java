@@ -89,7 +89,7 @@ public class ProblemService {
       new Timestamp(System.currentTimeMillis())
     );
 
-    Entity<Problem> problem = this.problemDao.get(problemId);
+    Entity<Problem> problem = this.problemDao.getNested(problemId);
     SubmissionResult result = Judger.judge(submission, problem);
     long submissionId = this.submissionDao.add(result);
 
@@ -163,7 +163,8 @@ public class ProblemService {
     return this.problemDao.get(problemId);
   }
 
-  public Entity<SubmissionResult> getSubmission(long submissionId) throws RecordNotFoundException {
+  public Entity<SubmissionResult> getSubmission(long submissionId)
+    throws RecordNotFoundException {
     return this.submissionDao.get(submissionId);
   }
 
@@ -171,6 +172,9 @@ public class ProblemService {
     long userId,
     long submissionId
   ) throws RecordNotFoundException {
-    return this.submissionDao.get(submissionId).getContent().getSubmission().getUserId() == userId;
+    return this.submissionDao.get(submissionId)
+                             .getContent()
+                             .getSubmission()
+                             .getUserId() == userId;
   }
 }

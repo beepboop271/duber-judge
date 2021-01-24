@@ -54,6 +54,7 @@ public class ContestStatusUpdater {
 
     public StatusUpdater() {
       this.contestSessionDao = new ContestSessionDao();
+      this.contestDao = new ContestDao();
     }
 
     @Override

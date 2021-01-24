@@ -99,4 +99,8 @@ public class Batch {
     return this.testcases;
   }
 
+  public void setTestcases(ArrayList<Entity<Testcase>> testcases) {
+    this.testcases = testcases;
+  }
+
 }

@@ -20,6 +20,8 @@ public class SubmissionResult {
   private int score;
   /** The total amount of time the submission took to run, in ms. */
   private long runDurationMillis;
+  /** The max memory used for one of its testcases. */
+  private long memoryUsageBytes;
   /** The testcase runs. */
   private ArrayList<TestcaseRun> testcaseRuns;
 
@@ -31,6 +33,7 @@ public class SubmissionResult {
    * @param status                   The execution status.
    * @param score                    The score.
    * @param runDurationMillis        The run duration in milliseconds.
+   * @param memoryUsageBytes
    * @param testcaseRuns             The testcase runs.
    */
   public SubmissionResult(
@@ -38,12 +41,14 @@ public class SubmissionResult {
     ExecutionStatus status,
     int score,
     long runDurationMillis,
+    long memoryUsageBytes,
     ArrayList<TestcaseRun> testcaseRuns
   ) {
     this.submission = submission;
     this.status = status;
     this.score = score;
     this.runDurationMillis = runDurationMillis;
+    this.memoryUsageBytes = memoryUsageBytes;
     this.testcaseRuns = testcaseRuns;
   }
 
@@ -54,17 +59,20 @@ public class SubmissionResult {
    * @param status                   The execution status.
    * @param score                    The score.
    * @param runDurationMillis        The run duration in milliseconds.
+   * @param memoryUsageBytes
    */
   public SubmissionResult(
     Submission submission,
     ExecutionStatus status,
     int score,
-    long runDurationMillis
+    long runDurationMillis,
+    long memoryUsageBytes
   ) {
     this.submission = submission;
     this.status = status;
     this.score = score;
     this.runDurationMillis = runDurationMillis;
+    this.memoryUsageBytes = memoryUsageBytes;
   }
 
   /**
@@ -111,5 +119,9 @@ public class SubmissionResult {
    */
   public ArrayList<TestcaseRun> getTestcaseRuns() {
     return this.testcaseRuns;
+  }
+
+  public long getMemoryUsageBytes() {
+    return this.memoryUsageBytes;
   }
 }

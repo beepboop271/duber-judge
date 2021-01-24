@@ -1,7 +1,7 @@
 
 AdminService
  ✓ o- removeUser
- x o- getUsers
+ ✓ o- getUsers
  ✓ o- createContest
  ✓ o- updateContest
  ✓ o- deleteContest
@@ -10,7 +10,7 @@ AdminService
  ✓ o- createContestProblem
  y - validateProblem
  ✓ o- updateProblem
-  o- deleteProblem   < add testcase runs
+ ✓ o- deleteProblem
  y - validateBatch
  ✓ o- createBatch
  ✓ o- updateBatch
@@ -39,7 +39,7 @@ ContestService
 ProblemService
  ~ o- submitSolution
  ✓ o- requestClarification
- x o- getAllSubmissions
+ ✓ o- getAllSubmissions
  ✓ o- getClarifications
  ✓ o- getProblem
  ✓ o- getSubmission
@@ -47,7 +47,9 @@ ProblemService
 
 PublicService
  ~ o- getContests
- ✓~ o- getLeaderboard  < test with submission, testcase
+ ✓ o- getOngoingContests
+ ✓ o- getUpcomingContests
+ ✓ o- getLeaderboard  < test with submission, testcase
  ✓ o- getContestLeaderboard
  ✓ o- getProblemLeaderboard < test with submission, testcase
  ✓ o- getPracticeProblems
@@ -58,20 +60,19 @@ PublicService
  ✓ o- getProblem
  ✓ o- getContestNumParticipants
 
-SessionService - ?
+SessionService - ✓
  ✓ - createSession(userId)
  ✓ o- createSession()
  ✓ - getSession
  ✓ o- updateSession
- ? - updateLastActive
- ? - deleteFromBefore
+ ✓ - updateLastActive
+ ✓ - deleteFromBefore
 
 SessionCleaner
-  o- run
+ ✓ o- start
 
 ContestStatusUpdater
-  o- run
-
+ ✓ o- start
 
 UserService
  ✓ - generateSalt
@@ -85,15 +86,14 @@ UserService
  ✓ o- updateUserProfile
  ✓ o- updateUserPassword
  ✓ o- isSameUser
+ ✓ o- getPoints
  ✓ - isAdmin
- x o- getProblems <- problems the user has attempted, not contest
- x o- getSubmissions <- all submissions
- x o- getProblemSubmissions <- submission by problem
- x o- getActiveContests
- x o- getParticipatedContests
+ ✓ o- getProblems <- problems the user has attempted, not contest
+ ✓ o- getSubmissions <- all submissions
+ ✓ o- getProblemSubmissions <- submission by problem
+ ✓ o- getActiveContests
+ ✓ o- getParticipatedContests
  ✓ o- getSubmissionCount
-
-
 
 
 x || failed qa (error or logic)

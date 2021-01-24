@@ -176,11 +176,11 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
 
   public void deleteByProblem(long problemId) {
     String sql =
-      "DELETE testcase_runs"
-      +"  FROM testcase_runs"
-      +"    INNER JOIN submissions"
-      +"    ON testcase_runs.submission_id = submissions.id"
-      +"    WHERE submissions.problem_id = ?;";
+      "DELETE FROM testcase_runs\n"
+      +"  WHERE testcase_runs.batch_id IN (\n"
+      +"    SELECT batches.id\n"
+      +"    FROM problems INNER JOIN batches ON problems.id = ?\n"
+      +"  );";
 
     PreparedStatement ps = null;
     Connection connection = null;

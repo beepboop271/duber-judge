@@ -290,4 +290,8 @@ public class UserService {
   public int getSubmissionCount(long userId, long problemId) {
     return this.submissionDao.countByUserAndProblem(userId, problemId);
   }
+
+  public int getPoints(long userId) {
+    return this.userDao.getPoints(userId);
+  }
 }

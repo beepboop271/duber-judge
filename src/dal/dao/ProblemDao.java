@@ -304,20 +304,34 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
 
   public Entity<Problem> getNested(long id) throws RecordNotFoundException {
     String sql =
-      "SELECT problems.*, batches.*, testcases.*"
-      +"  FROM testcases"
-      +"    INNER JOIN ("
-      +"      SELECT problems.*, batches.*"
-      +"      FROM problems INNER JOIN batches ON problems.id = batches.problem_id"
-      +"      WHERE problems.id = ?"
-      +"    ) ON testcases.batch_id = batches.id"
-      +"  ORDER BY batches.id;";
+       "SELECT\n"
+      +"  a.*,\n"
+      +"  testcases.id t_id,\n"
+      +"  testcases.batch_id t_bid,\n"
+      +"  testcases.creator_id t_cid,\n"
+      +"  testcases.sequence t_seq,\n"
+      +"  testcases.input t_in,\n"
+      +"  testcases.output t_out\n"
+      +"FROM testcases\n"
+      +"  INNER JOIN (\n"
+      +"    SELECT\n"
+      +"      problems.*,\n"
+      +"      batches.id b_id,\n"
+      +"      batches.creator_id b_cid,\n"
+      +"      batches.sequence b_seq,\n"
+      +"      batches.points b_points,\n"
+      +"      batches.problem_id b_pid\n"
+      +"    FROM problems INNER JOIN batches ON problems.id = batches.problem_id\n"
+      +"    WHERE problems.id = ?\n"
+      +"  ) AS a ON testcases.batch_id = a.b_id\n"
+      +"ORDER BY a.b_id;";
 
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet result = null;
     Entity<Problem> problem = null;
     ArrayList<Entity<Batch>> batches = new ArrayList<>();
+    Entity<Batch> batch = null;
     ArrayList<Entity<Testcase>> testcases = new ArrayList<>();
 
     long batchId = -1;
@@ -327,52 +341,58 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
       ps.setLong(1, id);
 
       result = ps.executeQuery();
+      boolean initialized = false;
       while (result.next()) {
+        if (!initialized) {
+          problem = this.getProblemFromResultSet(result);
+          batchId = result.getLong("b_id");
+          batch = new Entity<Batch>(
+            batchId,
+            new Batch(
+              result.getLong("b_pid"),
+              result.getLong("b_cid"),
+              result.getInt("b_seq"),
+              result.getInt("b_points")
+          ));
+          initialized = true;
+        }
         //new batch
-        if (batchId != result.getLong("batches.id")) {
-          if (batchId != -1) {
-            batches.add(new Entity<Batch>(
-              batchId,
-              new Batch(
-                result.getLong("batches.problem_id"),
-                result.getLong("batches.creator_id"),
-                result.getInt("batches.sequence"),
-                result.getInt("batches.points"),
-                testcases
-              ))
-            );
-            testcases.clear();
-          }
-          batchId = result.getLong("batches.id");
+        if (batchId != result.getLong("b_id")) {
+          batch.getContent().setTestcases(testcases);
+          batches.add(batch);
+          batchId = result.getLong("b_id");
+          batch = new Entity<Batch>(
+            batchId,
+            new Batch(
+              result.getLong("b_pid"),
+              result.getLong("b_cid"),
+              result.getInt("b_seq"),
+              result.getInt("b_points")
+          ));
+          testcases = new ArrayList<>();
         }
 
         testcases.add(new Entity<Testcase>(
-          result.getLong("testcases.id"),
+          result.getLong("t_id"),
           new Testcase(
-            result.getLong("testcases.batch_id"),
-            result.getLong("testcases.creator_id"),
-            result.getInt("testcases.sequence"),
-            result.getString("testcases.input"),
-            result.getString("testcases.output")
+            result.getLong("t_bid"),
+            result.getLong("t_cid"),
+            result.getInt("t_seq"),
+            result.getString("t_in"),
+            result.getString("t_out")
           ))
         );
 
-      }
-      //last batch
-      batches.add(new Entity<Batch>(
-        batchId,
-        new Batch(
-          result.getLong("batches.problem_id"),
-          result.getLong("batches.creator_id"),
-          result.getInt("batches.sequence"),
-          result.getInt("batches.points"),
-          testcases
-        ))
-      );
 
-      result.last();
-      problem = this.getProblemFromResultSet(result);
-      problem.getContent().setBatches(batches);
+      }
+
+      //add the testcases to batch and batches to problem
+      if (initialized) {
+        batch.getContent().setTestcases(testcases);
+        batches.add(batch);
+        problem.getContent().setBatches(batches);
+      }
+
 
     } catch (SQLException e) {
       e.printStackTrace();

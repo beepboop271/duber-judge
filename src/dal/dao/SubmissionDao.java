@@ -30,9 +30,11 @@ public class SubmissionDao implements Dao<SubmissionResult> {
 
   @Override
   public long add(SubmissionResult data) {
-    String sql = "INSERT INTO submissions"
-                +"(problem_id, user_id, code, language, created_at, status, score, run_duration_millis)"
-                +" VALUES (" + DaoHelper.getParamString(8) + ");";
+    String sql =
+      "INSERT INTO submissions"
+      +"(problem_id, user_id, code, language, created_at,"
+      +" status, score, run_duration_millis, memory_usage_b)"
+      +" VALUES (" + DaoHelper.getParamString(9) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -48,6 +50,7 @@ public class SubmissionDao implements Dao<SubmissionResult> {
       ps.setString(6, data.getStatus().name());
       ps.setInt(7, data.getScore());
       ps.setLong(8, data.getRunDurationMillis());
+      ps.setLong(9, data.getMemoryUsageBytes());
 
       ps.executeUpdate();
       key = ps.getGeneratedKeys();
@@ -145,7 +148,8 @@ public class SubmissionDao implements Dao<SubmissionResult> {
         ),
         ExecutionStatus.valueOf(result.getString("status")),
         result.getInt("score"),
-        result.getLong("run_duration_millis")
+        result.getLong("run_duration_millis"),
+        result.getLong("memory_usage_b")
       )
     );
   }
@@ -207,7 +211,7 @@ public class SubmissionDao implements Dao<SubmissionResult> {
       +"INNER JOIN (\n"
       +"  SELECT submissions.id AS sid\n"
       +"  FROM submissions INNER JOIN problems ON submissions.problem_id = problems.id\n"
-      +"  WHERE submissions.user_id = ? AND problems.type = '%s'\n"
+      +"  WHERE submissions.user_id = ? AND problems.problem_type = '%s'\n"
       +"  GROUP BY submissions.problem_id\n"
       +"  ORDER BY MAX(submissions.score) DESC\n"
       +") AS a ON submissions.id = a.sid\n"
@@ -251,9 +255,9 @@ public class SubmissionDao implements Dao<SubmissionResult> {
    */
   public ArrayList<Entity<SubmissionResult>> getByUser(long userId, int index, int numSubmissions) {
     String sql = String.format(
-                "SELECT * FROM submissions"
-                +"WHERE user_id = ?"
-                +"ORDER BY created_at DESC"
+                "SELECT * FROM submissions\n"
+                +"WHERE user_id = ?\n"
+                +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s", numSubmissions, index);
     PreparedStatement ps = null;
     Connection connection = null;
