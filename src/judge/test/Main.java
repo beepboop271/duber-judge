@@ -31,7 +31,7 @@ public class Main {
       )
     );
     p1.addBatch(p1b1);
-    
+
     Batch p1b2 = new Batch(3);
     p1b2.addTestcase(
       new Testcase(
@@ -70,7 +70,7 @@ public class Main {
         "D\nasdasdasfasfnakjhiahioqnfkjansvkjasnvkajnskcnjaskbcksabkxbasjkxnaskjxnjasnjxnasknxnjksxnkanxjksxnkjasxkasnxnasjkxnaskjnckjasvjsabvausdhasd",
         "0"
       )
-    );    
+    );
     p1.addBatch(p1b3);
 
     // should receive ALL_CLEAR
@@ -169,34 +169,44 @@ public class Main {
       directory
     );
     ArrayList<Submitter> submitters = new ArrayList<>();
-    // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s1, p1, judger));
-    // }
-    // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s2, p1, judger));
-    // }
-    // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s3, p1, judger));
-    // }
-    // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s4, p1, judger));
-    // }
-    // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s5, p1, judger));
-    // }
-    // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s6, p1, judger));
-    // }
-    // submitters.add(new Submitter(s7, p1, judger));
-    // submitters.add(new Submitter(s8, p1, judger));
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s1, p1, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s2, p1, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s3, p1, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s4, p1, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s5, p1, judger));
+    }
+    for (int i = 0; i < 3; i++) {
+      submitters.add(new Submitter(s6, p1, judger));
+    }
+    submitters.add(new Submitter(s7, p1, judger));
+    submitters.add(new Submitter(s8, p1, judger));
     submitters.add(new Submitter(s1, p1, judger));
     submitters.add(new Submitter(s9, p1, judger));
     System.out.println("starting to judge");
+    ArrayList<Thread> threads = new ArrayList<>();
     for (Submitter s : submitters) {
       Thread t = new Thread(s);
+      threads.add(t);
       t.start();
     }
-    // judger.shutdown();
-    // ChildProcesses.shutdown();
+    for (Thread t : threads) {
+      try {
+        t.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    judger.shutdown();
+    ChildProcesses.shutdown();
   }
 }
