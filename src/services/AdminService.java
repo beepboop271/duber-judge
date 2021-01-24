@@ -29,6 +29,7 @@ import entities.Language;
 import entities.PracticeProblem;
 import entities.Problem;
 import entities.ProblemType;
+import entities.PublishingState;
 import entities.Testcase;
 import entities.User;
 import entities.entity_fields.BatchField;
@@ -81,6 +82,14 @@ public class AdminService {
     return this.userDao.getUsers(index, numUsers);
   }
 
+  public ArrayList<Entity<Problem>> getCreatedProblems(long adminId) {
+    return this.problemDao.getCreatedProblems(adminId);
+  }
+
+  public ArrayList<Entity<Contest>> getCreatedContests(long adminId) {
+    return this.contestDao.getCreatedContests(adminId);
+  }
+
   public long createContest(
     long adminId,
     String title,
@@ -108,7 +117,8 @@ public class AdminService {
             startTime,
             endTime,
             ContestStatus.UPCOMING,
-            durationMinutes
+            durationMinutes,
+            PublishingState.PENDING
           )
         );
     } catch (IllegalArgumentException e) {
@@ -206,7 +216,8 @@ public class AdminService {
         outputLimitKb,
         numSubmissions,
         0,
-        editorial
+        editorial,
+        PublishingState.PENDING
       )
     );
   }
@@ -252,7 +263,8 @@ public class AdminService {
         numSubmissions,
         submissionsLimit,
         contestId,
-        0
+        0,
+        PublishingState.PENDING
       )
     );
   }

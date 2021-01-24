@@ -15,6 +15,7 @@ import entities.Contest;
 import entities.ContestSessionStatus;
 import entities.ContestStatus;
 import entities.Entity;
+import entities.PublishingState;
 import entities.entity_fields.ContestField;
 import services.InvalidArguments;
 
@@ -53,6 +54,8 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
       case STATUS:
         element = "status";
         break;
+      case PUBLISHING_STATE:
+        element = "publishing_state";
     }
     String sql = "UPDATE contests SET " + element + " = ? WHERE id = ?;";
     PreparedStatement ps = null;
@@ -78,6 +81,10 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
           break;
         case STATUS:
           ps.setString(1, ((ContestStatus)value).toString());
+          break;
+        case PUBLISHING_STATE:
+          ps.setString(1, (String)value);
+          break;
       }
 
       ps.setLong(2, id);
@@ -94,8 +101,9 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
   @Override
   public long add(Contest data) throws IllegalArgumentException {
     String sql = "INSERT INTO contests"
-                +"(creator_id, description, title, start_time, end_time, status, duration_minutes)"
-                +" VALUES (" + DaoHelper.getParamString(7) + ");";
+                +"(creator_id, description, title, start_time,"
+                +" end_time, status, duration_minutes, publishing_state)"
+                +" VALUES (" + DaoHelper.getParamString(8) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -110,6 +118,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
       ps.setString(5, data.getEndTime().toString());
       ps.setString(6, data.getStatus().toString());
       ps.setInt(7, data.getDurationMinutes());
+      ps.setString(8, data.getPublishingState().toString());
 
       ps.executeUpdate();
       key = ps.getGeneratedKeys();
@@ -202,10 +211,10 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
   public ArrayList<Entity<Contest>> getContests(int index, int numContests, ContestStatus status) {
     String sql = String.format(
       "SELECT * FROM contests\n"
-      +"WHERE status = ?\n"
+      +"WHERE status = ? AND publishing_state = '%s'\n"
       +"ORDER BY start_time ASC\n"
       +"LIMIT %s OFFSET %s",
-      numContests, index
+      PublishingState.PUBLISHED, numContests, index
     );
 
     PreparedStatement ps = null;
@@ -241,7 +250,8 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
         Timestamp.valueOf(result.getString("start_time")),
         Timestamp.valueOf(result.getString("end_time")),
         ContestStatus.valueOf(result.getString("status")),
-        result.getInt("duration_minutes")
+        result.getInt("duration_minutes"),
+        PublishingState.valueOf(result.getString("publishing_state"))
       )
     );
   }
@@ -281,5 +291,33 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
       ConnectDB.close(ps2);
       GlobalConnectionPool.pool.releaseConnection(connection);
     }
+  }
+
+
+  public ArrayList<Entity<Contest>> getCreatedContests(long userId) {
+    String sql = "SELECT * FROM contests WHERE creator_id = ?;";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Contest>> problems = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        problems.add(this.getContestFromResultSet(results));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return problems;
   }
 }

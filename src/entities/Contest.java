@@ -27,6 +27,8 @@ public class Contest {
   /** The current status of the contest. */
   private ContestStatus status;
 
+  private PublishingState publishingState;
+
   /**
    * Constructs a new Contest.
    *
@@ -44,7 +46,8 @@ public class Contest {
     Timestamp startTime,
     Timestamp endTime,
     ContestStatus status,
-    int durationMinutes
+    int durationMinutes,
+    PublishingState publishingState
   ) {
     this.creatorId = creatorId;
     this.description = description;
@@ -53,6 +56,7 @@ public class Contest {
     this.endTime = endTime;
     this.status = status;
     this.durationMinutes = durationMinutes;
+    this.publishingState = publishingState;
   }
 
   /**
@@ -112,6 +116,10 @@ public class Contest {
 
   public ContestStatus getStatus() {
     return this.status;
+  }
+
+  public PublishingState getPublishingState() {
+    return this.publishingState;
   }
 
 }

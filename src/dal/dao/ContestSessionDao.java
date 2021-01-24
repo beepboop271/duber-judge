@@ -14,6 +14,7 @@ import entities.ContestSession;
 import entities.ContestSessionStatus;
 import entities.ContestStatus;
 import entities.Entity;
+import entities.PublishingState;
 import entities.entity_fields.ContestSessionField;
 
 /**
@@ -492,7 +493,8 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
           Timestamp.valueOf(results.getString("start_time")),
           Timestamp.valueOf(results.getString("end_time")),
           ContestStatus.valueOf(results.getString("cstatus")),
-          results.getInt("duration_minutes")
+          results.getInt("duration_minutes"),
+          PublishingState.valueOf(results.getString("publishing_state"))
         );
 
 
