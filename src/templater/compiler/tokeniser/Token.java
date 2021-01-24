@@ -1,8 +1,9 @@
 package templater.compiler.tokeniser;
 
+import templater.compiler.LanguageElement;
 import templater.compiler.TextFilePosition;
 
-public class Token {
+public class Token extends LanguageElement {
   private final String content;
   private final TokenKind kind;
   private final TextFilePosition position;

@@ -1,15 +1,24 @@
 package templater;
 
+import java.util.List;
+
+import templater.compiler.LanguageElement;
+
 public class Loop extends Node {
-  private StringResolvable target;
+  private StringResolvables target;
   private String loopVariable;
 
-  public Loop(StringResolvable target, String loopVariable) {
+  public Loop(
+    List<LanguageElement> children,
+    String loopVariable,
+    StringResolvables target
+  ) {
+    super(children);
     this.target = target;
     this.loopVariable = loopVariable;
   }
 
-  public StringResolvable getTarget() {
+  public StringResolvables getTarget() {
     return this.target;
   }
 

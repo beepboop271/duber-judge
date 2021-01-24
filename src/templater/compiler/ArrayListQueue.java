@@ -251,5 +251,13 @@ public class ArrayListQueue<E> {
       ArrayListQueue.this.remove(this.index);
       this.index = 0;
     }
+
+    public int getIndex() {
+      return this.index;
+    }
+
+    protected void setIndex(int index) {
+      this.index = index;
+    }
   }
 }
