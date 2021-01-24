@@ -47,7 +47,8 @@ public class PracticeProblem extends Problem {
     int outputLimitKb,
     int numSubmissions,
     int clearedSubmissions,
-    String editorial
+    String editorial,
+    PublishingState state
   ) {
     super(
       ProblemType.PRACTICE,
@@ -62,7 +63,8 @@ public class PracticeProblem extends Problem {
       memoryLimitKb,
       outputLimitKb,
       numSubmissions,
-      clearedSubmissions
+      clearedSubmissions,
+      state
     );
 
     this.editorial = editorial;
@@ -99,7 +101,8 @@ public class PracticeProblem extends Problem {
     int numSubmissions,
     int clearedSubmissions,
     String editorial,
-    ArrayList<Entity<Batch>> batches
+    ArrayList<Entity<Batch>> batches,
+    PublishingState state
   ) {
     super(
       ProblemType.PRACTICE,
@@ -115,7 +118,8 @@ public class PracticeProblem extends Problem {
       outputLimitKb,
       numSubmissions,
       clearedSubmissions,
-      batches
+      batches,
+      state
     );
 
     this.editorial = editorial;

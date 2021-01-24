@@ -19,6 +19,7 @@ import entities.Entity;
 import entities.PracticeProblem;
 import entities.Problem;
 import entities.ProblemType;
+import entities.PublishingState;
 import entities.Testcase;
 import entities.entity_fields.ProblemField;
 import services.InvalidArguments;
@@ -48,7 +49,8 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
       problem.getOutputLimitKb(),
       problem.getNumSubmissions(),
       problem.getClearedSubmissions(),
-      ""
+      "",
+      problem.getPublishingState()
     );
   }
 
@@ -109,6 +111,9 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
         break;
       case CLEARED_SUBMISSIONS:
         element = "cleared_submissions";
+        break;
+      case PUBLISHING_STATE:
+        element = "publishing_state";
         break;
 
       // contest problem exclusive fields
@@ -189,6 +194,10 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
         case EDITORIAL:
           ps.setString(1, (String)value);
           break;
+
+        case PUBLISHING_STATE:
+          ps.setString(1, (String)value);
+          break;
       }
 
       ps.setLong(2, id);
@@ -209,8 +218,8 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
                 +"(problem_type, category, creator_id, created_at, last_modified_at,"
                 +" title, description, points, time_limit_millis, memory_limit_kb, output_limit_kb,"
                 +" num_submissions, cleared_submissions,"
-                +" contest_id, submissions_limit, editorial)"
-                +" VALUES (" + DaoHelper.getParamString(16) + ");";
+                +" contest_id, submissions_limit, editorial, pushlishing_state)"
+                +" VALUES (" + DaoHelper.getParamString(17) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet key = null;
@@ -254,6 +263,8 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           ps.setNull(16, Types.NULL);
           break;
       }
+
+      ps.setString(17, data.getPublishingState().toString());
 
       ps.executeUpdate();
       key = ps.getGeneratedKeys();
@@ -483,7 +494,8 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
             result.getInt("num_submissions"),
             result.getInt("submissions_limit"),
             result.getLong("contest_id"),
-            result.getInt("cleared_submissions")
+            result.getInt("cleared_submissions"),
+            PublishingState.valueOf(result.getString("publishing_state"))
           )
         );
         break;
@@ -504,7 +516,8 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
             result.getInt("output_limit_kb"),
             result.getInt("num_submissions"),
             result.getInt("cleared_submissions"),
-            result.getString("editorial")
+            result.getString("editorial"),
+            PublishingState.valueOf(result.getString("publishing_state"))
           )
         );
         break;
@@ -513,7 +526,10 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   }
 
   public ArrayList<Entity<Problem>> getAllByContest(long contestId) {
-    String sql = "SELECT * FROM problems WHERE contest_id = ?;";
+    String sql = String.format(
+      "SELECT * FROM problems WHERE contest_id = ? AND publishing_state = '%s';",
+      PublishingState.PUBLISHED
+    );
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet results = null;
@@ -541,10 +557,10 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
   public ArrayList<Entity<Problem>> getPracticeProblems(int index, int numProblems) {
     String sql = String.format(
                 "SELECT * FROM problems\n"
-                +"WHERE problem_type = '%s'\n"
+                +"WHERE problem_type = '%s' AND publishing_state = '%s'\n"
                 +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
-      ProblemType.PRACTICE.toString(), numProblems, index
+      ProblemType.PRACTICE.toString(), PublishingState.PUBLISHED, numProblems, index
     );
     PreparedStatement ps = null;
     Connection connection = null;
@@ -572,10 +588,10 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
     getPracticeProblemsByCategory(Category category, int index, int numProblems) {
     String sql = String.format(
                 "SELECT * FROM problems\n"
-                +"WHERE problem_type = '%s' AND category = ?\n"
+                +"WHERE problem_type = '%s' AND category = ? AND publishing_state = '%s'\n"
                 +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
-      ProblemType.PRACTICE.toString(), numProblems, index
+      ProblemType.PRACTICE.toString(), PublishingState.PUBLISHED, numProblems, index
     );
     PreparedStatement ps = null;
     Connection connection = null;
@@ -604,10 +620,10 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
     getPracticeProblemsByCreator(long creatorId, int index, int numProblems) {
     String sql = String.format(
                 "SELECT * FROM problems\n"
-                +"WHERE problem_type = '%s' AND creator_id = ?\n"
+                +"WHERE problem_type = '%s' AND creator_id = ? AND publishing_state = '%s'\n"
                 +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
-      ProblemType.PRACTICE.toString(), numProblems, index
+      ProblemType.PRACTICE.toString(), PublishingState.PUBLISHED, numProblems, index
     );
     PreparedStatement ps = null;
     Connection connection = null;
@@ -637,9 +653,10 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
     String sql = String.format(
                 "SELECT * FROM problems\n"
                 +"WHERE problem_type = '%s' AND points > ? AND points < ?\n"
+                +"AND publishing_state = '%s'\n"
                 +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
-      ProblemType.PRACTICE.toString(), numProblems, index
+      ProblemType.PRACTICE.toString(), PublishingState.PUBLISHED, numProblems, index
     );
     PreparedStatement ps = null;
     Connection connection = null;
@@ -669,10 +686,11 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
     getPracticeProblemsByNumSubmissions(int min, int max, int index, int numProblems) {
     String sql = String.format(
                 "SELECT * FROM problems\n"
-                +"WHERE problem_type = '%s' AND num_submissions > ? AND num_submissions < ?\n"
+                +"WHERE problem_type = '%s' AND num_submissions > ?"
+                +" AND num_submissions < ? AND publishing_state = '%s'\n"
                 +"ORDER BY created_at DESC\n"
                 +"LIMIT %s OFFSET %s",
-      ProblemType.PRACTICE.toString(), numProblems, index
+      ProblemType.PRACTICE.toString(), PublishingState.PUBLISHED, numProblems, index
     );
     PreparedStatement ps = null;
     Connection connection = null;
@@ -688,6 +706,33 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
       while (results.next()) {
         problems.add(this.getProblemFromResultSet(results));
       }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } finally {
+      ConnectDB.close(ps);
+      ConnectDB.close(results);
+      GlobalConnectionPool.pool.releaseConnection(connection);
+    }
+    return problems;
+  }
+
+  public ArrayList<Entity<Problem>> getCreatedProblems(long userId) {
+    String sql = "SELECT * FROM problems WHERE creator_id = ?;";
+
+    PreparedStatement ps = null;
+    Connection connection = null;
+    ResultSet results = null;
+    ArrayList<Entity<Problem>> problems = new ArrayList<>();
+    try {
+      connection = GlobalConnectionPool.pool.getConnection();
+      ps = connection.prepareStatement(sql);
+      ps.setLong(1, userId);
+
+      results = ps.executeQuery();
+      while (results.next()) {
+        problems.add(this.getProblemFromResultSet(results));
+      }
+
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {

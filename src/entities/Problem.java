@@ -42,6 +42,8 @@ public abstract class Problem {
 
   private ArrayList<Entity<Batch>> batches;
 
+  private PublishingState state;
+
   /**
    * Constructs a new Problem.
    *
@@ -72,7 +74,8 @@ public abstract class Problem {
     int memoryLimitKb,
     int outputLimitKb,
     int numSubmissions,
-    int clearedSubmissions
+    int clearedSubmissions,
+    PublishingState state
   ) {
     this.problemType = problemType;
     this.category = category;
@@ -87,6 +90,7 @@ public abstract class Problem {
     this.outputLimitKb = outputLimitKb;
     this.numSubmissions = numSubmissions;
     this.clearedSubmissions = clearedSubmissions;
+    this.state = state;
   }
 
 
@@ -122,7 +126,8 @@ public abstract class Problem {
     int outputLimitKb,
     int numSubmissions,
     int clearedSubmissions,
-    ArrayList<Entity<Batch>> batches
+    ArrayList<Entity<Batch>> batches,
+    PublishingState state
   ) {
     this.problemType = problemType;
     this.category = category;
@@ -138,6 +143,7 @@ public abstract class Problem {
     this.numSubmissions = numSubmissions;
     this.clearedSubmissions = clearedSubmissions;
     this.batches = batches;
+    this.state = state;
   }
 
   /**
@@ -263,6 +269,10 @@ public abstract class Problem {
 
   public ArrayList<Entity<Batch>> getBatches() {
     return this.batches;
+  }
+
+  public PublishingState getPublishingState() {
+    return this.state;
   }
 
 }
