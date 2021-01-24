@@ -5,30 +5,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class Element extends Node {
-  private final StringResolvable name;
-  private final StringResolvable id;
+import templater.compiler.LanguageElement;
+
+public class Element extends Node {
+  private final StringResolvables name;
+  private final List<StringResolvables> classes;
+  private final StringResolvables id;
+  private final Map<String, StringResolvables> attributes;
   private final boolean isEmpty;
-  private final List<StringResolvable> classes;
-  private final Map<StringResolvable, StringResolvable> attributes;
 
-  public Element(StringResolvable name, StringResolvable id, boolean isEmpty) {
+  public Element(
+    List<LanguageElement> children,
+    StringResolvables name,
+    List<StringResolvables> classes,
+    StringResolvables id,
+    Map<String, StringResolvables> attributes,
+    boolean isEmpty
+  ) {
+    super(children);
     this.name = name;
+    this.classes = new ArrayList<>(classes);
     this.id = id;
+    this.attributes = new HashMap<>(attributes);
     this.isEmpty = isEmpty;
-    this.classes = new ArrayList<>();
-    this.attributes = new HashMap<>();
   }
 
-  public Element(StringResolvable name, boolean isEmpty) {
-    this(name, null, isEmpty);
-  }
-
-  public StringResolvable getName() {
+  public StringResolvables getName() {
     return this.name;
   }
 
-  public StringResolvable getId() {
+  public StringResolvables getId() {
     return this.id;
   }
 
@@ -36,19 +42,11 @@ class Element extends Node {
     return this.isEmpty;
   }
 
-  public ReadOnlyIterator<Map.Entry<StringResolvable, StringResolvable>> getAttributes() {
+  public ReadOnlyIterator<Map.Entry<String, StringResolvables>> getAttributes() {
     return new ReadOnlyIterator<>(this.attributes.entrySet().iterator());
   }
 
-  public ReadOnlyIterator<StringResolvable> getClasses() {
+  public ReadOnlyIterator<StringResolvables> getClasses() {
     return new ReadOnlyIterator<>(this.classes.iterator());
-  }
-
-  public void addAttribute(StringResolvable name, StringResolvable value) {
-    this.attributes.put(name, value);
-  }
-
-  public void addClass(StringResolvable name) {
-    this.classes.add(name);
   }
 }

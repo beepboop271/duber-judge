@@ -4,18 +4,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-class Node {
-  private final List<Node> children;
+import templater.compiler.LanguageElement;
 
-  public Node() {
-    this.children = new ArrayList<>();
+class Node extends LanguageElement {
+  private final List<LanguageElement> children;
+
+  public Node(List<LanguageElement> children) {
+    this.children = new ArrayList<>(children);
   }
 
-  public Iterator<Node> getChildren() {
+  public Iterator<LanguageElement> getChildren() {
     return this.children.iterator();
   }
 
-  public void addChild(Node n) {
+  public void addChild(LanguageElement n) {
     this.children.add(n);
   }
 }
