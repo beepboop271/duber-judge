@@ -10,7 +10,6 @@ import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
 import entities.Clarification;
 import entities.ContestProblem;
-import entities.ContestSession;
 import entities.Entity;
 import entities.ExecutionStatus;
 import entities.Language;
@@ -18,9 +17,8 @@ import entities.PracticeProblem;
 import entities.Problem;
 import entities.Submission;
 import entities.SubmissionResult;
-import judge.Judger;
-import entities.entity_fields.ContestSessionField;
 import entities.entity_fields.ProblemField;
+import judge.Judger;
 
 /**
  * [description]

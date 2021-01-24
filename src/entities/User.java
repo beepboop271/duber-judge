@@ -21,7 +21,7 @@ public class User {
 
   /**
    * Constructs a new User.
-   * 
+   *
    * @param username the user's username.
    * @param password the user's password.
    * @param userType the type of user this user is.
@@ -36,7 +36,7 @@ public class User {
 
   /**
    * Retrieves the user's username.
-   * 
+   *
    * @return the user's username.
    */
   public String getUsername() {
@@ -45,7 +45,7 @@ public class User {
 
   /**
    * Retrieves the user's password.
-   * 
+   *
    * @return the user's password.
    */
   public String getPassword() {
@@ -54,7 +54,7 @@ public class User {
 
   /**
    * Retrieves the type of the user this user is.
-   * 
+   *
    * @return the type of the user this user is.
    */
   public UserType getUserType() {
@@ -63,7 +63,7 @@ public class User {
 
   /**
    * Retrieves the salt used to hash the password.
-   * 
+   *
    * @return the salt used to hash the password.
    */
   public String getSalt() {

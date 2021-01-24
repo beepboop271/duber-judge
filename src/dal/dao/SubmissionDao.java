@@ -148,7 +148,7 @@ public class SubmissionDao implements Dao<SubmissionResult> {
         ),
         ExecutionStatus.valueOf(result.getString("status")),
         result.getInt("score"),
-        result.getLong("run_duration_millis"),
+        result.getInt("run_duration_millis"),
         result.getLong("memory_usage_b")
       )
     );

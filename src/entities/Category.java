@@ -16,7 +16,7 @@ public enum Category {
   NUMBER_THEORY,
   /** A category for "string analysis" problems. */
   STRING_ANALYSIS,
-  /** A category for "data structures" problems */
+  /** A category for "data structures" problems. */
   DATA_STRUCTURES,
   /** A category for "combinatorics" problems. */
   COMBINATORICS,

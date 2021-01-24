@@ -17,7 +17,7 @@ public class Entity<T> implements Identifiable {
 
   /**
    * Constructs a new Entity.
-   * 
+   *
    * @param id      a unique identifier for the entity.
    * @param content What the entity contains.
    */
@@ -28,7 +28,7 @@ public class Entity<T> implements Identifiable {
 
   /**
    * Retrieves this entity's id.
-   * 
+   *
    * @return this entity's id.
    */
   public long getId() {
@@ -37,7 +37,7 @@ public class Entity<T> implements Identifiable {
 
   /**
    * Retrieves this entity's content.
-   * 
+   *
    * @return this entity's content.
    */
   public T getContent() {

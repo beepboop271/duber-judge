@@ -16,7 +16,7 @@ public class TestcaseRun {
   /** The id of the associated batch. */
   private long batchId;
   /** The total duration of this run, in ms. */
-  private long runDurationMillis;
+  private int runDurationMillis;
   /** The total amount of memory used, in kB. */
   private long memoryUsageB;
   /** The current status of this run. */
@@ -25,7 +25,7 @@ public class TestcaseRun {
   private String output;
 
   /**
-   * Constructs a new TestcaseRun.
+   * Constructs a new {@code TestcaseRun}.
    *
    * @param submissionId      the id of the associated submission.
    * @param batchId           the id of the associated batch.
@@ -37,7 +37,7 @@ public class TestcaseRun {
   public TestcaseRun(
     long submissionId,
     long batchId,
-    long runDurationMillis,
+    int runDurationMillis,
     long memoryUsageB,
     ExecutionStatus status,
     String output
@@ -48,6 +48,24 @@ public class TestcaseRun {
     this.memoryUsageB = memoryUsageB;
     this.status = status;
     this.output = output;
+  }
+
+  /**
+   * Constructs a new {@code TestcaseRun}.
+   *
+   * @param submissionId      the id of the associated submission.
+   * @param batchId           the id of the associated batch.
+   */
+  public TestcaseRun(
+    long submissionId,
+    long batchId
+  ) {
+    this.submissionId = submissionId;
+    this.batchId = batchId;
+    this.runDurationMillis = 0;
+    this.memoryUsageB = 0;
+    this.status = ExecutionStatus.PENDING;
+    this.output = "";
   }
 
   /**
@@ -73,17 +91,37 @@ public class TestcaseRun {
    *
    * @return the total amount of time this run took, in ms.
    */
-  public long getRunDurationMillis() {
+  public int getRunDurationMillis() {
     return this.runDurationMillis;
   }
 
   /**
-   * Retrieves the total amount of memory used, in kB.
+   * Sets the total amount of time this run took, in ms.
    *
-   * @return the total amount of memory used, in kB.
+   * @param duration The total amount of time this run took,
+   *                 in ms.
+   */
+  public void setRunDurationMillis(int duration) {
+    this.runDurationMillis = duration;
+  }
+
+  /**
+   * Retrieves the total amount of memory used, in bytes.
+   *
+   * @return the total amount of memory used, in bytes.
    */
   public long getMemoryUsageB() {
     return this.memoryUsageB;
+  }
+
+  /**
+   * Sets the total amount of memory used, in bytes.
+   *
+   * @param memoryUsageB The total amount of memory used, in
+   *                     bytes.
+   */
+  public void setMemoryUsageB(long memoryUsageB) {
+    this.memoryUsageB = memoryUsageB;
   }
 
   /**
@@ -96,11 +134,29 @@ public class TestcaseRun {
   }
 
   /**
-   * Retrieves the generated output for this run.
+   * Sets the current status of this testcase run.
    *
-   * @return the generated output for this run.
+   * @param status The current status of this submission.
+   */
+  public void setStatus(ExecutionStatus status) {
+    this.status = status;
+  }
+
+  /**
+   * Retrieves the outputted data for this run.
+   *
+   * @return the outputted data for this run.
    */
   public String getOutput() {
     return this.output;
+  }
+
+  /**
+   * Sets the outputted data for this run.
+   *
+   * @param output the outputted data for this run.
+   */
+  public void setOutput(String output) {
+    this.output = output;
   }
 }

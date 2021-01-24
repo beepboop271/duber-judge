@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import entities.Batch;
+import entities.Entity;
 import entities.ExecutionStatus;
+import entities.Submission;
 import entities.Testcase;
 import entities.TestcaseRun;
 import judge.launcher.SourceLauncher;
@@ -27,19 +30,27 @@ import judge.launcher.SourceLauncher;
  */
 public class Tester {
   /**
-   * Tests a batch of testcases and returns a {@code CompletableFuture} of the
-   * testcase runs.
+   * Tests a batch of testcases and returns a
+   * {@code CompletableFuture} of the testcase runs.
    *
+   * @param submission      The {@code Submission} that
+   *                        contains the program.
    * @param batch           The {@code Batch} to be tested.
-   * @param launcher        The {@code SourceLauncher} to launch the program.
-   * @param pool            The {@code ExecutorService} to submit the task.
-   * @param timeLimitMillis The time limit of each testcase, in milliseconds.
-   * @param memoryLimitKb   The memory limit of each testcase, in kilobytes.
-   * @param outputLimitKb   The output limit of each testcase, in kilobytes.
-   * @return                A {@code CompletableFuture} of the testcase runs.
+   * @param launcher        The {@code SourceLauncher} to
+   *                        launch the program.
+   * @param pool            The {@code ExecutorService} to
+   *                        submit the task.
+   * @param timeLimitMillis The time limit of each testcase,
+   *                        in milliseconds.
+   * @param memoryLimitKb   The memory limit of each testcase,
+   *                        in kilobytes.
+   * @param outputLimitKb   The output limit of each testcase,
+   *                        in kilobytes.
+   * @return A {@code CompletableFuture} of the testcase runs.
    */
   public static CompletableFuture<TestcaseRun[]> testBatch(
-    Batch batch,
+    Entity<Submission> submission,
+    Entity<Batch> batch,
     SourceLauncher launcher,
     ExecutorService pool,
     int timeLimitMillis,
@@ -50,6 +61,7 @@ public class Tester {
     pool.submit(
       new BatchRunner(
         f,
+        submission,
         batch,
         launcher,
         timeLimitMillis,
@@ -67,8 +79,10 @@ public class Tester {
   private static class BatchRunner implements Runnable {
     private static final int BUF_SIZE = 8192;
 
+    /** The {@code Submission} that contains the program. */
+    private final Entity<Submission> submission;
     /** The {@code Batch} to be tested. */
-    private final Batch batch;
+    private final Entity<Batch> batch;
     /** The {@code SourceLauncher} to launch the program. */
     private final SourceLauncher launcher;
     /** The time limit of each testcase, in milliseconds. */
@@ -82,26 +96,35 @@ public class Tester {
     private CompletableFuture<TestcaseRun[]> f;
 
     /**
-     * Creates a new {@code BatchRunner} instance with time, memory and output
-     * restrictions that apply to each testcase.
+     * Creates a new {@code BatchRunner} instance with time,
+     * memory and output restrictions that apply to each
+     * testcase.
      *
-     * @param f               The {@code CompletableFuture} to be completed with
-     *                        testcase runs.
+     * @param f               The {@code CompletableFuture} to
+     *                        be completed with testcase runs.
+     * @param submission      The {@code Submission} that
+     *                        contains the program.
      * @param batch           The {@code Batch} to be tested.
-     * @param launcher        The {@code SourceLauncher} to launch the program.
-     * @param timeLimitMillis The time limit of each testcase, in milliseconds.
-     * @param memoryLimitKb   The memory limit of each testcase, in kilobytes.
-     * @param outputLimitKb   The output limit of each testcase, in kilobytes.
+     * @param launcher        The {@code SourceLauncher} to
+     *                        launch the program.
+     * @param timeLimitMillis The time limit of each testcase,
+     *                        in milliseconds.
+     * @param memoryLimitKb   The memory limit of each testcase,
+     *                        in kilobytes.
+     * @param outputLimitKb   The output limit of each testcase,
+     *                        in kilobytes.
      */
     public BatchRunner(
       CompletableFuture<TestcaseRun[]> f,
-      Batch batch,
+      Entity<Submission> submission,
+      Entity<Batch> batch,
       SourceLauncher launcher,
       int timeLimitMillis,
       int memoryLimitKb,
       int outputLimitKb
     ) {
       this.f = f;
+      this.submission = submission;
       this.batch = batch;
       this.launcher = launcher;
       this.timeLimitMillis = timeLimitMillis;
@@ -115,16 +138,16 @@ public class Tester {
      */
     @Override
     public void run() {
-      Testcase[] testcases = batch.getTestcases();
-      TestcaseRun[] testcaseRuns = new TestcaseRun[testcases.length];
+      ArrayList<Entity<Testcase>> testcases = this.batch.getContent().getTestcases();
+      TestcaseRun[] testcaseRuns = new TestcaseRun[testcases.size()];
       boolean batchPassed = true;
-      for (int i = 0; i < testcases.length; i++) {
-        Testcase t = testcases[i];
-        TestcaseRun testcaseRun = new TestcaseRun(t);
+      for (int i = 0; i < testcases.size(); i++) {
+        Entity<Testcase> testcase = testcases.get(i);
+        TestcaseRun testcaseRun = new TestcaseRun(this.submission.getId(), this.batch.getId());
         if (!batchPassed) {
           testcaseRun.setStatus(ExecutionStatus.SKIPPED);
         } else {
-          testcaseRun = this.test(t);
+          testcaseRun = this.test(testcase.getContent(), testcaseRun);
           if (testcaseRun.getStatus() != ExecutionStatus.ALL_CLEAR) {
             batchPassed = false;
           }
@@ -135,14 +158,15 @@ public class Tester {
     }
 
     /**
-     * Tests a given testcase and returns a {@code TestcaseRun} object representing
-     * the result.
+     * Tests a given testcase and returns a {@code TestcaseRun}
+     * object representing the result.
      *
      * @param testcase The {@code Testcase} to be tested.
-     * @return         A {@code TestcaseRun} object representing the result.
+     * @param result   The {@code TestcaseRun} to be updated.
+     * @return The updated {@code TestcaseRun} object
+     *         representing the result.
      */
-    private TestcaseRun test(Testcase testcase) {
-      TestcaseRun runToReturn = new TestcaseRun(testcase);
+    private TestcaseRun test(Testcase testcase, TestcaseRun result) {
       String input = testcase.getInput();
       if (!input.endsWith("\n")) { // make sure the input ends with a newline character
         input += "\n";
@@ -163,9 +187,9 @@ public class Tester {
         stdout = program.getInputStream();
 
       } catch (InternalErrorException e) {
-        return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, runToReturn);
+        return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, result);
       } catch (ProcessNotFoundException e) {
-        return this.fail(ExecutionStatus.WRONG_ANSWER, e, false, runToReturn);
+        return this.fail(ExecutionStatus.WRONG_ANSWER, e, false, result);
       }
 
       int runDurationMillis = 0;
@@ -179,26 +203,26 @@ public class Tester {
         long end = System.currentTimeMillis();
         runDurationMillis = (int)(end - start);
       } catch (IOException e) {
-        return this.fail(ExecutionStatus.WRONG_ANSWER, e, false, runToReturn);
+        return this.fail(ExecutionStatus.WRONG_ANSWER, e, false, result);
       } catch (InterruptedException e) {
-        return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, runToReturn);
+        return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, result);
       }
-      runToReturn.setRunDurationMillis(runDurationMillis);
-      runToReturn.setMemoryUsedBytes(childProcess.getMemoryUsedBytes());
+      result.setRunDurationMillis(runDurationMillis);
+      result.setMemoryUsageB(childProcess.getMemoryUsedBytes());
 
       // timed out
       if (program.isAlive()) {
-        runToReturn.setStatus(ExecutionStatus.TIME_LIMIT_EXCEEDED);
+        result.setStatus(ExecutionStatus.TIME_LIMIT_EXCEEDED);
         program.destroyForcibly();
       // memory limit exceeded
-      } else if (runToReturn.getMemoryUsedBytes() > this.memoryLimitKb*1024) {
-        runToReturn.setStatus(ExecutionStatus.MEMORY_LIMIT_EXCEEDED);
+      } else if (result.getMemoryUsageB() > this.memoryLimitKb*1024) {
+        result.setStatus(ExecutionStatus.MEMORY_LIMIT_EXCEEDED);
       // invalid return code
       } else if (program.exitValue() != 0) {
-        runToReturn.setStatus(ExecutionStatus.INVALID_RETURN);
+        result.setStatus(ExecutionStatus.INVALID_RETURN);
       }
 
-      runToReturn = this.judgeOutput(stdout, testcase.getOutput(), runToReturn);
+      result = this.judgeOutput(stdout, testcase.getOutput(), result);
 
       // end of testing, close resources
       program.destroyForcibly();
@@ -209,7 +233,7 @@ public class Tester {
         e.printStackTrace();
       }
 
-      return runToReturn;
+      return result;
     }
 
     /**

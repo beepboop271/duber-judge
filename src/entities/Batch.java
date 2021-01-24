@@ -14,8 +14,9 @@ import java.util.ArrayList;
  * @since 1.0.0
  */
 public class Batch {
-  /** The id of the problem that the batch belongs to */
+  /** The id of the problem that the batch belongs to. */
   private long problemId;
+  /** The id of the creator of the batch. */
   private long creatorId;
   /** The sequence number of the batch. */
   private int sequence;
@@ -38,7 +39,6 @@ public class Batch {
     this.sequence = sequence;
     this.points = points;
   }
-
 
   /**
    * Constructs a new Batch.
