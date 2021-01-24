@@ -422,8 +422,8 @@ public class WebServer {
     private long connectionOpenTime;
     /** The current amount of requests handled. */
     private int curReq;
-    /** If the connection should be closed immedietely. */
-    private boolean closeImmedietely = false;
+    /** If the connection should be closed immediately. */
+    private boolean closeImmediately = false;
 
     /** The client to handle. */
     private Socket client;
@@ -466,7 +466,7 @@ public class WebServer {
         System.out.println("A stream failed to connect.");
         e.printStackTrace();
       } catch (IOException e) {
-        System.out.println("An I/O error occured while handling the streams.");
+        System.out.println("An I/O error occurred while handling the streams.");
         e.printStackTrace();
       }
     }
@@ -549,8 +549,8 @@ public class WebServer {
       }
 
       // If neither of the above are true, just make sure we don't
-      // need to close immedietely
-      return this.closeImmedietely;
+      // need to close immediately
+      return this.closeImmediately;
     }
 
     /**
@@ -582,9 +582,9 @@ public class WebServer {
       // Connection header exists
       String connectionValue = res.getHeader("Connection");
 
-      // Return if we are to close immedietely
+      // Return if we are to close immediately
       if (connectionValue.contains("close")) {
-        this.closeImmedietely = true;
+        this.closeImmediately = true;
         return;
 
       } else if (connectionValue.contains("keep-alive")) {
@@ -677,7 +677,7 @@ public class WebServer {
           return;
         }
       }
-
+      //TODO check if the request is a HEAD, and if so, dont actually use the body
       if (!cache.checkCache(fullPath)) {
         cache.putCache(response.getBody(), fullPath, 60);
       }
@@ -688,7 +688,7 @@ public class WebServer {
      * <p>
      * This response can stem from the cache or a handler. If
      * neither can handle the request, a generic fail page will
-     * be returned alonside a 404 response.
+     * be returned alongside a 404 response.
      *
      * @param request The HTTP request to handle.
      * @return an HTTP response to return to the user.

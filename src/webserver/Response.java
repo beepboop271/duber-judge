@@ -1,5 +1,6 @@
 package webserver;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,6 +11,10 @@ import java.util.Map;
  * implements {@link #toString()} which will convert this
  * object to a properly formatted HTTP response string,
  * ready to be sent to the client.
+ * <p>
+ * Note that any cookies stored in this class are expected
+ * to be used as `Set-Cookie`, and this class will be
+ * converted to a string with that in mind.
  * <p>
  * Created <b> 2020-12-28 </b>
  *
@@ -23,6 +28,12 @@ import java.util.Map;
 public class Response extends HttpMessage {
   /** The status of the response. */
   private String statusString;
+  /**
+   * The max ages of the cookies to be set, to work in tandem
+   * with {@link HttpMessage#cookies}. Any cookie that does
+   * not have an age is set as a session cookie.
+   */
+  private HashMap<String, Integer> cookieAges;
 
   /**
    * Generates a generic HTML page to represent a
@@ -184,7 +195,7 @@ public class Response extends HttpMessage {
   }
 
   /**
-   * Gener tes a {@code 200 OK} html HTTP response with the
+   * Generates a {@code 200 OK} html HTTP response with the
    * appropriate headers, and informs the browser not to cache
    * this page.
    * <p>
@@ -312,9 +323,9 @@ public class Response extends HttpMessage {
 
     Response response = Response.okHtml(html, hasBody);
     if (maxAge == -1) {
-      response.headers.put("Set-Cookie", name+"="+value);
+      response.addCookie(name, value);
     } else {
-      response.headers.put("Set-Cookie", name+"="+value+"; Max-Age="+maxAge);
+      response.addCookie(name, value, maxAge);
     }
 
     return response;
@@ -384,6 +395,7 @@ public class Response extends HttpMessage {
     super(body);
 
     this.statusString = "HTTP/1.1 "+statusCode;
+    this.cookieAges = new HashMap<>();
   }
 
   /**
@@ -404,6 +416,7 @@ public class Response extends HttpMessage {
     super(headers, body);
 
     this.statusString = "HTTP/1.1 "+statusCode;
+    this.cookieAges = new HashMap<>();
   }
 
   /**
@@ -434,6 +447,7 @@ public class Response extends HttpMessage {
     super(headers, body);
 
     this.statusString = "HTTP/1.1 "+statusCode;
+    this.cookieAges = new HashMap<>();
   }
 
   /**
@@ -492,11 +506,79 @@ public class Response extends HttpMessage {
   /**
    * {@inheritDoc}
    * <p>
+   * Note that cookies added this way will be session cookies.
+   * To add a max age, use
+   * {@link #addCookie(String, String, int)} instead.
+   *
+   * @param name  The name of the cookie.
+   * @param value The value of the cookie.
+   */
+  @Override
+  public void addCookie(String name, String value) {
+    try {
+      super.addCookie(name, value);
+
+    } catch (InvalidCookieException e) {
+      // Response cookies should not stem from a stream, so we can
+      // convert this to a runtime exception as all Response
+      // cookie errors should come from programmer implementation.
+      throw new IllegalArgumentException("Improper cookie input", e);
+    }
+  }
+
+  /**
+   * Adds a cookie to this message's cookie map.
+   * <p>
+   * The cookie will have a max age setting equal to the
+   * provided seconds to live.
+   *
+   * @param name          The name of the cookie to add.
+   * @param value         The value of the cookie.
+   * @param secondsToLive The amount of seconds for the cookie
+   *                      to live.
+   */
+  public void addCookie(String name, String value, int secondsToLive) {
+    try {
+      super.addCookie(name, value);
+      this.cookieAges.put(name, secondsToLive);
+    } catch (InvalidCookieException e) {
+      // Response cookie errors should all stem from programmer
+      // errors
+      throw new IllegalArgumentException("Improper cookie input", e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   * <p>
    * This method will return a string that is formatted and
    * ready for output back to a client.
    */
   public String toString() {
     StringBuilder responseString = new StringBuilder(this.statusString+"\r\n");
+
+    for (String cookie : this.cookies.keySet()) {
+      if (this.cookieAges.containsKey(cookie)) {
+        responseString.append(
+          "Set-Cookie: "
+            +cookie
+            +"="
+            +this.cookies.get(cookie)
+            +"; Max-Age="
+            +this.cookieAges.get(cookie)
+            +"\r\n"
+        );
+      } else {
+        responseString.append(
+          "Set-Cookie: "
+            +cookie
+            +"="
+            +this.cookies.get(cookie)
+            +";\r\n"
+        );
+      }
+    }
+
     responseString.append(this.getHeadersString());
 
     if (!this.body.equals("")) {

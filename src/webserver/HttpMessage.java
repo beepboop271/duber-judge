@@ -15,12 +15,14 @@ import java.util.Map;
  * Created <b> 2021-01-01 </b>
  *
  * @since 0.0.1
- * @version 0.0.4
+ * @version 0.0.6
  * @author Joseph Wang
  */
 abstract class HttpMessage {
   /** The headers of this HttpMessage. */
   protected Map<String, String> headers;
+  /** The cookies associated with the message. */
+  protected Map<String, String> cookies;
   /** The body of this HttpMessage, if present. */
   protected String body;
 
@@ -42,6 +44,7 @@ abstract class HttpMessage {
    */
   public HttpMessage(String body) {
     this.headers = new HashMap<>();
+    this.cookies = new HashMap<>();
     this.body = body;
   }
 
@@ -76,6 +79,7 @@ abstract class HttpMessage {
     throws InvalidHeaderException {
     this.headers = new HashMap<>();
     this.addHeaders(headers);
+    this.cookies = new HashMap<>();
     this.body = body;
   }
 
@@ -135,6 +139,7 @@ abstract class HttpMessage {
     throws InvalidHeaderException {
     this.headers = new HashMap<>();
     this.addHeaders(headers);
+    this.cookies = new HashMap<>();
     this.body = "";
   }
 
@@ -258,7 +263,7 @@ abstract class HttpMessage {
   /**
    * Retrieves all of this message's headers.
    *
-   * @return the original {@code HashMap<String, String>}
+   * @return the original {@code Map<String, String>}
    *         containing this message's headers.
    */
   public Map<String, String> getHeaders() {
@@ -320,5 +325,80 @@ abstract class HttpMessage {
    */
   public String getBody() {
     return this.body;
+  }
+
+  /**
+   * Adds a cookie to this message.
+   *
+   * @param name  The name of the cookie.
+   * @param value The value of the cookie.
+   * @throws InvalidCookieException if the cookie name or
+   *                                value is null or empty.
+   */
+  public void addCookie(String name, String value)
+    throws InvalidCookieException {
+    if (name == null || name.equals("") || value == null || value.equals("")) {
+      throw new InvalidCookieException("A cookie field is invalid.");
+    }
+
+    this.cookies.put(name, value);
+  }
+
+  /**
+   * Adds a string of cookies to this message.
+   * <p>
+   * Cookies must be in {@code name=value} format, and
+   * separated with a semicolon {@code ;}.
+   *
+   * @param cookieString The string of cookies to parse
+   *                     through.
+   * @throws InvalidCookieException if the cookie format is
+   *                                incorrect.
+   */
+  public void addCookies(String cookieString) throws InvalidCookieException {
+    String[] cookies = cookieString.split(";");
+
+    for (String cookie : cookies) {
+      String[] cookieTokens = cookie.trim().split("=");
+      if (cookieTokens.length != 2) {
+        throw new InvalidCookieException("Cookie formatted incorrectly.");
+      }
+
+      this.addCookie(cookieTokens[0], cookieTokens[1]);
+    }
+  }
+
+  /**
+   * Gets a specific cookie from this message's map of
+   * cookies.
+   * <p>
+   * If the cookie is not found, {@code null} will be
+   * returned.
+   *
+   * @param cookieName The cookie to retrieve.
+   * @return the cookie, or {@code null} if not found.
+   */
+  public String getCookie(String cookieName) {
+    return this.cookies.get(cookieName);
+  }
+
+  /**
+   * Checks if this message has a specific cookie.
+   *
+   * @param cookieName The cookie to check for.
+   * @return true if this message has the cookie.
+   */
+  public boolean hasCookie(String cookieName) {
+    return this.cookies.containsKey(cookieName);
+  }
+
+  /**
+   * Retrieves all of this message's cookies.
+   *
+   * @return the original {@code Map<String, String>}
+   *         containing this message's cookies.
+   */
+  public Map<String, String> getCookies() {
+    return this.cookies;
   }
 }

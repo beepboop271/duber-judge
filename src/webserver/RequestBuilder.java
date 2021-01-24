@@ -381,15 +381,20 @@ public class RequestBuilder {
       this.failSyntax("The request is incomplete.");
     }
 
-    Request req = new Request(this.method, this.path, this.protocol);
     try {
-      req.addHeaders(this.headers);
+      Request req =
+        new Request(
+          this.method,
+          this.path,
+          this.protocol,
+          this.headers,
+          this.body.toString()
+        );
       req.body = this.body.toString();
+      return req;
     } catch (InvalidHeaderException e) {
-      this.failSyntax("A header was invalid.", e);
+      throw new HttpSyntaxException("A header was invalid", e);
     }
-
-    return req;
   }
 
   /**
@@ -411,18 +416,5 @@ public class RequestBuilder {
    */
   private void failSyntax(String message) throws HttpSyntaxException {
     throw new HttpSyntaxException(message);
-  }
-
-  /**
-   * Throws an exception with the provided message and cause.
-   *
-   * @param message The detail message for the exception.
-   * @param e       The cause of the exception.
-   * @throws HttpSyntaxException always, according to the
-   *                             message.
-   */
-  private void failSyntax(String message, Throwable e)
-    throws HttpSyntaxException {
-    throw new HttpSyntaxException(message, e);
   }
 }

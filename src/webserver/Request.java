@@ -69,6 +69,7 @@ public class Request extends HttpMessage {
     this.params = new HashMap<>();
 
     this.initializePathAndQueries(fullPath);
+    this.initializeCookies();
   }
 
   /**
@@ -92,6 +93,7 @@ public class Request extends HttpMessage {
     this.params = new HashMap<>();
 
     this.initializePathAndQueries(fullPath);
+    this.initializeCookies();
   }
 
   /**
@@ -125,7 +127,7 @@ public class Request extends HttpMessage {
    * Constructs a new Request with specified string array of
    * headers but no body.
    * <p>
-   * The body will be initialzed as an empty string.
+   * The body will be initialized as an empty string.
    * <p>
    * This constructor will accept a string array of headers,
    * separated by a colon.
@@ -190,6 +192,7 @@ public class Request extends HttpMessage {
     this.params = new HashMap<>();
 
     this.initializePathAndQueries(fullPath);
+    this.initializeCookies();
   }
 
   /**
@@ -233,6 +236,7 @@ public class Request extends HttpMessage {
     this.params = new HashMap<>();
 
     this.initializePathAndQueries(fullPath);
+    this.initializeCookies();
   }
 
   /**
@@ -256,6 +260,27 @@ public class Request extends HttpMessage {
       this.endResource = this.path.substring(lastIndex + 1);
     } catch (URISyntaxException e) {
       throw new HttpSyntaxException("Provided path is invalid.", e);
+    }
+  }
+
+  /**
+   * Attempts to initialize the cookies from this request's list of headers.
+   * <p>
+   * Ensure that this method is called after initializing headers.
+   *
+   * @throws HttpSyntaxException if a cookie is malformed, as cookies come from the header.
+   */
+  private void initializeCookies() throws HttpSyntaxException {
+    if (!this.headers.containsKey("Cookie")) {
+      return;
+    }
+
+    try {
+      String cookieString = this.headers.get("Cookie");
+      this.addCookies(cookieString);
+
+    } catch (InvalidCookieException e) {
+      throw new HttpSyntaxException("A cookie was invalid.");
     }
   }
 
