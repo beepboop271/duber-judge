@@ -124,3 +124,70 @@
 /admin/problem/:problemId/testcases/:testcaseId
   - updateTestcase
   - deleteTestcase
+
+
+Handlers:
+
+LoginHandler
+  - /login
+  - /signup
+
+HomeHandler:
+  - /
+  - /contests
+  - /leaderboard
+
+ProfileHandler
+  - /profile -> /profile/:username
+  - /profile/:username
+  - /profile/:username/(submissions|problems|contests)
+
+ProfileEditHandler
+  - /profile/:username/edit
+
+ContestHandler
+  - /contest/:contestId -> /contest/:contestId/problems
+  - /contest/:contestId/problems
+  - /contest/:contestId/leaderboard
+
+PublicProblemHandler:
+  - /problems
+  - /problems?sort=categoryName
+  - /problems?sort=creatorName
+  - /problems?sort=points
+  - /problems?sort=numSubmissions
+  - /problem/:problemId/leaderboard
+  - /problem/:problemId
+
+ContestProblemHandler:
+  - /contest/:contestId/problem/:problemId
+
+PracticeProblemSubmissionHandler:
+  - /problem/:problemId/submit
+  - /problem/:problemId/submissions
+  - /problem/:problemId/submissions/:submissionId
+  - /problem/:problemId/submissions?userid=id
+
+ContestProblemSubmissionHandler:
+  - /contest/:contestId/problem/:problemId/submit
+  - /contest/:contestId/problem/:problemId/submissions
+  - /contest/:contestId/problem/:problemId/submissions/:submissionId
+
+
+AdminHandler:
+  - /admin -> /admin/users
+  - /admin/clarifications
+  - /admin/problems
+  - /admin/restrictions
+  - /admin/contests
+  - /admin/clarifications/:clarificationId
+  - /admin/problem/:problemId
+  - /admin/contest/:contestId -> /admin/contest/:contestId/problems
+  - /admin/contest/:contestId/problems
+  - /admin/contest/:contestId/problem/:problemId
+
+StaticHandler:
+  - /static/(css)/:file
+  - /static/(js)/:file
+
+
