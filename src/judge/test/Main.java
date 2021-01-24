@@ -75,7 +75,6 @@ public class Main {
 
     // should receive ALL_CLEAR
     Submission s1 = new Submission(
-      p1,
       "char = input()\nstring = input()\nprint(string.count(char))",
       Language.PYTHON,
       new Timestamp(System.currentTimeMillis())
@@ -83,7 +82,6 @@ public class Main {
 
     // should receive WRONG_ANSWER with score 0
     Submission s2 = new Submission(
-      p1,
       "a = 1",
       Language.PYTHON,
       new Timestamp(System.currentTimeMillis())
@@ -91,7 +89,6 @@ public class Main {
 
     // should receive WRONG_ANSWER, but partial points
     Submission s3 = new Submission(
-      p1,
       "char = input()\n"
       + "string = input()\n"
       + "if len(string) < 10:\n"
@@ -102,7 +99,6 @@ public class Main {
 
     // should receive OUTPUT_LIMIT_EXCEEDED
     Submission s4 = new Submission(
-      p1,
       "input()\n"
       +"input()\n"
       +"for i in range(100):"
@@ -113,7 +109,6 @@ public class Main {
 
     // should receive TIME_LIMIT_EXCEEDED
     Submission s5 = new Submission(
-      p1,
       "while True:\n\ta = 1",
       Language.PYTHON,
       new Timestamp(System.currentTimeMillis())
@@ -121,7 +116,6 @@ public class Main {
 
     // should receive COMPILE_ERROR
     Submission s6 = new Submission(
-      p1,
       "char = input()\nstring = input()\nprint(string.count(char))",
       Language.JAVA,
       new Timestamp(System.currentTimeMillis())
@@ -129,7 +123,6 @@ public class Main {
 
     // should receive MEMORY_LIMIT_EXCEEDED
     Submission s7 = new Submission(
-      p1,
       "input()\n"
       +"input()\n"
       +"thing = []\n"
@@ -141,14 +134,12 @@ public class Main {
 
     // should receive ILLEGAL_CODE
     Submission s8 = new Submission(
-      p1,
       "import os",
       Language.PYTHON,
       new Timestamp(System.currentTimeMillis())
     );
 
     Submission s9 = new Submission(
-      p1,
       "import java.util.Scanner;\n"
       +"public class Main {\n"
       +"\tpublic static void main(String[] args) {\n"
@@ -179,27 +170,27 @@ public class Main {
     );
     ArrayList<Submitter> submitters = new ArrayList<>();
     // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s1, judger));
+    //   submitters.add(new Submitter(s1, p1, judger));
     // }
     // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s2, judger));
+    //   submitters.add(new Submitter(s2, p1, judger));
     // }
     // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s3, judger));
+    //   submitters.add(new Submitter(s3, p1, judger));
     // }
     // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s4, judger));
+    //   submitters.add(new Submitter(s4, p1, judger));
     // }
     // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s5, judger));
+    //   submitters.add(new Submitter(s5, p1, judger));
     // }
     // for (int i = 0; i < 3; i++) {
-    //   submitters.add(new Submitter(s6, judger));
+    //   submitters.add(new Submitter(s6, p1, judger));
     // }
-    // submitters.add(new Submitter(s7, judger));
-    // submitters.add(new Submitter(s8, judger));
-    submitters.add(new Submitter(s1, judger));
-    submitters.add(new Submitter(s9, judger));
+    // submitters.add(new Submitter(s7, p1, judger));
+    // submitters.add(new Submitter(s8, p1, judger));
+    submitters.add(new Submitter(s1, p1, judger));
+    submitters.add(new Submitter(s9, p1, judger));
     System.out.println("starting to judge");
     for (Submitter s : submitters) {
       Thread t = new Thread(s);

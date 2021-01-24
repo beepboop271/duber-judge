@@ -37,7 +37,7 @@ public class Judger {
     this.tempFileDirectory = tempFileDirectory;
   }
 
-  public SubmissionResult judge(Submission submission) {
+  public SubmissionResult judge(Submission submission, Problem problem) {
     SubmissionResult result = new SubmissionResult(submission);
     // check if code is clean
     try {
@@ -71,7 +71,7 @@ public class Judger {
       return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, null, result);
     }
 
-    result = this.testSubmission(submission, launcher, result);
+    result = this.testSubmission(submission, problem, launcher, result);
     launcher.close();
     return result;
   }
@@ -83,10 +83,10 @@ public class Judger {
   @SuppressWarnings("unchecked")
   private SubmissionResult testSubmission(
     Submission submission,
+    Problem problem,
     SourceLauncher launcher,
     SubmissionResult result
   ) {
-    Problem problem = submission.getProblem();
     int timeLimitMillis = problem.getTimeLimitMillis();
     int memoryLimitKb = problem.getMemoryLimitKb();
     int outputLimitKb = problem.getOutputLimitKb();
