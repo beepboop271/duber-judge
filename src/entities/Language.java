@@ -12,6 +12,6 @@ package entities;
 public enum Language {
   /** The Java programming language. */
   JAVA,
-  /** The Python progrmaming language. */
+  /** The Python programming language. */
   PYTHON
 }

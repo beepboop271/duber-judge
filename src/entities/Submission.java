@@ -91,6 +91,4 @@ public class Submission {
   public Timestamp getCreatedAt() {
     return this.createdAt;
   }
-
-
 }
