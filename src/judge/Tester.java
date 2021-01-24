@@ -86,6 +86,9 @@ public class Tester {
           testcaseRun.setStatus(ExecutionStatus.SKIPPED);
         } else {
           testcaseRun = this.test(t);
+          if (testcaseRun.getStatus() != ExecutionStatus.ALL_CLEAR) {
+            batchPassed = false;
+          }
         }
         testcaseRuns[i] = testcaseRun;
       }
