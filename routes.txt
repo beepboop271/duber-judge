@@ -139,7 +139,7 @@ HomeHandler:
 
 ProfileHandler
   - /profile -> /profile/:username
-  - /profile/:username
+  - /profile/:username -> /profile/:username/submissions
   - /profile/:username/(submissions|problems|contests)
 
 ProfileEditHandler
@@ -162,13 +162,13 @@ PublicProblemHandler:
 ContestProblemHandler:
   - /contest/:contestId/problem/:problemId
 
-PracticeProblemSubmissionHandler:
+PracticeSubmissionHandler:
   - /problem/:problemId/submit
   - /problem/:problemId/submissions
   - /problem/:problemId/submissions/:submissionId
   - /problem/:problemId/submissions?userid=id
 
-ContestProblemSubmissionHandler:
+ContestSubmissionHandler:
   - /contest/:contestId/problem/:problemId/submit
   - /contest/:contestId/problem/:problemId/submissions
   - /contest/:contestId/problem/:problemId/submissions/:submissionId
@@ -187,7 +187,7 @@ AdminHandler:
   - /admin/contest/:contestId/problem/:problemId
 
 StaticHandler:
-  - /static/(css)/:file
-  - /static/(js)/:file
+  - /static/:type(css)/:file
+  - /static/:type(js)/:file
 
 

@@ -1,0 +1,31 @@
+body {
+  min-height: 100vh;
+}
+
+
+.problem-listing {
+  width: 100%;
+}
+
+.problem-list {
+  text-align: left;
+}
+
+.sidebar {
+  max-width: 20%;
+  display: inline-block;
+}
+
+.content-container {
+  display: inline;
+  width: 80%;
+  margin-left: auto;
+}
+
+
+.page-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}

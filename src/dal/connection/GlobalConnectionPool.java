@@ -12,5 +12,5 @@ package dal.connection;
  */
 public class GlobalConnectionPool {
   /** The connection pool. */
-  public static ConnectionPool pool = new ConnectionPool(2, 5);
+  public static ConnectionPool pool = new ConnectionPool(10, 20);
 }
