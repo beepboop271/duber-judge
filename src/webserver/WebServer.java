@@ -178,6 +178,14 @@ public class WebServer {
    * character are interpreted literally. All other symbols
    * will be their regex counterparts.
    * <p>
+   * Wildcards and capture groups can be retreived using
+   * {@code req.getParam("0")}, where 0 is the index but as a string.
+   * Named parameters can be created like {@code :myParamName} and
+   * is retrievable through {@code req.getParam("myParamName")}.
+   * Additionally, if you combine a named parameter with a capture group,
+   * you can retrieve the value of the capture group given the
+   * parameter name.
+   * <p>
    * All route will be matched as is, from start to end (akin
    * to placing {@code ^$} symbols). To match every file under
    * a path, use {@code *} to indicate that everything under
@@ -199,11 +207,16 @@ public class WebServer {
    * // This will only match the /static path
    * server.route("/static", new StaticHandler());
    *
-   * // This will match
+   * // Wildcard match
    * // /problems {0: null}
    * // /problems/problem1 {0: problem1}
    * // /problems/problem2/123 {0: problem2/123}
    * server.route("/problems/*?", new ProblemHandler());
+   *
+   * // Optional
+   * // /problems/id {0: id}
+   * // /problems/   {0: null}
+   * server.route("/problems/(id)?", new ProblemHander());
    *
    * // Named parameters
    * // /problems/1234abc {problemId: 1234abc}
@@ -213,6 +226,17 @@ public class WebServer {
    * // /problems/1234abc {problemId: 1234abc}
    * // /problems/ {problemId: null}
    * server.route("/problems/:problemId?", new ProblemHander());
+   *
+   * // Capture groups
+   * // /problems/math      {0: math}
+   * // /problems/english   does not match
+   * server.route("/problems/(math)", new ProblemHander());
+   *
+   * // Named parameters combined with capture groups
+   * // /problems/good {type: good}
+   * // /problems/bad {type: bad}
+   * // /problems/cool does not match
+   * server.route("/problems/:type(good|bad)", new ProblemHander());
    * </pre>
    *
    * @param route  The route associated with the
@@ -235,6 +259,8 @@ public class WebServer {
     ArrayList<String> paramKeys = new ArrayList<>();
     // indicating the following characters are parameter names
     boolean isParamName = false;
+    // something like /:user(me|you) should match me|you and stored in user
+    boolean paramCaptureGroup = false;
 
     for (int i = 0; i < route.length(); i++) {
       charAt = route.charAt(i);
@@ -249,7 +275,11 @@ public class WebServer {
         if (isParamName) {
           isParamName = false;
           paramKeys.add(paramName.toString());
-          cleanedRoute.append("([^/]+?)");
+          if (charAt == '(') {
+            paramCaptureGroup = true;
+          } else {
+            cleanedRoute.append("([^/]+?)");
+          }
         }
 
         switch (charAt) {
@@ -272,7 +302,11 @@ public class WebServer {
           // assign keys to user defined capture groups
           case '(':
             cleanedRoute.append('(');
-            paramKeys.add(String.valueOf(keyI++));
+            if (paramCaptureGroup) {
+              paramCaptureGroup = false;
+            } else {
+              paramKeys.add(String.valueOf(keyI++));
+            }
             break;
           // named parameter
           // it will be treated as a literal unless there is a

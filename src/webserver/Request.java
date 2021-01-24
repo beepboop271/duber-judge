@@ -38,6 +38,8 @@ public class Request extends HttpMessage {
   private String path;
   /** The full path for the request. */
   private String fullPath;
+  /** The resource to fetch, aka the last part of the path. */
+  private String endResource;
   /** The query strings in the path. */
   private Map<String, String> queryStrings;
   /** The HTTP protocol for this request. */
@@ -241,13 +243,17 @@ public class Request extends HttpMessage {
    *                             parsed as a request status
    *                             path.
    */
-  private void initializePathAndQueries(String fullPath) throws HttpSyntaxException {
+  private void initializePathAndQueries(String fullPath)
+    throws HttpSyntaxException {
     try {
       URI pathUri = new URI(fullPath);
       if (pathUri.getQuery() != null) {
         this.parseQueryStrings(pathUri.getQuery());
       }
       this.path = pathUri.getPath();
+
+      int lastIndex = this.path.lastIndexOf("/");
+      this.endResource = this.path.substring(lastIndex + 1);
     } catch (URISyntaxException e) {
       throw new HttpSyntaxException("Provided path is invalid.", e);
     }
@@ -387,5 +393,15 @@ public class Request extends HttpMessage {
    */
   public String getProtocol() {
     return this.protocol;
+  }
+
+  /**
+   * Retrieves this request's requested resource, which can be
+   * found at the end of the path.
+   *
+   * @return this request's requested resource.
+   */
+  public String returnEndResource() {
+    return this.endResource;
   }
 }
