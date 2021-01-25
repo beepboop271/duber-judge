@@ -27,7 +27,7 @@ public class Node extends LanguageElement {
    *
    * @return The children.
    */
-  public Iterator<LanguageElement> getChildren() {
-    return this.children.iterator();
+  public ReadOnlyIterator<LanguageElement> getChildren() {
+    return new ReadOnlyIterator<>(this.children.iterator());
   }
 }

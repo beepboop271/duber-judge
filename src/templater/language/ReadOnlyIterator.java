@@ -1,4 +1,4 @@
-package templater;
+package templater.language;
 
 import java.util.Iterator;
 
