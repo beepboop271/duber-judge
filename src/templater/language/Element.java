@@ -12,10 +12,18 @@ import java.util.Map;
  * @version 1.0
  */
 public class Element extends Node {
+  /** The name of this element. */
   private final StringResolvables name;
+  /** The classes this element belongs to. */
   private final List<StringResolvables> classes;
+  /** The id of this element. */
   private final StringResolvables id;
+  /** The attributes on this element. */
   private final Map<String, StringResolvables> attributes;
+  /**
+   * Whether or not this element is an empty element, i.e if
+   * it does not need a closing tag like {@code <br>}.
+   */
   private final boolean isEmpty;
 
   /**

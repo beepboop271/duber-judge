@@ -19,7 +19,7 @@ import templater.language.StringResolvables;
  * @author Paula Yuan
  * @version 1.0
  */
-public class Interpreter {
+class Interpreter {
   /** The namespace map whence template-mentioned objects are retrieved. */
   private Map<String, Object> namespace;
 
