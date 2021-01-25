@@ -10,7 +10,7 @@ html(lang="en") {
 
     script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
 
-    link(rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
     link(rel="stylesheet" href="./styles.css");
 
@@ -65,7 +65,7 @@ html(lang="en") {
               }
             }
             a.settings-logo-wrapper text-dark(href="/") {
-              i.fas fa-cog{}
+              i.fas.fa-cog{}
             }
           }
         }
@@ -93,10 +93,10 @@ html(lang="en") {
                     }
                   }
                   small.text-muted.mr-4 {
-                    "Points: " ${user.getPoints}
+                    "Points: "${user.getPoints}
                   }
                   small.text-muted.mr-4 {
-                    "Num Problems: " ${user.getProblemsSolved}
+                    "Num Problems: "${user.getProblemsSolved}
                   }
                 }
               }
@@ -105,8 +105,8 @@ html(lang="en") {
         }
       }
     }
-    script(src="./vendored/static/jquery-3.4.1.slim.min.js") {}
-    script(src="./vendored/static/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
     script(src="./scripts.js") {}
   }
 }
