@@ -44,7 +44,7 @@ html(lang="en") {
             }
           }
           li.nav-item.active {
-            a.nva-link(href=${profileLink}) {
+            a.nav-link(href=${profileLink}) {
               ${user.getUsername}
             }
           }

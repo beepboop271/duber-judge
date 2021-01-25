@@ -38,13 +38,13 @@ html(lang="en") {
               "Leaderboard"
             }
           }
-          li.nav-item {
+          li.nav-item.active {
             a.nav-link(href=${problemsLink}) {
               "Practice Problems"
             }
           }
-          li.nav-item.active {
-            a.nva-link(href=${profileLink}) {
+          li.nav-item {
+            a.nav-link(href=${profileLink}) {
               ${username}
             }
           }

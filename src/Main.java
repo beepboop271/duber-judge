@@ -32,14 +32,11 @@ public class Main {
     sessCleaner.start();
 
     try {
-      Templater.prepareTemplate("userProfile",
-      Paths.get("static/userProfile"));
+      Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
       // Templater.prepareTemplate("adminUsers",
       // Paths.get("static/adminUsers"));
-      Templater
-      .prepareTemplate("adminProfile",
-      Paths.get("static/adminProfile"));
-      Templater.prepareTemplate("problems", Paths.get("static/problems"));
+      Templater.prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
+      Templater.prepareTemplate("problems", Paths.get("static/viewAllProblems"));
       // Templater
       // .prepareTemplate("adminProblems",
       // Paths.get("static/adminProblems"));
