@@ -462,4 +462,16 @@ public class Request extends HttpMessage {
   public String returnEndResource() {
     return this.endResource;
   }
+
+  /**
+   * Retrieves this message's body, as a String.
+   * <p>
+   * This assumes that the current body was inserted as a
+   * legible string, and will parse from that.
+   *
+   * @return this message's body, as a string.
+   */
+  public String getBodyString() {
+    return new String(this.body, StandardCharsets.UTF_8);
+  }
 }
