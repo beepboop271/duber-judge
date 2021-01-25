@@ -121,7 +121,7 @@ html(lang="en") {
       }
     }
     script(src="../../lib/static/jquery-3.4.1.slim.min.js") {}
-    script(src="../../lib/static/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
+    script(src="../../lib/static/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
     script(src="./scripts.js") {}
   }
 }

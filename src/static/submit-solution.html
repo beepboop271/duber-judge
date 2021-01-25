@@ -9,13 +9,13 @@
 
     <title>Duber Judge</title>
 
-
     <link rel="stylesheet" href="./lib/bootstrap-4.4.1-dist/css/bootstrap.min.css">
 
     <link rel="stylesheet" href="./styles.css"/>
 
   </head>
   <body>
+    <!-- same as user but with extra admin button to navigate to admin console -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
       <a class="navbar-brand" href="#">DubJ</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,36 +33,40 @@
             <a class="nav-link" href="#">Practice Problems</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="#">Sign in</a>
+            <a class="nav-link" href="#">Shari09</a>
           </li>
         </ul>
       </div>
     </nav>
-    <div class="page-container">
-      <form class="login" action="/" method="post">
+    <div class="create-problem-container">
+
+      <h3>Submit solution to problem 1j34kj234</h3>
+
+      <form class="submit-solution needs-validation" novalidate action="/" method="post">
+
+
+        <div class="mb-3">
+          <label for="solution">Solution code:</label>
+          <textarea name="solution" class="form-control" id="solution" placeholder="// Code" required></textarea>
+          <div class="invalid-feedback">Please enter some valid code.</div>
+        </div>
+
         <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp" required>
-          <small class="form-text text-muted">3-20 characters, no special symbols.</small>
+          <label for="points">Language:</label>
+          <select name="language" class="custom-select" required>
+            <option value="JAVA">Java</option>
+            <option value="PYTHON">Python</option>
+          </select>
+          <div class="invalid-feedback">Example invalid custom select feedback</div>
         </div>
-        <div class="form-group">
-          <label for="password" >Password</label>
-          <input type="password" class="form-control" id="password" name="password" required>
-          <small class="form-text text-muted">5-25 characters, must contain at least one alphabet and number.</small>
-        </div>
-        <div class="form-group error" id="error-msg">
-          <p>Please try a different username or password.</p>
-        </div>
-        <button type="submit" class="btn btn-primary">Sign Up</button>
-        <a href="/" class="ml-3 text-decoration-none">Login</button>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
       </form>
 
+
     </div>
-
-
     <script src="./lib/jquery-3.4.1.slim.min.js"></script>
-    <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
     <script src="./lib/bootstrap-4.4.1-dist/js/bootstrap.min.js"></script>
     <script src="./scripts.js"></script>
   </body>
