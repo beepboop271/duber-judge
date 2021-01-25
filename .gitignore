@@ -6,4 +6,4 @@
 .project
 .classpath
 queries.sql
-/src/static/lib
+/src/static
