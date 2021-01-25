@@ -75,11 +75,19 @@ html(lang="en") {
         div.card.text-center.problem-listing {
           div.card-header {
             ul.nav.nav-tabs.card-header-tabs {
-              for (item : navItems) {
-                li.nav-item {
-                  a.nav-link.test-dark.active(href=${item.getLink}) {
-                    ${item.getName}
-                  }
+              li.nav-item {
+                a.nav-link.test-dark.active(href=${userSubmissionsLink}) {
+                  "Submissions"
+                }
+              }
+              li.nav-item {
+                a.nav-link.test-dark(href=${userProblemsLink}) {
+                  "Problems"
+                }
+              }
+              li.nav-item {
+                a.nav-link.test-dark.active(href=${userContestsLink}) {
+                  "Contests"
                 }
               }
             }

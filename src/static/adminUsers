@@ -2,24 +2,29 @@ html(lang="en") {
   head {
     meta(name="dubj" content="pls work");
     meta(charset="utf-8");
-    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no");
+
     title {
       "Duber Judge"
     }
-    link(rel="stylesheet" href="../../lib/static/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+
+    script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
+
+    link(rel="stylesheet" href="./lib/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+
     link(rel="stylesheet" href="./styles.css");
+
   }
-  
   body {
-    nav.navbar navbar-expand-lg.navbar-light.bg-light.sticky-top) {
-      a.navbar-brand.(href="#") {
-        DubJ
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
+      a.navbar-brand(href="#") {
+        "DubJ"
       }
       button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
-        span.navbar-toggler-icon {}
+        span.navbar-toggler-icon{}
       }
-      div.collapse navbar-collapse#navbarNav {
-        ul.navbar-nav ml-auto {
+      div.collapse.navbar-collapse#navbarNav {
+        ul.navbar-nav.ml-auto {
           li.nav-item {
             a.nav-link(href="#") {
               "Home"
@@ -47,21 +52,20 @@ html(lang="en") {
       }
     }
     div.page-container {
-      div.user.sidebar { 
+      div.user.sidebar {
         div.card.mb-3(style="max-width: 540px;") {
           img.card-img-top(src="https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png" alt="pfp");
-          div.card-body {
-            h5.card-title {
-              ${user.getUsername}
+          div.card-body.d-flex.justify-content-between {
+            div.admin-profile-text {
+              h5.card-title {
+                ${user.getUsername}
+              }
+              p.card-text {
+                "Admin"
+              }
             }
-            p.card-text {
-              "Number of Submissions:" ${user.getSubmissions}
-            }
-            p.card-text {
-              "Number of Problems:" ${user.getProblemsSolved}
-            }
-            p.card-text {
-              "Points:" ${user.getPoints}
+            a.settings-logo-wrapper text-dark(href="/") {
+              i.fas fa-cog{}
             }
           }
         }
@@ -72,42 +76,27 @@ html(lang="en") {
           div.card-header {
             ul.nav.nav-tabs.card-header-tabs {
               li.nav-item {
-                a.nav-link.test-dark.active(href=${userSubmissionsLink}) {
-                  "Submissions"
-                }
+                a.nav-link.text-dark.active(href=${adminUsersLink}){}
               }
               li.nav-item {
-                a.nav-link.test-dark(href=${userProblemsLink}) {
-                  "Problems"
-                }
-              }
-              li.nav-item {
-                a.nav-link.test-dark.active(href=${userContestsLink}) {
-                  "Contests"
-                }
+                a.nav-link.text-dark(href=${adminProblemsLink}){}
               }
             }
           }
           div.card-body {
             div.list-group.user.problem-list {
-              for (problem : problems) {
-                a.list-group-item.list-group-item-action(href=${problem.getLink}) {
+              for (user : users) {
+                a.list-group-item.list-group-item-action(href=${user.getLink}){
                   div.d-flex.w-100.justify-content-between {
                     h5.mb-1 {
-                      ${problem.getTitle}
-                    }
-                    p {
-                      ${userProblemPoints} "/" ${problem.getPoints}
+                      ${user.getUsername}
                     }
                   }
                   small.text-muted.mr-4 {
-                    "Attempted by: " ${problem.getNumSubmissions}
+                    "Points: " ${user.getPoints}
                   }
                   small.text-muted.mr-4 {
-                    "Category: " ${problem.getCategory}
-                  }
-                  small.text-muted.mr-4 {
-                    "Clear rate: " ${problem.getClearRate}
+                    "Num Problems: " ${user.getProblemsSolved}
                   }
                 }
               }
