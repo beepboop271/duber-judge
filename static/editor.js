@@ -4,10 +4,10 @@ var MathJax = {
   asciimath: { delimiters: [["@@", "@@"]] },
 };
 
-let input = document.getElementById("input");
+let input = document.getElementById("input-description");
 let stoppedTypingTimer;
 
-let output = document.getElementById("output");
+let output = document.getElementById("output-description");
 output.innerHTML = marked(input.value);
 
 function render() {

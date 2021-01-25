@@ -9,7 +9,13 @@
 
     <title>Duber Judge</title>
 
-    <link rel="stylesheet" href="./lib/bootstrap-4.4.1-dist/css/bootstrap.min.css">
+    <!-- block so that page is always seen with markdown -->
+    <script src="./vendored/marked-1.2.7.min.js"></script>
+    <script src="./vendored/purify-2.2.6.min.js"></script>
+    <!-- defer to allow config loading + generation in predictable order -->
+    <script defer src="./vendored/mathjax-tex-chtml-3.1.2.js"></script>
+
+    <link rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css">
 
     <link rel="stylesheet" href="./styles.css"/>
 
@@ -49,9 +55,87 @@
           <div class="invalid-feedback">Please enter a title.</div>
         </div>
 
-        <div class="mb-3">
-          <label for="description">Problem description:</label>
-          <textarea name="description" class="form-control" id="description" placeholder="Description" required></textarea>
+        
+        <label for="description">Problem description:</label>
+        <div class="mb-3 add-problem description">
+
+          <textarea id="input-description" class="form-control" rows="5" cols="33">
+# CCC '19 S2 - Pretty Average Primes
+
+---
+
+*This is a demo of Markdown, Asciimath, and Latex.*
+
+**Canadian Computing Competition: 2019 Stage 1, Senior #2**
+
+*[Asciimath](http://asciimath.org/): Use* `@@` *as delimiters.*
+
+*Latex: Use* `\\(` *and* `\\)` *for inline math* \\(x+y\\)*, and* `\\[` *with* `\\]` *for display math* \\[x+y\\]
+*Two backslashes are required since the Markdown renderer uses* `\` *as an escape character thus* `\\` *produces* \\.
+
+***Avoid mixing Asciimath and Latex within the same paragraph, this works very unreliably.***
+
+For various given positive integers @@N>3@@, find two primes, @@A@@ and @@B@@ such that @@N@@ is the average (mean) of @@A@@ and @@B@@. That is, @@N@@ should be equal to @@(A+B)/2@@.
+
+Recall that a prime number is an integer \\(P>1\\) which is only divisible by \\(1\\) and \\(P\\). For example, \\(2, 3, 5, 7, 11\\) are the first few primes, and \\(4, 6, 8, 9\\) are not prime numbers.
+
+## Input Specification
+
+The first line of input is the number @@T@@ (@@1<=T<=1000@@), which is the number of test cases. Each of the next @@T@@ lines contain one integer @@N_i@@ (@@4<=N_i<=1000000@@, @@1<=i<=T@@).
+
+For 6 of the available 15 marks, all \\(N_i< 1000\\).
+
+## Output Specification
+
+The output will consist of @@T@@ lines. The @@i^(th)@@ line of output will contain two integers, @@A_i@@ and @@B_i@@, separated by one space. It should be the case that @@N_i=(A_i+B_i)/2@@ and that @@A_i@@ and @@B_i@@ are prime numbers.
+
+If there are more than one possible @@A_i@@ and @@B_i@@ for a particular @@N_i@@, output any such pair. The order of the pair @@A_i@@ and @@B_i@@ does not matter.
+
+It will be the case that there will always be at least one set of values \\(A_i\\) and \\(B_i\\) for any given \\(N_i\\).
+
+*Note: dubj does not support a grader that is order agnostic.*
+
+## Sample Input 1
+
+```
+4
+8
+4
+7
+21
+```
+
+## Sample Output 1
+
+```
+3 13
+5 3
+7 7
+13 29
+```
+
+## Explanation of Possible Output for Sample Input
+
+Notice that:
+
+\\begin{align}
+  8 &= \\frac{3+13}{2} \\\\
+  4 &= \\frac{5+3}{2} \\\\
+  7 &= \\frac{7+7}{2} \\\\
+  21 &= \\frac{13+29}{2}
+\\end{align}
+
+It is interesting to note, that we can also write
+
+\\begin{align}
+  8 &= \\frac{5+11}{2} \\\\
+  21 &= \\frac{5+37}{2} = \\frac{11+31}{2} = \\frac{19+23}{2} \\\\
+  7 &= \\frac{3+11}{2}
+\\end{align}
+
+and so any of these pairs could have also been used in output. There is no pairs of primes other than @@3@@ and @@5@@ which average to the value of @@4@@.
+          </textarea>
+          <div id="output-description"></div>
           <div class="invalid-feedback">Please enter a description.</div>
         </div>
 
@@ -96,10 +180,12 @@
 
 
     </div>
-    <script src="./lib/jquery-3.4.1.slim.min.js"></script>
+
+    <script src="./vendored/jquery-3.4.1.slim.min.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
-    <script src="./lib/bootstrap-4.4.1-dist/js/bootstrap.min.css"></script>
+    <script src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js"></script>
     <script src="./scripts.js"></script>
+    <script src="./editor.js"></script>
   </body>
 </html>

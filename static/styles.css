@@ -92,3 +92,15 @@ body {
 .submit-solution #solution {
   height: 60vh;
 }
+
+.add-problem.description {
+  display: flex;
+  flex-direction: row;
+  overflow: wrap;
+}
+
+#input-description {
+  min-height: 20em;
+  max-width: 47%;
+  margin-right: 5%;
+}
