@@ -292,4 +292,8 @@ public class UserService {
   public int getPoints(long userId) {
     return this.userDao.getPoints(userId);
   }
+
+  public Entity<User> getUser(long userId) throws RecordNotFoundException {
+    return this.userDao.get(userId);
+  }
 }

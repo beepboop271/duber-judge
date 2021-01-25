@@ -45,7 +45,7 @@ html(lang="en") {
           }
           li.nav-item.active {
             a.nva-link(href=${profileLink}) {
-              ${user.getUsername}
+              ${username}
             }
           }
         }
@@ -58,7 +58,7 @@ html(lang="en") {
           div.card-body.d-flex.justify-content-between {
             div.admin-profile-text {
               h5.card-title {
-                ${user.getUsername}
+                ${username}
               }
               p.card-text {
                 "Admin"
@@ -101,7 +101,7 @@ html(lang="en") {
                       ${problem.getTitle}
                     }
                     p {
-                      ${userProblemPoints} "/" ${problem.getPoints}
+                      ${problem.getUserScore} "/" ${problem.getPoints}
                     }
                   }
                   small.text-muted.mr-4 {

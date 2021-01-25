@@ -40,7 +40,7 @@ html(lang="en") {
           }
           li.nav-item.active {
             a.nva-link(href=${profileLink}) {
-              ${user.getUsername}
+              ${username}
             }
           }
         }
@@ -52,16 +52,16 @@ html(lang="en") {
           img.card-img-top(src="https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png" alt="pfp");
           div.card-body {
             h5.card-title {
-              ${user.getUsername}
+              ${username}
             }
             p.card-text {
-              "Number of Submissions:" ${user.getSubmissions}
+              "Number of Submissions:" ${submissionsCount}
             }
             p.card-text {
-              "Number of Problems:" ${user.getProblemsSolved}
+              "Number of Problems:" ${problemsSolved}
             }
             p.card-text {
-              "Points:" ${user.getPoints}
+              "Points:" ${currentPoints}
             }
           }
         }
@@ -97,7 +97,7 @@ html(lang="en") {
                       ${problem.getTitle}
                     }
                     p {
-                      ${userProblemPoints} "/" ${problem.getPoints}
+                      ${problem.getUserScore} "/" ${problem.getPoints}
                     }
                   }
                   small.text-muted.mr-4 {
