@@ -10,7 +10,7 @@ html(lang="en") {
 
     script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
 
-    link(rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
     link(rel="stylesheet" href="./styles.css");
 
@@ -64,17 +64,17 @@ html(lang="en") {
                   ${problem.getTitle}
                 }
                 h6 {
-                  ${problem.getPoints} " points"
+                  ${problem.getPoints}" points"
                 }
               }
               small.text-muted.mr-4 {
-                "Attempted by: " ${problem.getNumSubmissions}
+                "Attempted by: "${problem.getNumSubmissions}
               }
               small.text-muted.mr-4 {
-                "Category: " ${problem.getCategory}
+                "Category: "${problem.getCategory}
               }
               small.text-muted.mr-4 {
-                "Clear rate: " ${problem.getClearRate} "%"
+                "Clear rate: "${problem.getClearRate}"%"
               }
             }
           }
@@ -114,8 +114,8 @@ html(lang="en") {
         }
       }
     }
-    script(src="./vendored/jquery-3.4.1.slim.min.js") {}
-    script(src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
     script(src="./scripts.js") {}
   }
 }
