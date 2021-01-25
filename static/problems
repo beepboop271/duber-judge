@@ -52,53 +52,62 @@ html(lang="en") {
       }
     }
     div.page-container {
-      div.user.sidebar {
-        div.card.mb-3(style="max-width: 540px;") {
-          img.card-img-top(src="https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png" alt="pfp");
-          div.card-body.d-flex.justify-content-between {
-            div.admin-profile-text {
-              h5.card-title {
-                ${user.getUsername}
+      h4.text-dark.mb-4 {
+        "Practice problems"
+      }
+      div.card.text-center.problem-listing {
+        div.list-group.problem-list {
+          for (problem : problems) {
+            a.list-group-item.list-group-item-action(href=${problem.getLink}) {
+              div.d-flex.w-100.justify-content-between {
+                h5.mb-1 {
+                  ${problem.getTitle}
+                }
+                h6 {
+                  ${problem.getPoints} " points"
+                }
               }
-              p.card-text {
-                "Admin"
+              small.text-muted.mr-4 {
+                "Attempted by: " ${problem.getNumSubmissions}
               }
-            }
-            a.settings-logo-wrapper text-dark(href="/") {
-              i.fas fa-cog{}
+              small.text-muted.mr-4 {
+                "Category: " ${problem.getCategory}
+              }
+              small.text-muted.mr-4 {
+                "Clear rate: " ${problem.getClearRate}
+              }
             }
           }
         }
       }
-
-      div.user.content-container {
-        div.card.text-center.problem-listing {
-          div.card-header {
-            ul.nav.nav-tabs.card-header-tabs {
-              li.nav-item {
-                a.nav-link.text-dark.active(href=${adminUsersLink}){}
-              }
-              li.nav-item {
-                a.nav-link.text-dark(href=${adminProblemsLink}){}
+      nav.pagination-wrapper(aria-label="pagination") {
+        ul.pagination.justify-content-center {
+          li.page-item {
+            a.page-link.text-dark(href=${previousPageLink} aria-label="Previous") {
+              span(aria-hidden="true") {
+                "&laquo"
               }
             }
           }
-          div.card-body {
-            div.list-group.user.problem-list {
-              for (user : users) {
-                a.list-group-item.list-group-item-action(href=${user.getLink}){
-                  div.d-flex.w-100.justify-content-between {
-                    h5.mb-1 {
-                      ${user.getUsername}
-                    }
-                  }
-                  small.text-muted.mr-4 {
-                    "Points: " ${user.getPoints}
-                  }
-                  small.text-muted.mr-4 {
-                    "Num Problems: " ${user.getProblemsSolved}
-                  }
-                }
+          li.page-item.active {
+            a.page-link.text-dark(href={$page1Link}) {
+              "1"
+            }
+          }
+          li.page-item {
+            a.page-link.text-dark(href={$page2Link}) {
+              "2"
+            }
+          }
+          li.page-item {
+            a.page-link.text-dark(href={$page3Link}) {
+              "3"
+            }
+          }
+          li.page-item {
+            a.page-link.text-dark(href=${nextPageLink} aria-label="Next") {
+              span(aria-hidden="true") {
+                "&raquo"
               }
             }
           }
