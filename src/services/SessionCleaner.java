@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 
 /**
  * Clears out expired sessions.
+ * Check out {@link #SESSION_DURATION} to see the lifespan
+ * of a session in milliseconds.
  * <p>
  * Created on 2021.01.16.
  *

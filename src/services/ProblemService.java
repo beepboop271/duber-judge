@@ -22,7 +22,8 @@ import entities.entity_fields.ProblemField;
 import judge.Judger;
 
 /**
- * [description]
+ * Handles services relating to problems,
+ * such as submitting a solution to a problem or request clarification.
  * <p>
  * Created on 2021.01.16.
  *
@@ -69,15 +70,15 @@ public class ProblemService {
   }
 
   /**
-   * @param userId
-   * @param problemId
-   * @param code
-   * @param language
-   * @return
-   * @throws InsufficientPermissionException The user is
-   *                                         unable to submit.
-   * @throws RecordNotFoundException         The problem is
-   *                                         not found.
+   * Submits a solution to a problem that will be judged.
+   *
+   * @param userId              The user ID.
+   * @param problemId           The problem ID.
+   * @param code                The code the user is submitting.
+   * @param language            The language they are using.
+   * @return                    The result of the submission.
+   * @throws InsufficientPermissionException    The user is unable to submit.
+   * @throws RecordNotFoundException            The problem is not found.
    */
   public Entity<SubmissionResult> submitSolution(
     long userId,
@@ -117,7 +118,7 @@ public class ProblemService {
       pContent.getNumSubmissions()+1
     );
 
-    if (result.getStatus() == ExecutionStatus.ALL_CLEAR) {
+    if (result.getContent().getStatus() == ExecutionStatus.ALL_CLEAR) {
       this.problemDao.update(
         problem.getId(),
         ProblemField.CLEARED_SUBMISSIONS,

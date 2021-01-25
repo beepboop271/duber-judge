@@ -13,7 +13,7 @@ import entities.Entity;
 import entities.entity_fields.BatchField;
 
 /**
- * [description]
+ * {@code DAO} for {@link Batch}.
  * <p>
  * Created on 2021.01.10.
  *

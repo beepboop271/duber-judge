@@ -40,7 +40,8 @@ import entities.entity_fields.ProblemField;
 import entities.entity_fields.TestcaseField;
 
 /**
- * [description]
+ * {@code AdminService} deals with all admin related actions,
+ * such as deleting user, creating contests, problems, etc.
  * <p>
  * Created on 2021.01.16.
  *

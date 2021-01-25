@@ -8,7 +8,7 @@ import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
 
 /**
- * [description]
+ * A DAO helper that
  * <p>
  * Created on 2021.01.14.
  *
@@ -19,6 +19,13 @@ import dal.connection.GlobalConnectionPool;
 
 public class DaoHelper {
 
+  /**
+   * Gets a string representing {@code PreparedStatement} parameters({@code ?}) given
+   * the number of parameters needed.
+   *
+   * @param count   The number of times it should be repeated.
+   * @return        The constructed string.
+   */
   public static String getParamString(int count) {
     if (count < 0) {
       return "";
@@ -36,6 +43,12 @@ public class DaoHelper {
     return sb.toString();
   }
 
+  /**
+   * Deletes a record from a table given the ID.
+   *
+   * @param tableName   The table to delete the record from.
+   * @param id          The record's ID.
+   */
   public static void deleteById(String tableName, long id) {
     String sql = "DELETE FROM " + tableName + " WHERE id = ?;";
 

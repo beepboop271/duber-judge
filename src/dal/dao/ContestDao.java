@@ -19,7 +19,7 @@ import entities.entity_fields.ContestField;
 import services.InvalidArguments;
 
 /**
- * [description]
+ * {@code DAO} for {@link Contest}.
  * <p>
  * Created on 2021.01.10.
  *

@@ -14,7 +14,7 @@ import entities.Language;
 import entities.entity_fields.IllegalCodeField;
 
 /**
- * [description]
+ * {@code DAO} for {@link IllegalCode}.
  * <p>
  * Created on 2021.01.22.
  *

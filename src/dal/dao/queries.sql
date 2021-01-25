@@ -33,3 +33,12 @@ WHERE (datetime('now') - created_at < duration)
     FROM contest_sessions INNER JOIN contests
     ON contest_session.id = contests.id
   );
+
+
+UPDATE submissions
+SET
+  status = ?,
+  score = ?,
+  run_duration_millis = ?,
+  memory_usage_b = ?
+WHERE id = ?;

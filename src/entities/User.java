@@ -18,6 +18,8 @@ public class User {
   private UserType userType;
   /** The salt used for hashing. */
   private String salt;
+  /** The points of the user */
+  private int points;
 
   /**
    * Constructs a new User.
@@ -32,6 +34,23 @@ public class User {
     this.password = password;
     this.userType = userType;
     this.salt = salt;
+  }
+
+  /**
+   * Constructs a new User.
+   *
+   * @param username the user's username.
+   * @param password the user's password.
+   * @param userType the type of user this user is.
+   * @param salt the salt used for hashing.
+   * @param points the points.
+   */
+  public User(String username, String password, UserType userType, String salt, int points) {
+    this.username = username;
+    this.password = password;
+    this.userType = userType;
+    this.salt = salt;
+    this.points = points;
   }
 
   /**
@@ -68,6 +87,15 @@ public class User {
    */
   public String getSalt() {
     return this.salt;
+  }
+
+  /**
+   * Retrieves the number of points this user has.
+   *
+   * @return The points.
+   */
+  public int getPoints() {
+    return this.points;
   }
 
 }

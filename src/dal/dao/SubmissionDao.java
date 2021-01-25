@@ -17,7 +17,7 @@ import entities.Submission;
 import entities.SubmissionResult;
 
 /**
- * [description]
+ * {@code DAO} for {@link Submission}.
  * <p>
  * Created on 2021.01.10.
  *
