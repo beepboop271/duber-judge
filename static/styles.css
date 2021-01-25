@@ -104,3 +104,21 @@ body {
   max-width: 47%;
   margin-right: 5%;
 }
+
+.create-testcase #details div {
+  flex: 1;
+}
+
+.create-testcase textarea {
+  min-height: 30em;
+  max-height: 30em;
+}
+
+.create-testcase #details {
+  display: flex;
+}
+
+
+#problem-viewing-latex-input {
+  display: none;
+}

@@ -9,11 +9,11 @@
 
     <title>Duber Judge</title>
 
-      <!-- block so that page is always seen with markdown -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- block so that page is always seen with markdown -->
+    <script src="./vendored/marked-1.2.7.min.js"></script>
+    <script src="./vendored/purify-2.2.6.min.js"></script>
     <!-- defer to allow config loading + generation in predictable order -->
-    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous"></script>
+    <script defer src="./vendored/mathjax-tex-chtml-3.1.2.js"></script>
 
     <link rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css">
 
@@ -46,10 +46,15 @@
     </nav>
     <div class="problem-container">
 
-      <h2 class="problem-title">Coolest problem title</h3>
+      <h1 class="problem-title mt-3">Coolest problem title</h3>
       <div class="d-flex justify-content-between">
 
-        <div id="latex"></div>
+        <textarea id="problem-viewing-latex-input">
+*this is markdown*
+#### actual problem description goes here
+##### pass in string literal as param
+        </textarea>
+        <div id="problem-viewing-latex"></div>
         <div class="list-group" id="submission-panel">
           <a href="./submit-solution.html" class="list-group-item list-group-item-action">Submit</a>
           <a href="#" class="list-group-item list-group-item-action">View submissions</a>
@@ -60,35 +65,10 @@
     </div>
 
 
-    <script>
-      // runs before deferred script loads
-      MathJax = {
-        startup: { typeset: false },
-        loader: { load: ["input/asciimath"] },
-        asciimath: { delimiters: [["@@", "@@"]] },
-      };
-
-      text = ""
-        + "@@sum_(i=1)^n i^3=((n(n+1))/2)^2@@\n\n"
-        + "When \\\\(a \\ne 0\\\\), there are two solutions to "
-        + "\\\\(ax^2 + bx + c = 0\\\\) and they are "
-        + "\\\\[x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.\\\\] "
-        + "Rendered by **marked**. `print(\"hi\")`"
-        + "\\\\[\\begin{align}y&=mx+b \\\\\\ y-mx&=b\\end{align}\\\\]";
-
-      e = document.getElementById("latex");
-      e.innerHTML = marked(text);
-
-      // runs after mathjax loads
-      window.onload = function() {
-        MathJax.typeset([e]);
-      }
-    </script>
 
     <script src="./vendored/jquery-3.4.1.slim.min.js"></script>
-    <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
     <script src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js"></script>
+    <script src="./problem-viewing-script.js"></script>
     <script src="./scripts.js"></script>
   </body>
 </html>
