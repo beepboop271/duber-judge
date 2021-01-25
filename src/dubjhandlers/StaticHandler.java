@@ -47,6 +47,9 @@ public class StaticHandler implements RouteTarget {
       case ".js":
         mimeType = "application/javascript";
         break;
+      case ".woff":
+        mimeType = "font/woff";
+        break;
       default:
         // Disallow any other kind of retrieval requests
         return Response.forbidden();
@@ -60,7 +63,7 @@ public class StaticHandler implements RouteTarget {
       } else {
         fileBytes = WebServer.loadFile("./static/"+req.getPath());
       }
-      
+
       return Response.ok(fileBytes, mimeType, hasBody);
     } catch (FileNotFoundException e) {
       // The server could not locate the file, return not found.
