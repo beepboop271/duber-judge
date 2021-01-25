@@ -147,6 +147,25 @@ public class Response extends HttpMessage {
   }
 
   /**
+   * Generates a {@code 308 Temporary Redirect} HTTP response
+   * with the appropriate {@code Location} header, redirecting
+   * to the provided URI temporarily.
+   *
+   * @param newUri The new URI to redirect the client to.
+   * @return a 308 HTTP response object.
+   */
+  public static Response temporaryRedirect(String newUri) {
+    if (newUri == null || newUri.equals("")) {
+      throw new IllegalArgumentException("A uri must be provided.");
+    }
+
+    Response response = new Response(307);
+    response.headers.put("Location", newUri);
+
+    return response;
+  }
+
+  /**
    * Generates a {@code 303 See Other} HTTP response with the
    * appropriate {@code Location} header, redirecting to the
    * provided URI that has another page.
