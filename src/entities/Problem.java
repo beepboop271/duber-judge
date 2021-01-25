@@ -1,7 +1,7 @@
 package entities;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An entity designed to represent specific problems.
@@ -40,7 +40,7 @@ public abstract class Problem {
   /** This problem's number of cleared submissions. */
   private int clearedSubmissions;
 
-  private ArrayList<Entity<Batch>> batches;
+  private List<Entity<Batch>> batches;
 
   private PublishingState state;
 
@@ -126,7 +126,7 @@ public abstract class Problem {
     int outputLimitKb,
     int numSubmissions,
     int clearedSubmissions,
-    ArrayList<Entity<Batch>> batches,
+    List<Entity<Batch>> batches,
     PublishingState state
   ) {
     this.problemType = problemType;
@@ -263,11 +263,11 @@ public abstract class Problem {
     return this.outputLimitKb;
   }
 
-  public void setBatches(ArrayList<Entity<Batch>> batches) {
+  public void setBatches(List<Entity<Batch>> batches) {
     this.batches = batches;
   }
 
-  public ArrayList<Entity<Batch>> getBatches() {
+  public List<Entity<Batch>> getBatches() {
     return this.batches;
   }
 
