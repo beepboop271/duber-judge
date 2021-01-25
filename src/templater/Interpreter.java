@@ -6,13 +6,35 @@ import java.util.Map;
 
 import templater.compiler.LanguageElement;
 
+/**
+ * A class for a {@code Interpreter} that can read templates
+ * and translate them into their string HTML representation.
+ *
+ * @author Paula Yuan
+ * @version 1.0
+ */
 public class Interpreter {
+  /** The wrapped iterator to read from. */
   private HashMap<String, Object> namespace;
 
+  /**
+   * Creates a new {@code Interpreter}, given the required
+   * namespace.
+   *
+   * @param namespace The {@code HashMap} dictating variable-value
+   *                  associations for this page.
+   */
   public Interpreter(HashMap<String, Object> namespace) {
     this.namespace = namespace;
   }
 
+  /**
+   * Translates a {@code StringResolvables} into the string
+   * containing its contents.
+   *
+   * @param s The {@code StringResolvables} to translate.
+   * @return String, the translated string
+   */
   public String resolveStrings(StringResolvables s) {
     StringBuilder sb = new StringBuilder();
     Iterator<StringResolvable> itr = s.iterator();
@@ -27,14 +49,33 @@ public class Interpreter {
     return sb.toString();
   }
 
+  /**
+   * Creates the HTML string associated with the given {@code Template}
+   * through a helper method. The wrapping exists to eliminate unnecessary
+   * concerns for the user.
+   *
+   * @param syntaxTree The {@code Template} to translate.
+   * @return String, the HTML string derived from this template.
+   */
   public String interpret(Template syntaxTree) {
-    return interpretHelper(syntaxTree.getSyntaxTree(), new StringBuilder()).toString();
+    return interpretHelper(syntaxTree.getSyntaxTree(), new StringBuilder())
+      .toString();
   }
 
-  public StringBuilder interpretHelper(LanguageElement curElem, StringBuilder interpreted) {
+  /**
+   * Appends to the given HTML string associated with the {@code Template} 
+   * by recursively walking through the syntax tree and translating each
+   * {@code LanguageElement}.
+   *
+   * @param curElem The {@code LanguageElement} the walk is currently on.
+   * @param interpreted The {@code StringBuilder} being added to.
+   */
+  public StringBuilder interpretHelper(
+    LanguageElement curElem,
+    StringBuilder interpreted
+  ) {
     if (curElem instanceof Root) {
       Iterator<LanguageElement> children = ((Root)curElem).getChildren();
-      // I mean it technically should only have one child so ashfdasf idk TODO
       while (children.hasNext()) {
         interpreted = interpretHelper(children.next(), interpreted);
       }
@@ -43,10 +84,10 @@ public class Interpreter {
 
     if (curElem instanceof StringResolvables) {
       return (interpreted.append(resolveStrings((StringResolvables)curElem)));
-    } 
+    }
 
     if (curElem instanceof Loop) {
-      Loop loop = (Loop) curElem;
+      Loop loop = (Loop)curElem;
       Object loopTarget = this.namespace.get(resolveStrings(loop.getTarget()));
       if (loopTarget instanceof Iterable<?>) {
         for (Object item : (Iterable<Object>)loopTarget) {
@@ -62,17 +103,20 @@ public class Interpreter {
     }
 
     // only option left is element
-    Element elem = (Element) curElem;
-    interpreted.append("<" + resolveStrings(elem.getName()));
+    Element elem = (Element)curElem;
+    interpreted.append("<");
+    interpreted.append(resolveStrings(elem.getName()));
     if (elem.getId() != null) {
-      interpreted.append(" id=" + resolveStrings(elem.getId()));
+      interpreted.append(" id=");
+      interpreted.append(resolveStrings(elem.getId()));
     }
 
     Iterator<StringResolvables> classes = elem.getClasses();
     if (classes.hasNext()) {
       interpreted.append(" class='");
       while (classes.hasNext()) {
-        interpreted.append(resolveStrings(classes.next())+" ");
+        interpreted.append(resolveStrings(classes.next()));
+        interpreted.append(" ");
       }
       // get rid of trailing whitespace
       interpreted.deleteCharAt(interpreted.length() - 1);
@@ -83,9 +127,11 @@ public class Interpreter {
       elem.getAttributes();
     while (attributes.hasNext()) {
       Map.Entry<String, StringResolvables> attribute = attributes.next();
-      interpreted.append(
-        " "+attribute.getKey()+"='"+resolveStrings(attribute.getValue())+"'"
-      );
+      interpreted.append(" ");
+      interpreted.append(attribute.getKey());
+      interpreted.append("='");
+      interpreted.append(resolveStrings(attribute.getValue()));
+      interpreted.append("'");
     }
 
     interpreted.append(">");
@@ -98,7 +144,9 @@ public class Interpreter {
     while (children.hasNext()) {
       interpreted = interpretHelper(children.next(), interpreted);
     }
-    interpreted.append("</"+resolveStrings(elem.getName())+">");
+    interpreted.append("</");
+    interpreted.append(resolveStrings(elem.getName()));
+    interpreted.append(">");
     return interpreted;
   }
 }
