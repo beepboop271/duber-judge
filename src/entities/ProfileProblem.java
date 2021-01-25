@@ -1,5 +1,16 @@
 package entities;
 
+/**
+ * A problem entity used inside the templater, which stores
+ * relevant information about a problem and a user's results
+ * on the problem.
+ * <p>
+ * Created <b>2021-01-25</b>.
+ *
+ * @since 0.0.7
+ * @version 0.0.7
+ * @author Joseph Wang
+ */
 public class ProfileProblem {
   /** The link to this problem. */
   private String link;
@@ -16,6 +27,23 @@ public class ProfileProblem {
   /** This problem's number of cleared submissions. */
   private int clearedSubmissions;
 
+  // TODO: potentially reformat to simply accepting a problem
+  // and associated fields
+  /**
+   * Constructs a new ProfileProblem.
+   *
+   * @param link               The link to this problem.
+   * @param category           This problem's category.
+   * @param title              This problem's title.
+   * @param points             The amount of points this
+   *                           problem is worth.
+   * @param userScore          The amount of points the user
+   *                           scored on this problem.
+   * @param numSubmissions     This problem's number of total
+   *                           submissions.
+   * @param clearedSubmissions This problem's number of
+   *                           cleared submissions.
+   */
   public ProfileProblem(
     String link,
     Category category,
@@ -88,12 +116,20 @@ public class ProfileProblem {
     return this.clearedSubmissions;
   }
 
+  /**
+   * Retrieves this problem's user's score.
+   *
+   * @return this problem's user's score.
+   */
   public int getUserScore() {
     return this.userScore;
   }
 
   /**
    * Retrieves this problem's clear rate.
+   * <p>
+   * If no submissions have been made, the clear rate is
+   * considered 0%.
    *
    * @return this problem's clear rate.
    */
@@ -102,6 +138,6 @@ public class ProfileProblem {
       return 0;
     }
 
-    return (this.clearedSubmissions / this.numSubmissions) * 100;
+    return (this.clearedSubmissions/this.numSubmissions)*100;
   }
 }

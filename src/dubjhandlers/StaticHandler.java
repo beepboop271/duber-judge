@@ -8,6 +8,16 @@ import webserver.Response;
 import webserver.RouteTarget;
 import webserver.WebServer;
 
+/**
+ * The class that handles requests to static files and
+ * contest, like js or css files.
+ * <p>
+ * Created <b> 2020-01-25 </b>.
+ *
+ * @since 0.0.7
+ * @version 0.0.7
+ * @author Joseph Wang
+ */
 public class StaticHandler implements RouteTarget {
   /**
    * {@inheritDoc}
