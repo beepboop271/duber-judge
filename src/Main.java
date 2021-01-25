@@ -82,8 +82,10 @@ public class Main {
     server.route("/admin/contest/:contestId/problem/:problemId", admin);
 
     server.route("/static", staticHandler);
-    server.route("/static/(css)/:file", staticHandler);
-    server.route("/static/(js)/:file", staticHandler);
+    server.route("/static/*", staticHandler);
+    server.route("/vendored/*", staticHandler);
+    server.route("/styles.css", staticHandler);
+    server.route("/scripts.js", staticHandler);
 
     server.run();
   }
