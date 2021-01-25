@@ -40,37 +40,23 @@
     </nav>
     <div class="create-problem-container">
 
-      <h3>Practice problem</h3>
+      <h3>Batch #1 Testcase #3</h3>
 
-      <form class="create-practice-problem needs-validation" novalidate action="/" method="post">
-        <div class="mb-3">
-          <label for="title">Enter a title:</label>
-          <input name="title" class="form-control" id="title" placeholder="Title" required></input>
-          <div class="invalid-feedback">Please enter a title.</div>
+      <form class="create-testcase needs-validation" novalidate action="/" method="post">
+
+        <div id="details">
+          <div class="mb-3">
+            <label for="testcase-input">Input:</label>
+            <textarea name="input" class="form-control" id="testcase-input" placeholder="// Sample Input" required></textarea>
+            <div class="invalid-feedback">Please enter the testcase input.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="testcase-output">Output:</label>
+            <textarea name="output" class="form-control" id="testcase-output" placeholder="// Sample output" required></textarea>
+            <div class="invalid-feedback">Please enter the testcase output.</div>
+          </div>
         </div>
-
-        <div class="mb-3">
-          <label for="description">Problem description:</label>
-          <textarea name="description" class="form-control" id="description" placeholder="Description" required></textarea>
-          <div class="invalid-feedback">Please enter a description.</div>
-        </div>
-
-
-        <div class="mb-3">
-          <label for="points">Points:</label>
-          <input name="points" type="number" class="form-control range" min="0" id="points" step="1" max="30" data-bind="value:points" required/>
-        </div>
-
-        <div class="mb-3">
-          <label for="memory">Memory limit:</label>
-          <input name="memoryLimit" type="number" class="form-control range" id="memory" min="0" max="300000" data-bind="value:points" required/>
-        </div>
-
-        <div class="mb-3">
-          <label for="output">Output limit:</label>
-          <input name="outputLimit" type="number" class="form-control range" id="output" min="0" max="9999999" data-bind="value:points" required/>
-        </div>
-
 
         <button type="submit" class="btn btn-primary">Publish</button>
 
