@@ -70,7 +70,7 @@ public class PracticeSubmissionHandler implements RouteTarget {
     }
 
     try {
-      return this.ss.getSession(req.getCookie("token"));
+      return this.ss.getSession(req.getCookie("token") + "=");
     } catch (RecordNotFoundException e) {
       return null;
     }

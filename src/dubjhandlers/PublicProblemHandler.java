@@ -6,10 +6,15 @@ import java.util.HashMap;
 import dal.dao.RecordNotFoundException;
 import entities.Entity;
 import entities.Problem;
+import entities.ProfileProblem;
 import entities.Session;
+import entities.SubmissionResult;
+import entities.User;
 import services.ProblemService;
 import services.PublicService;
 import services.SessionService;
+import services.UserService;
+import templater.Templater;
 import webserver.Request;
 import webserver.Response;
 import webserver.RouteTarget;
@@ -25,11 +30,13 @@ public class PublicProblemHandler implements RouteTarget {
   private PublicService ps;
   private ProblemService prs;
   private SessionService ss;
+  private UserService us;
 
   public PublicProblemHandler() {
     this.ps = new PublicService();
     this.prs = new ProblemService();
     this.ss = new SessionService();
+    this.us = new UserService();
   }
 
   public Response accept(Request req) {
@@ -69,22 +76,78 @@ public class PublicProblemHandler implements RouteTarget {
     return Response.internalError();
   }
 
+   // TODO: hasSession would be nice on db
+  private Session getActiveSession(Request req) {
+    if (!req.hasCookie("token")) {
+      return null;
+    }
+
+    try {
+      return this.ss.getSession(req.getCookie("token") + "=");
+    } catch (RecordNotFoundException e) {
+      return null;
+    }
+  }
+
   private Response getAllProblems(Request req, boolean hasBody) {
-    ArrayList<Entity<Problem>> problems = ps.getPracticeProblems(0, 500);
+    Session currentSession = this.getActiveSession(req);
+    String username = "Profile";
+    User user;
+
+    if (currentSession != null) {
+      try {
+        user = this.us.getUser(currentSession.getUserId()).getContent();
+        username = user.getUsername();
+      } catch (RecordNotFoundException e) {
+        System.out.println("user not found");
+      }
+    }
+
+    ArrayList<Entity<Problem>> practice = ps.getPracticeProblems(0, 500);
+    ArrayList<ProfileProblem> problems = new ArrayList<>();
+    for (Entity<Problem> entity : practice) {
+      Problem prob = entity.getContent();
+      problems.add(new ProfileProblem(
+        "/problem/"+entity.getId(),
+        prob.getCategory(),
+        prob.getTitle(),
+        prob.getPoints(),
+        -1,
+        prob.getNumSubmissions(),
+        prob.getClearedSubmissions()
+      ));
+    }
 
     HashMap<String, Object> templateParams = new HashMap<>();
-    return Response.internalError();
+    templateParams.put("leaderboardLink", "/leaderboard");
+    templateParams.put("problemsLink", "/problems");
+    templateParams.put("profileLink", "/profile");
+    templateParams.put("username", username);
+    templateParams.put("problems", problems);
+    templateParams.put("previousPageLink", "/problems");
+    templateParams.put("page1Link", "/problems");
+    templateParams.put("page2Link", "/problems");
+    templateParams.put("page3Link", "/problems");
+    templateParams.put("nextPageLink", "/problems");
+
+    return Response.okHtml(Templater.fillTemplate("problems", templateParams));
   }
 
   private Response getProblemLeaderboard(Request req, boolean hasBody) {
-    String probName = req.getParam("problemId");
+    int probId = Integer.parseInt(req.getParam("problemId"));
+    ArrayList<Entity<SubmissionResult>> leaderboard = ps.getProblemLeaderboard(probId, 0, 500);
 
     return Response.internalError();
   }
 
   private Response getProblem(Request req, boolean hasBody) {
-    String probName = req.getParam("problemId");
+    int probId = Integer.parseInt(req.getParam("problemId"));
+    try {
+      Problem prob = ps.getProblem(probId).getContent();
 
-    return Response.internalError();
+      return Response.internalError();
+    } catch (RecordNotFoundException e) {
+      return Response.notFoundHtml(req.getPath());
+    }
   }
 }

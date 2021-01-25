@@ -75,7 +75,7 @@ public class LoginHandler implements RouteTarget {
     }
 
     try {
-      return this.ss.getSession(req.getCookie("token"));
+      return this.ss.getSession(req.getCookie("token") + "=");
     } catch (RecordNotFoundException e) {
       return null;
     }
@@ -122,7 +122,7 @@ public class LoginHandler implements RouteTarget {
       long uid = us.login(username, password);
       String token = ss.createSession(uid);
 
-      Response r = Response.created("/profile/"+username);
+      Response r = Response.seeOther("/profile/"+username);
       r.addCookie("token", token, 300);
 
       return r;
@@ -156,8 +156,8 @@ public class LoginHandler implements RouteTarget {
       long uid = us.createUser(username, password);
       String token = ss.createSession(uid);
 
-      Response r = Response.created("/profile/"+username);
-      r.addCookie("token", token, 300);
+      Response r = Response.seeOther("/profile/"+username);
+      r.addCookie("token", token, 60*30);
 
       return r;
     } catch (IllegalArgumentException e) {

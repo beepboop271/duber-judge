@@ -196,7 +196,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           break;
 
         case PUBLISHING_STATE:
-          ps.setString(1, (String)value);
+          ps.setString(1, ((PublishingState)value).toString());
           break;
       }
 
@@ -218,7 +218,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
                 +"(problem_type, category, creator_id, created_at, last_modified_at,"
                 +" title, description, points, time_limit_millis, memory_limit_kb, output_limit_kb,"
                 +" num_submissions, cleared_submissions,"
-                +" contest_id, submissions_limit, editorial, pushlishing_state)"
+                +" contest_id, submissions_limit, editorial, publishing_state)"
                 +" VALUES (" + DaoHelper.getParamString(17) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
