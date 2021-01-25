@@ -66,7 +66,10 @@ public class WebServer {
    * @see Request#getParam(String)
    */
   private HashMap<Pattern, ArrayList<String>> routeParamKeys;
-  /** The web cache to store cached pages. This cache will only be used to store html files. */
+  /**
+   * The web cache to store cached pages. This cache will only
+   * be used to store html files.
+   */
   private WebLruCache cache;
 
   /**
@@ -183,11 +186,12 @@ public class WebServer {
    * will be their regex counterparts.
    * <p>
    * Wildcards and capture groups can be retreived using
-   * {@code req.getParam("0")}, where 0 is the index but as a string.
-   * Named parameters can be created like {@code :myParamName} and
-   * is retrievable through {@code req.getParam("myParamName")}.
-   * Additionally, if you combine a named parameter with a capture group,
-   * you can retrieve the value of the capture group given the
+   * {@code req.getParam("0")}, where 0 is the index but as a
+   * string. Named parameters can be created like
+   * {@code :myParamName} and is retrievable through
+   * {@code req.getParam("myParamName")}. Additionally, if you
+   * combine a named parameter with a capture group, you can
+   * retrieve the value of the capture group given the
    * parameter name.
    * <p>
    * All route will be matched as is, from start to end (akin
@@ -219,7 +223,7 @@ public class WebServer {
    *
    * // Optional
    * // /problems/id {0: id}
-   * // /problems/   {0: null}
+   * // /problems/ {0: null}
    * server.route("/problems/(id)?", new ProblemHander());
    *
    * // Named parameters
@@ -232,8 +236,8 @@ public class WebServer {
    * server.route("/problems/:problemId?", new ProblemHander());
    *
    * // Capture groups
-   * // /problems/math      {0: math}
-   * // /problems/english   does not match
+   * // /problems/math {0: math}
+   * // /problems/english does not match
    * server.route("/problems/(math)", new ProblemHander());
    *
    * // Named parameters combined with capture groups
@@ -263,7 +267,8 @@ public class WebServer {
     ArrayList<String> paramKeys = new ArrayList<>();
     // indicating the following characters are parameter names
     boolean isParamName = false;
-    // something like /:user(me|you) should match me|you and stored in user
+    // something like /:user(me|you) should match me|you and
+    // stored in user
     boolean paramCaptureGroup = false;
 
     for (int i = 0; i < route.length(); i++) {
@@ -389,10 +394,13 @@ public class WebServer {
    *
    * @param path The path to find the file.
    * @return a byte array with the file data.
-   * @throws IOException if an IO error occurs while reading the file.
-   * @throws FileNotFoundException If the file cannot be found.
+   * @throws IOException           if an IO error occurs while
+   *                               reading the file.
+   * @throws FileNotFoundException If the file cannot be
+   *                               found.
    */
-  public static byte[] loadFile(String path) throws IOException, FileNotFoundException {
+  public static byte[] loadFile(String path) throws IOException,
+    FileNotFoundException {
     File file = new File(path);
     if (file.exists()) {
       InputStream in = new FileInputStream(path);
@@ -544,7 +552,8 @@ public class WebServer {
 
           // Finally, output to user
           // Keep open if keep alive header exists
-          byte[] outputResponse = res.toString().getBytes(StandardCharsets.UTF_8);
+          byte[] outputResponse =
+            res.toString().getBytes(StandardCharsets.UTF_8);
           this.output.write(outputResponse, 0, outputResponse.length);
           this.output.flush();
 
@@ -720,7 +729,8 @@ public class WebServer {
           return;
         }
       }
-      //TODO check if the request is a HEAD, and if so, dont actually use the body
+      // TODO check if the request is a HEAD, and if so, dont
+      // actually use the body
       if (!cache.checkCache(fullPath)) {
         cache.putCache(response.getBody(), fullPath, 60);
       }
@@ -739,16 +749,15 @@ public class WebServer {
     private Response generateResponseFromRequest(Request request) {
       // Get handler and initialize parameters
       RouteTarget handler = WebServer.this.getRoute(request);
-      
-      // The cache should only store html files because those are the templated ones
-      // Therefore if there is a static param we ignore looking in the cache
-      if (request.getParam("static") == null) {
-        byte[] cachedBody = cache.getCachedObject(request.getFullPath());
-        if (cachedBody != null) {
-          // Retrieve the cached object
-          if (request.getMethod().equals("HEAD")) {
-            return Response.okByteHtml(cachedBody, false);
-          }
+
+      // The cache should only store html files because those are
+      // the templated ones
+      byte[] cachedBody = cache.getCachedObject(request.getFullPath());
+      if (cachedBody != null) {
+        // Retrieve the cached object
+        if (request.getMethod().equals("HEAD")) {
+          return Response.okByteHtml(cachedBody, false);
+        } else if (request.getMethod().equals("GET")) {
           return Response.okByteHtml(cachedBody);
         }
       }

@@ -123,7 +123,7 @@ public class LoginHandler implements RouteTarget {
       String token = ss.createSession(uid);
 
       Response r = Response.created("/profile/"+username);
-      r.addCookie("token", token, 30);
+      r.addCookie("token", token, 300);
 
       return r;
     } catch (IllegalArgumentException e) {
@@ -157,7 +157,7 @@ public class LoginHandler implements RouteTarget {
       String token = ss.createSession(uid);
 
       Response r = Response.created("/profile/"+username);
-      r.addCookie("token", token, 30);
+      r.addCookie("token", token, 300);
 
       return r;
     } catch (IllegalArgumentException e) {
