@@ -1,0 +1,121 @@
+html(lang="en") {
+  head {
+    meta(name="dubj" content="pls work");
+    meta(charset="utf-8");
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no");
+
+    title {
+      "Duber Judge"
+    }
+
+    script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
+
+    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+
+    link(rel="stylesheet" href="./styles.css"/);
+  }
+  body {
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
+      a.navbar-brand(href="#") {
+        "DubJ"
+      }
+      button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
+        span.navbar-toggler-icon{}
+      }
+      div.collapse.navbar-collapse#navbarNav {
+        ul.navbar-nav.ml-auto {
+          li.nav-item {
+            a.nav-link(href="#") {
+              "Home"
+              span.sr-only {
+                "(current)"
+              }
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${leaderboardLink}) {
+              "Leaderboard"
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${problemsLink}) {
+              "Practice Problems"
+            }
+          }
+          li.nav-item.active {
+            a.nva-link(href=${profileLink}) {
+              ${user.getUsername}
+            }
+          }
+        }
+      }
+    }
+    div.create-problem-container {
+      h3 {
+        ${problem.getTitle}
+      }
+
+      div.row {
+        div.col-4 {
+          div.list-group#list-tab(role="tablist") {
+            for (batch : batches) {
+              a.list-group-item.list-group-item-action.active#batch-${batch.getSequence}-list(data-toggle="list" href="#batch-"${batch.getSequence} role="tab" aria-controls="home") {
+                "Batch "${batch.getSequence}
+            }
+            a.list-group-item.list-group-item-action#add-batch-list(data-toggle="list" href="#add-batch" role="tab" aria-controls="profile") {
+              div.d-flex.w-100.justify-content-center {
+                p.h3.m-0 {
+                  i.fas.fa-plus-circle {}
+                }
+              }
+            }
+          }
+        }
+        div.col-8 {
+          div.tab-content#nav-tabContent {
+            for (batch : batches) {
+              div.tab-pane.fade.show.active#batch-"${batch.getSequence}(role="tabpanel" aria-labelledby="batch-"${batch.getSequence}"-list") {
+              div.list-group.user.problem-list {
+                for (testcase : batch.getTestcases) {
+                  a.list-group-item.list-group-item-action(href=${testcase.getLink}) {
+                    div.d-flex.w-100.justify-content-between {
+                      h5 { 
+                        "Testcase "${testcase.getSequence}
+                      }
+                      i.fas.fa-edit.h4 {}
+                    }
+                  }
+                }
+                a.list-group-item.list-group-item-action(href=${addNewTestcaseLink}) {
+                  div.d-flex.w-100.justify-content-center {
+                    p.h3 {
+                      i.fas.fa-plus-circle{}
+                    }
+                  }
+                }
+              }
+            }
+            div.tab-pane.fade#add-batch(role="tabpanel" aria-labelledby="add-batch-list") {
+              form.create-practice-problem.needs-validation(novalidate action="./" method="post") {
+                input(name="action" type="hidden" value="createBatch");
+                div.mb-3 {
+                  label(for="points") {
+                    "Points:"
+                  }
+                  input.form-control.range#points(name="points" type="number" min="0" step="1" max="30" data-bind="value:points" required);
+                }
+                button.btn-primary.btn(type="submit") {
+                  "Create"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="./scripts.js") {}
+  }
+}
