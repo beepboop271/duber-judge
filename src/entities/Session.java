@@ -64,7 +64,7 @@ public class Session implements Comparable<Session> {
   /**
    * Updates the client's last active time.
    *
-   * @param lastActive        the last active time.
+   * @param time the last active time.
    */
   public void updateLastActive(long time) {
     this.lastActive.setTime(time);

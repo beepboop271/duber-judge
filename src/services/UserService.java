@@ -10,9 +10,7 @@ import dal.dao.ContestSessionDao;
 import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
 import dal.dao.UserDao;
-import entities.Contest;
 import entities.ContestSession;
-import entities.ContestStatus;
 import entities.ContestSessionStatus;
 import entities.Entity;
 import entities.SubmissionResult;
@@ -293,5 +291,9 @@ public class UserService {
 
   public int getPoints(long userId) {
     return this.userDao.getPoints(userId);
+  }
+
+  public Entity<User> getUser(long userId) throws RecordNotFoundException {
+    return this.userDao.get(userId);
   }
 }

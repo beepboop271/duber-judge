@@ -1,0 +1,123 @@
+html(lang="en") {
+  head {
+    meta(name="dubj" content="pls work");
+    meta(charset="utf-8");
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    title {
+      "Duber Judge"
+    }
+    link(rel="stylesheet" href="../../vendored/static/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="./styles.css");
+  }
+  
+  body {
+    nav.navbar navbar-expand-lg.navbar-light.bg-light.sticky-top) {
+      a.navbar-brand.(href="#") {
+        DubJ
+      }
+      button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
+        span.navbar-toggler-icon {}
+      }
+      div.collapse navbar-collapse#navbarNav {
+        ul.navbar-nav ml-auto {
+          li.nav-item {
+            a.nav-link(href="#") {
+              "Home"
+              span.sr-only {
+                "(current)"
+              }
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${leaderboardLink}) {
+              "Leaderboard"
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${problemsLink}) {
+              "Practice Problems"
+            }
+          }
+          li.nav-item.active {
+            a.nva-link(href=${profileLink}) {
+              ${username}
+            }
+          }
+        }
+      }
+    }
+    div.page-container {
+      div.user.sidebar { 
+        div.card.mb-3(style="max-width: 540px;") {
+          img.card-img-top(src="https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png" alt="pfp");
+          div.card-body {
+            h5.card-title {
+              ${username}
+            }
+            p.card-text {
+              "Number of Submissions:" ${submissionsCount}
+            }
+            p.card-text {
+              "Number of Problems:" ${problemsSolved}
+            }
+            p.card-text {
+              "Points:" ${currentPoints}
+            }
+          }
+        }
+      }
+
+      div.user.content-container {
+        div.card.text-center.problem-listing {
+          div.card-header {
+            ul.nav.nav-tabs.card-header-tabs {
+              li.nav-item {
+                a.nav-link.test-dark.active(href=${userSubmissionsLink}) {
+                  "Submissions"
+                }
+              }
+              li.nav-item {
+                a.nav-link.test-dark(href=${userProblemsLink}) {
+                  "Problems"
+                }
+              }
+              li.nav-item {
+                a.nav-link.test-dark.active(href=${userContestsLink}) {
+                  "Contests"
+                }
+              }
+            }
+          }
+          div.card-body {
+            div.list-group.user.problem-list {
+              for (problem : problems) {
+                a.list-group-item.list-group-item-action(href=${problem.getLink}) {
+                  div.d-flex.w-100.justify-content-between {
+                    h5.mb-1 {
+                      ${problem.getTitle}
+                    }
+                    p {
+                      ${problem.getUserScore} "/" ${problem.getPoints}
+                    }
+                  }
+                  small.text-muted.mr-4 {
+                    "Attempted by: " ${problem.getNumSubmissions}
+                  }
+                  small.text-muted.mr-4 {
+                    "Category: " ${problem.getCategory}
+                  }
+                  small.text-muted.mr-4 {
+                    "Clear rate: " ${problem.getClearRate}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    script(src="./vendored/static/jquery-3.4.1.slim.min.js") {}
+    script(src="./vendored/static/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
+    script(src="./scripts.js") {}
+  }
+}

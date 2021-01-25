@@ -9,10 +9,9 @@ import dal.dao.ProblemDao;
 import dal.dao.RecordNotFoundException;
 import entities.Contest;
 import entities.ContestSession;
-import entities.ContestStatus;
+import entities.ContestSessionStatus;
 import entities.Entity;
 import entities.Problem;
-import entities.ContestSessionStatus;
 import entities.entity_fields.ContestSessionField;
 
 /**

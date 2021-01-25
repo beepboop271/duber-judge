@@ -28,7 +28,6 @@ import entities.IllegalCode;
 import entities.Language;
 import entities.PracticeProblem;
 import entities.Problem;
-import entities.ProblemType;
 import entities.PublishingState;
 import entities.Testcase;
 import entities.User;

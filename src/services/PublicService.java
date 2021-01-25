@@ -88,11 +88,11 @@ public class PublicService {
     return this.submissionDao.getProblemLeaderboard(problemId, index, numUsers);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblems(int index, int numProblems) {
+  public ArrayList<Entity<Problem>> getPracticeProblems(int index, int numProblems) {
     return this.problemDao.getPracticeProblems(index, numProblems);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblemsByCategory(
+  public ArrayList<Entity<Problem>> getPracticeProblemsByCategory(
     Category category,
     int index,
     int numProblems
@@ -100,7 +100,7 @@ public class PublicService {
     return this.problemDao.getPracticeProblemsByCategory(category, index, numProblems);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblemsByCreator(
+  public ArrayList<Entity<Problem>> getPracticeProblemsByCreator(
     long creatorId,
     int index,
     int numProblems
@@ -108,7 +108,7 @@ public class PublicService {
     return this.problemDao.getPracticeProblemsByCreator(creatorId, index, numProblems);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblemsByPoints(
+  public ArrayList<Entity<Problem>> getPracticeProblemsByPoints(
     int min,
     int max,
     int index,
@@ -117,7 +117,7 @@ public class PublicService {
     return this.problemDao.getPracticeProblemsByPoints(min, max, index, numProblems);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblemsByNumSubmissions(
+  public ArrayList<Entity<Problem>> getPracticeProblemsByNumSubmissions(
     int min,
     int max,
     int index,

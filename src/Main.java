@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.nio.file.Paths;
+
 import dubjhandlers.AdminHandler;
 import dubjhandlers.ContestHandler;
 import dubjhandlers.ContestProblemHandler;
@@ -9,11 +12,23 @@ import dubjhandlers.ProfileEditHandler;
 import dubjhandlers.ProfileHandler;
 import dubjhandlers.PublicProblemHandler;
 import dubjhandlers.StaticHandler;
+import templater.Templater;
+import templater.compiler.tokeniser.UnknownTokenException;
 import webserver.WebServer;
 
 public class Main {
   public static void main(String[] args) {
     WebServer server = new WebServer(5000);
+
+    try {
+      Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
+      Templater.prepareTemplate("adminUsers", Paths.get("static/adminUsers"));
+      Templater.prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
+    } catch (IOException e) {
+      System.out.println("An exception occurred while preparing templates.");
+    } catch (UnknownTokenException e) {
+      System.out.println("A token in a template was unparsable.");
+    }
 
     HomeHandler home = new HomeHandler();
     LoginHandler login = new LoginHandler();
@@ -82,8 +97,10 @@ public class Main {
     server.route("/admin/contest/:contestId/problem/:problemId", admin);
 
     server.route("/static", staticHandler);
-    server.route("/static/(css)/:file", staticHandler);
-    server.route("/static/(js)/:file", staticHandler);
+    server.route("/static/*", staticHandler);
+    server.route("/vendored/*", staticHandler);
+    server.route("/styles.css", staticHandler);
+    server.route("/scripts.js", staticHandler);
 
     server.run();
   }

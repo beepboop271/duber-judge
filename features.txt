@@ -94,6 +94,7 @@ UserService
  ✓ o- getActiveContests
  ✓ o- getParticipatedContests
  ✓ o- getSubmissionCount
+ - getUser
 
 
 x || failed qa (error or logic)

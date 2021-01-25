@@ -1,0 +1,121 @@
+html(lang="en") {
+  head {
+    meta(name="dubj" content="pls work");
+    meta(charset="utf-8");
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no");
+
+    title {
+      "Duber Judge"
+    }
+
+    script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
+
+    link(rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+
+    link(rel="stylesheet" href="./styles.css");
+
+  }
+  body {
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
+      a.navbar-brand(href="#") {
+        "DubJ"
+      }
+      button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
+        span.navbar-toggler-icon{}
+      }
+      div.collapse.navbar-collapse#navbarNav {
+        ul.navbar-nav.ml-auto {
+          li.nav-item {
+            a.nav-link(href="#") {
+              "Home"
+              span.sr-only {
+                "(current)"
+              }
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${leaderboardLink}) {
+              "Leaderboard"
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${problemsLink}) {
+              "Practice Problems"
+            }
+          }
+          li.nav-item.active {
+            a.nva-link(href=${profileLink}) {
+              ${user.getUsername}
+            }
+          }
+        }
+      }
+    }
+    div.page-container {
+      h4.text-dark.mb-4 {
+        "Practice problems"
+      }
+      div.card.text-center.problem-listing {
+        div.list-group.problem-list {
+          for (problem : problems) {
+            a.list-group-item.list-group-item-action(href=${problem.getLink}) {
+              div.d-flex.w-100.justify-content-between {
+                h5.mb-1 {
+                  ${problem.getTitle}
+                }
+                h6 {
+                  ${problem.getPoints} " points"
+                }
+              }
+              small.text-muted.mr-4 {
+                "Attempted by: " ${problem.getNumSubmissions}
+              }
+              small.text-muted.mr-4 {
+                "Category: " ${problem.getCategory}
+              }
+              small.text-muted.mr-4 {
+                "Clear rate: " ${problem.getClearRate}
+              }
+            }
+          }
+        }
+      }
+      nav.pagination-wrapper(aria-label="pagination") {
+        ul.pagination.justify-content-center {
+          li.page-item {
+            a.page-link.text-dark(href=${previousPageLink} aria-label="Previous") {
+              span(aria-hidden="true") {
+                "&laquo"
+              }
+            }
+          }
+          li.page-item.active {
+            a.page-link.text-dark(href={$page1Link}) {
+              "1"
+            }
+          }
+          li.page-item {
+            a.page-link.text-dark(href={$page2Link}) {
+              "2"
+            }
+          }
+          li.page-item {
+            a.page-link.text-dark(href={$page3Link}) {
+              "3"
+            }
+          }
+          li.page-item {
+            a.page-link.text-dark(href=${nextPageLink} aria-label="Next") {
+              span(aria-hidden="true") {
+                "&raquo"
+              }
+            }
+          }
+        }
+      }
+    }
+    script(src="./vendored/static/jquery-3.4.1.slim.min.js") {}
+    script(src="./vendored/static/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
+    script(src="./scripts.js") {}
+  }
+}

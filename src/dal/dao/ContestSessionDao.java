@@ -458,7 +458,7 @@ public class ContestSessionDao implements Dao<ContestSession>, Updatable<Contest
 
 
   /**
-   * Retrieves a version of ContestSession (ContestSession has Contest)
+   * Retrieves a version of ContestSession (ContestSession has Contest).
    *
    * @param userId
    * @param status

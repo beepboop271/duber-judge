@@ -10,8 +10,6 @@ package entities;
  * @since 1.0.0
  */
 public enum ExecutionStatus {
-  /** The program is waiting to be judged. */
-  PENDING,
 
   /** An internal error was encountered during judging. */
   INTERNAL_ERROR,
@@ -30,6 +28,8 @@ public enum ExecutionStatus {
   TIME_LIMIT_EXCEEDED,
   /** The program ran out of memory. */
   MEMORY_LIMIT_EXCEEDED,
+  /** The program program outputted too much data. */
+  OUTPUT_LIMIT_EXCEEDED,
   /** The program raised an exception or error. */
   INVALID_RETURN,
   /** The output produced was incorrect. */
@@ -42,5 +42,8 @@ public enum ExecutionStatus {
   SKIPPED,
 
   /** The testcase run / submission passed all required testing. */
-  ALL_CLEAR
+  ALL_CLEAR,
+
+  /** The program is waiting to be judged. */
+  PENDING,
 }

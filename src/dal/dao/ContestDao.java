@@ -12,7 +12,6 @@ import org.sqlite.SQLiteErrorCode;
 import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
 import entities.Contest;
-import entities.ContestSessionStatus;
 import entities.ContestStatus;
 import entities.Entity;
 import entities.PublishingState;

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- meta tags -->
+    <meta name="dubj" content="pls work"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Duber Judge</title>
+
+
+    <link rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./styles.css"/>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+      <a class="navbar-brand" href="#">DubJ</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Leaderboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Practice Problems</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Sign in</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="page-container">
+      <form class="login" action="/login" method="post" id="login-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp">
+          <small class="form-text text-muted">3-20 characters, no special symbols.</small>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" id="password" name="password">
+          <small class="form-text text-muted">5-25 characters, must contain at least one alphabet and number.</small>
+        </div>
+        <div class="form-group error" id="error-msg">
+          <p>Please try a different username or password.</p>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+        <a href="/signup" class="ml-3 text-decoration-none">Sign Up</button>
+      </form>
+
+    </div>
+
+
+    <script src="./vendored/jquery-3.4.1.slim.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
+    <script src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js"></script>
+    <script src="./scripts.js"></script>
+  </body>
+</html>

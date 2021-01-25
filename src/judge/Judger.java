@@ -1,6 +1,7 @@
 package judge;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -8,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import entities.Batch;
+import entities.Entity;
 import entities.ExecutionStatus;
 import entities.Problem;
 import entities.Submission;
@@ -59,29 +61,29 @@ public class Judger {
    * and returns a {@code SubmissionResult} containing the information of the
    * judge result.
    *
-   * @param submission  The {@code Submission} to be judged.
+   * @param submission  The submission {@code Entity} to be judged.
    * @param problem     The problem used for judging the submission, containing
    *                    necessary information such as batches and
    *                    time/memory/output limits.
    * @return            A {@code SubmissionResult} containing the information of
    *                    the judge result.
    */
-  public SubmissionResult judge(Submission submission, Problem problem) {
-    SubmissionResult result = new SubmissionResult(submission);
+  public SubmissionResult judge(Entity<Submission> submission, Entity<Problem> problem) {
+    SubmissionResult result = new SubmissionResult(submission.getContent());
     // check if code is clean
     try {
-      if (!SourceCheckerService.isClean(submission)) {
-        result.setStatus(ExecutionStatus.ILLEGAL_CODE);
+      if (!SourceCheckerService.isClean(submission.getContent())) {
+        result.updateStatus(ExecutionStatus.ILLEGAL_CODE);
         return result;
       }
     } catch (UnknownLanguageException unknownLanguageException) {
-      result.setStatus(ExecutionStatus.UNKNOWN_LANGUAGE);
+      result.updateStatus(ExecutionStatus.UNKNOWN_LANGUAGE);
       return result;
     }
     // get launcher
     CompletableFuture<SourceLauncher> launcherFuture =
       SourceLauncherService.getSourceLauncher(
-        submission,
+        submission.getContent(),
         this.tempFileDirectory,
         this.pool
       );
@@ -100,7 +102,7 @@ public class Judger {
       return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, null, result);
     }
 
-    result = this.testSubmission(submission, problem, launcher, result);
+    result = this.testSubmission(submission, problem.getContent(), launcher, result);
     launcher.close();
     return result;
   }
@@ -126,7 +128,7 @@ public class Judger {
    */
   @SuppressWarnings("unchecked")
   private SubmissionResult testSubmission(
-    Submission submission,
+    Entity<Submission> submission,
     Problem problem,
     SourceLauncher launcher,
     SubmissionResult result
@@ -134,14 +136,20 @@ public class Judger {
     int timeLimitMillis = problem.getTimeLimitMillis();
     int memoryLimitKb = problem.getMemoryLimitKb();
     int outputLimitKb = problem.getOutputLimitKb();
-    Batch[] batches = problem.getBatches();
+    ArrayList<Entity<Batch>> batches = problem.getBatches();
 
     // store the futures in an array and wait for them to complete
     CompletableFuture<TestcaseRun[]>[] batchRunResults =
-      (CompletableFuture<TestcaseRun[]>[])(new CompletableFuture[batches.length]);
-    for (int i = 0; i < batches.length; i++) {
+      (CompletableFuture<TestcaseRun[]>[])(new CompletableFuture[batches.size()]);
+    for (int i = 0; i < batches.size(); i++) {
       batchRunResults[i] = Tester.testBatch(
-        batches[i], launcher, this.pool, timeLimitMillis, memoryLimitKb, outputLimitKb
+        submission,
+        batches.get(i),
+        launcher,
+        this.pool,
+        timeLimitMillis,
+        memoryLimitKb,
+        outputLimitKb
       );
     }
     CompletableFuture.allOf(batchRunResults).join();
@@ -149,7 +157,11 @@ public class Judger {
     // loop through each bach results and grade the submission
     try {
       for (int i = 0; i < batchRunResults.length; i++) {
-        this.gradeBatch(batches[i].getPoints(), batchRunResults[i].get(), result);
+        this.gradeBatch(
+          batches.get(i).getContent().getPoints(),
+          batchRunResults[i].get(),
+          result
+        );
       }
     } catch (InterruptedException | ExecutionException e) {
       return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, launcher, result);
@@ -189,7 +201,7 @@ public class Judger {
       // update run duration
       result.addRunDurationMillis(run.getRunDurationMillis());
       // update memory usage
-      result.updateMemoryUsedBytes(run.getMemoryUsedBytes());
+      result.updateMemoryUsageBytes(run.getMemoryUsageBytes());
     }
     // update score
     if (batchPassed) {
@@ -232,26 +244,26 @@ public class Judger {
   }
 
 
-  // ------temp methods
+  // // ------temp methods
 
-  public static void display(SubmissionResult submission) {
-    System.out.println("Submission: " + submission);
-    System.out.println("Language: " + submission.getSubmission().getLanguage());
-    System.out.println("Status: " + submission.getStatus());
-    System.out.println("Score: " + submission.getScore());
-    System.out.println("Run duration (milliseconds): " + submission.getRunDurationMillis());
-    System.out.println("Memory used (bytes): " + submission.getMemoryUsedBytes());
-    System.out.println("Source Code:\n" + submission.getSubmission().getCode());
-    System.out.println();
-  }
+  // public static void display(SubmissionResult submission) {
+  //   System.out.println("Submission: " + submission);
+  //   System.out.println("Language: " + submission.getSubmission().getLanguage());
+  //   System.out.println("Status: " + submission.getStatus());
+  //   System.out.println("Score: " + submission.getScore());
+  //   System.out.println("Run duration (milliseconds): " + submission.getRunDurationMillis());
+  //   System.out.println("Memory used (bytes): " + submission.getMemoryUsedBytes());
+  //   System.out.println("Source Code:\n" + submission.getSubmission().getCode());
+  //   System.out.println();
+  // }
 
-  public static void display(TestcaseRun run) {
-    System.out.println("Testcase: " + run.getTestcase() + " of submission " + run.getSubmission());
-    System.out.println("Status: " + run.getStatus());
-    System.out.println("Run duration (milliseconds): " + run.getRunDurationMillis());
-    System.out.println("Memory used (bytes): " + run.getMemoryUsedBytes());
-    System.out.println("Output: " + run.getOutput());
-    System.out.println();
-  }
+  // public static void display(TestcaseRun run) {
+  //   System.out.println("Testcase: " + run.getTestcase() + " of submission " + run.getSubmission());
+  //   System.out.println("Status: " + run.getStatus());
+  //   System.out.println("Run duration (milliseconds): " + run.getRunDurationMillis());
+  //   System.out.println("Memory used (bytes): " + run.getMemoryUsedBytes());
+  //   System.out.println("Output: " + run.getOutput());
+  //   System.out.println();
+  // }
 
 }

@@ -2,6 +2,7 @@ package webserver;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,9 +16,9 @@ import java.util.Set;
  * format this request into a proper HTTP request string.
  * <p>
  * This request will convert body strings into UTF-8 byte
- * arrays. For the sake of convenience, the majority of
- * the constructors will use Strings for body, as byte arrays are
- * less readable and should only be used to represent
+ * arrays. For the sake of convenience, the majority of the
+ * constructors will use Strings for body, as byte arrays
+ * are less readable and should only be used to represent
  * objects that cannot be Strings (eg. files).
  * <p>
  * This request object stores both the full path (with query
@@ -103,7 +104,8 @@ public class Request extends HttpMessage {
   }
 
   /**
-   * Constructs a new Request with a byte array body but no headers.
+   * Constructs a new Request with a byte array body but no
+   * headers.
    *
    * @param method   The HTTP method for the request.
    * @param fullPath The full path for the request.
@@ -461,5 +463,49 @@ public class Request extends HttpMessage {
    */
   public String getEndResource() {
     return this.endResource;
+  }
+
+  /**
+   * Retrieves this message's body, as a String.
+   * <p>
+   * This assumes that the current body was inserted as a
+   * legible string, and will parse from that.
+   *
+   * @return this message's body, as a string.
+   */
+  public String getBodyString() {
+    return new String(this.body, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Parses and treats this request's body as if it were an
+   * application/x-www-form-urlencoded body, and stores the
+   * parsed queries in the provided map.
+   *
+   * @param toStoreIn The map to store the parsed results in.
+   * @throws HttpSyntaxException if the body is badly formed.
+   */
+  public void parseFormBody(Map<String, String> toStoreIn)
+    throws HttpSyntaxException {
+    if (
+      !this.headers.get("Content-Type")
+        .equals("application/x-www-form-urlencoded")
+    ) {
+      return;
+    }
+
+    String[] fieldTokens = this.getBodyString().split("&");
+    if (fieldTokens.length != 2) {
+      throw new HttpSyntaxException("Body malformed.");
+    }
+
+    for (String s : fieldTokens) {
+      String[] paramTokens = s.split("=");
+      if (fieldTokens.length != 2) {
+        throw new HttpSyntaxException("Body malformed.");
+      }
+
+      toStoreIn.put(paramTokens[0], paramTokens[1]);
+    }
   }
 }
