@@ -1,5 +1,6 @@
 package webserver;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +12,14 @@ import java.util.Map;
  * implements {@link #toString()} which will convert this
  * object to a properly formatted HTTP response string,
  * ready to be sent to the client.
+ * <p>
+ * This response will accept both Strings and byte arrays as
+ * valid forms of body. Strings will be converted into UTF-8
+ * byte arrays. For the sake of convenience, the majority of
+ * the constructors and generic static methods will use
+ * Strings for body, as byte arrays are less readable and
+ * should only be used to represent objects that cannot be
+ * Strings (eg. files).
  * <p>
  * Note that any cookies stored in this class are expected
  * to be used as `Set-Cookie`, and this class will be
@@ -34,48 +43,6 @@ public class Response extends HttpMessage {
    * not have an age is set as a session cookie.
    */
   private HashMap<String, Integer> cookieAges;
-
-  /**
-   * Generates a generic HTML page to represent a
-   * {@code 404 Not Found} response, with the associated
-   * headers and the appropriate headers.
-   *
-   * @param resource The resource requested.
-   * @return a 404 HTTP response object.
-   */
-  public static Response notFoundHtml(String resource) {
-    String body =
-      "<html><head><title>404</title></head><body>404: "
-        +resource
-        +" not found. </body></html>";
-
-    Response response = new Response(404, body);
-    response.headers.put("Content-Type", "text/html");
-    response.headers.put("Content-Length", Integer.toString(body.length()));
-
-    return response;
-  }
-
-  /**
-   * Generates a generic HTML page to represent a
-   * {@code 400 Bad Request} response with the associated
-   * cause and the appropriate headers.
-   *
-   * @param reason The cause of the bad response.
-   * @return a 400 HTTP response object.
-   */
-  public static Response badRequestHtml(String reason) {
-    String body =
-      "<html><head><title>400</title></head><body>400: Bad Request - "
-        +reason
-        +"</body></html>";
-
-    Response response = new Response(400, body);
-    response.headers.put("Content-Type", "text/html");
-    response.headers.put("Content-Length", Integer.toString(body.length()));
-
-    return response;
-  }
 
   /**
    * Generates a generic
@@ -145,6 +112,148 @@ public class Response extends HttpMessage {
   }
 
   /**
+   * Generates a {@code 201 Created} html HTTP response with
+   * the appropriate headers, and sets the resource link to a
+   * provided link.
+   *
+   * @param resourceLink The link to the newly created
+   *                     resource.
+   * @return a 201 HTTP response object.
+   */
+  public static Response created(String resourceLink) {
+    Response response = new Response(201);
+    response.headers.put("Location", resourceLink);
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 308 Permanent Redirect} HTTP response
+   * with the appropriate {@code Location} header, redirecting
+   * to the provided URI.
+   *
+   * @param newUri The new URI to redirect the client to.
+   * @return a 308 HTTP response object.
+   */
+  public static Response permanentRedirect(String newUri) {
+    if (newUri == null || newUri.equals("")) {
+      throw new IllegalArgumentException("A uri must be provided.");
+    }
+
+    Response response = new Response(308);
+    response.headers.put("Location", newUri);
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 303 See Other} HTTP response with the
+   * appropriate {@code Location} header, redirecting to the
+   * provided URI that has another page.
+   * <p>
+   * This should normally be sent back as a result of a POST
+   * or PUT to redirect to another page, etc.
+   *
+   * @param newUri The new URI to redirect the client to.
+   * @return a 303 HTTP response object.
+   */
+  public static Response seeOther(String newUri) {
+    if (newUri == null || newUri.equals("")) {
+      throw new IllegalArgumentException("A uri must be provided.");
+    }
+
+    Response response = new Response(303);
+    response.headers.put("Location", newUri);
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 200 OK} HTTP response with the
+   * appropriate headers and body array.
+   * <p>
+   * The MIME type of the body must be specified (see <a href=
+   * "https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MDN
+   * docs</a> for more information).
+   * <p>
+   * The html can be set as the body of the request by setting
+   * {@code hasBody} to true. If false, only the headers are
+   * returned, without the body.
+   *
+   * @param body    The byte array file to send in the
+   *                Response.
+   * @param mime    The mime type of this file.
+   * @param hasBody Whether this request has a body or not.
+   * @return a 200 HTTP response object.
+   */
+  public static Response ok(byte[] body, String mime, boolean hasBody) {
+    Response response;
+    if (hasBody) {
+      response = new Response(200, body);
+    } else {
+      response = new Response(200);
+    }
+
+    response.headers.put("Content-Type", mime);
+    response.headers.put("Content-Length", Integer.toString(body.length));
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 200 OK} HTTP response with the
+   * appropriate headers and body array.
+   * <p>
+   * The MIME type of the body must be specified (see <a href=
+   * "https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MDN
+   * docs</a> for more information).
+   *
+   * @param body The byte array file to send in the Response.
+   * @param mime The mime type of this file.
+   * @return a 200 HTTP response object.
+   */
+  public static Response ok(byte[] body, String mime) {
+    return Response.ok(body, mime, true);
+  }
+
+  /**
+   * Generates a {@code 200 OK} HTTP response with the
+   * appropriate headers and body.
+   * <p>
+   * The MIME type of the body must be specified (see <a href=
+   * "https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MDN
+   * docs</a> for more information).
+   * <p>
+   * The html can be set as the body of the request by setting
+   * {@code hasBody} to true. If false, only the headers are
+   * returned, without the body.
+   *
+   * @param body    The file to send in the Response.
+   * @param mime    The mime type of this file.
+   * @param hasBody Whether this request has a body or not.
+   * @return a 200 HTTP response object.
+   */
+  public static Response ok(String body, String mime, boolean hasBody) {
+    return Response.ok(body.getBytes(StandardCharsets.UTF_8), mime, hasBody);
+  }
+
+  /**
+   * Generates a {@code 200 OK} HTTP response with the
+   * appropriate headers and body.
+   * <p>
+   * The MIME type of the body must be specified (see <a href=
+   * "https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MDN
+   * docs</a> for more information).
+   *
+   * @param body The file to send in the Response.
+   * @param mime The mime type of this file.
+   * @return a 200 HTTP response object.
+   */
+  public static Response ok(String body, String mime) {
+    return Response.ok(body, mime, true);
+  }
+
+  /**
    * Generates a {@code 200 OK} html HTTP response with the
    * appropriate headers and body.
    *
@@ -160,26 +269,43 @@ public class Response extends HttpMessage {
    * appropriate headers.
    * <p>
    * The html can be set as the body of the request by setting
-   * {@code hasBody} to true. However, the client may simply
-   * want the headers and nothing more, in which case
-   * {@code hasBody} should be set to false.
+   * {@code hasBody} to true. If false, only the headers are
+   * returned, without the body.
    *
    * @param html    The html file to send in the Response.
    * @param hasBody Whether this request has a body or not.
    * @return a 200 HTTP response object.
    */
   public static Response okHtml(String html, boolean hasBody) {
-    Response response;
-    if (hasBody) {
-      response = new Response(200, html);
-    } else {
-      response = new Response(200);
-    }
+    return Response.okByteHtml(html.getBytes(StandardCharsets.UTF_8), hasBody);
+  }
 
-    response.headers.put("Content-Type", "text/html");
-    response.headers.put("Content-Length", Integer.toString(html.length()));
+  /**
+   * Generates a {@code 200 OK} html HTTP response with the
+   * appropriate headers and body.
+   *
+   * @param body The byte array body to send in the Response.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okByteHtml(byte[] body) {
+    return Response.okByteHtml(body, true);
+  }
 
-    return response;
+  /**
+   * Generates a {@code 200 OK} html HTTP response with the
+   * appropriate headers.
+   * <p>
+   * The html can be set as the body of the request by setting
+   * {@code hasBody} to true. If false, only the headers are
+   * returned, without the body.
+   *
+   * @param body    The byte array body to send in the
+   *                Response.
+   * @param hasBody Whether this request has a body or not.
+   * @return a 200 HTTP response object.
+   */
+  public static Response okByteHtml(byte[] body, boolean hasBody) {
+    return Response.ok(body, "text/html", hasBody);
   }
 
   /**
@@ -200,9 +326,8 @@ public class Response extends HttpMessage {
    * this page.
    * <p>
    * The html can be set as the body of the request by setting
-   * {@code hasBody} to true. However, the client may simply
-   * want the headers and nothing more, in which case
-   * {@code hasBody} should be set to false.
+   * {@code hasBody} to true. If false, only the headers are
+   * returned, without the body.
    *
    * @param html    The html file to send in the Response.
    * @param hasBody Whether this request has a body or not.
@@ -241,9 +366,8 @@ public class Response extends HttpMessage {
    * shutdown.
    * <p>
    * The html can be set as the body of the request by setting
-   * {@code hasBody} to true. However, the client may simply
-   * want the headers and nothing more, in which case
-   * {@code hasBody} should be set to false.
+   * {@code hasBody} to true. If false, only the headers are
+   * returned, without the body.
    *
    * @param html  The html file to send in the Response.
    * @param name  The name of the cookie.
@@ -297,9 +421,8 @@ public class Response extends HttpMessage {
    * expires immediately, set {@code maxAge} to {@code 0};
    * <p>
    * The html can be set as the body of the request by setting
-   * {@code hasBody} to true. However, the client may simply
-   * want the headers and nothing more, in which case
-   * {@code hasBody} should be set to false.
+   * {@code hasBody} to true. If false, only the headers are
+   * returned, without the body.
    *
    * @param html    The html file to send in the Response.
    * @param name    The name of the cookie.
@@ -332,56 +455,45 @@ public class Response extends HttpMessage {
   }
 
   /**
-   * Generates a {@code 201 Created} html HTTP response with the
-   * appropriate headers, and sets the resource link to a provided link.
+   * Generates a generic HTML page to represent a
+   * {@code 404 Not Found} response, with the associated
+   * headers and the appropriate headers.
    *
-   * @param resourceLink The link to the newly created resource.
-   * @return a 201 HTTP response object.
+   * @param resource The resource requested.
+   * @return a 404 HTTP response object.
    */
-  public static Response created(String resourceLink) {
-    Response response = new Response(201);
-    response.headers.put("Location", resourceLink);
-
-    return response;
+  public static Response notFoundHtml(String resource) {
+    return Response.notFoundHtml(resource, true);
   }
 
   /**
-   * Generates a {@code 308 Permanent Redirect} HTTP response
-   * with the appropriate {@code Location} header, redirecting
-   * to the provided URI.
-   *
-   * @param newUri The new URI to redirect the client to.
-   * @return a 308 HTTP response object.
-   */
-  public static Response permanentRedirect(String newUri) {
-    if (newUri == null || newUri.equals("")) {
-      throw new IllegalArgumentException("A uri must be provided.");
-    }
-
-    Response response = new Response(308);
-    response.headers.put("Location", newUri);
-
-    return response;
-  }
-
-  /**
-   * Generates a {@code 303 See Other} HTTP response with the
-   * appropriate {@code Location} header, redirecting to the
-   * provided URI that has another page.
+   * Generates a generic HTML page to represent a
+   * {@code 404 Not Found} response, with the associated
+   * headers and the appropriate headers.
    * <p>
-   * This should normally be sent back as a result of a POST
-   * or PUT to redirect to another page, etc.
+   * The html can be set as the body of the request by setting
+   * {@code hasBody} to true. If false, only the headers are
+   * returned, without the body.
    *
-   * @param newUri The new URI to redirect the client to.
-   * @return a 303 HTTP response object.
+   * @param resource The resource requested.
+   * @param hasBody  Whether this resource has a body or not.
+   * @return a 404 HTTP response object.
    */
-  public static Response seeOther(String newUri) {
-    if (newUri == null || newUri.equals("")) {
-      throw new IllegalArgumentException("A uri must be provided.");
+  public static Response notFoundHtml(String resource, boolean hasBody) {
+    Response response;
+    String body =
+      "<html><head><title>404</title></head><body>404: "
+        +resource
+        +" not found. </body></html>";
+
+    if (hasBody) {
+      response = new Response(404, body);
+    } else {
+      response = new Response(404);
     }
 
-    Response response = new Response(303);
-    response.headers.put("Location", newUri);
+    response.headers.put("Content-Type", "text/html");
+    response.headers.put("Content-Length", Integer.toString(body.length()));
 
     return response;
   }
@@ -406,6 +518,20 @@ public class Response extends HttpMessage {
    * @param body       The body of the response.
    */
   public Response(int statusCode, String body) {
+    super(body);
+
+    this.statusString = "HTTP/1.1 "+statusCode;
+    this.cookieAges = new HashMap<>();
+  }
+
+  /**
+   * Constructs a new Response, without any headers.
+   *
+   * @param statusCode The status code of the response (eg.
+   *                   201, 404, etc)
+   * @param body       The body byte array with the response.
+   */
+  public Response(int statusCode, byte[] body) {
     super(body);
 
     this.statusString = "HTTP/1.1 "+statusCode;
@@ -563,12 +689,39 @@ public class Response extends HttpMessage {
   }
 
   /**
-   * {@inheritDoc}
+   * Generates the output bytes for this response object with
+   * its headers, body, and status line.
    * <p>
-   * This method will return a string that is formatted and
-   * ready for output back to a client.
+   * This method should be the primary way to convert this
+   * response to an object suitable for stream output through
+   * a connection.
+   *
+   * @return a byte array representation of this response.
    */
-  public String toString() {
+  public byte[] toOutputBytes() {
+    byte[] headerBytes = this.toHeadString().getBytes(StandardCharsets.UTF_8);
+    byte[] fullOutput = new byte[headerBytes.length+this.body.length];
+
+    System.arraycopy(headerBytes, 0, fullOutput, 0, headerBytes.length);
+    System.arraycopy(
+      this.body.length,
+      0,
+      fullOutput,
+      headerBytes.length,
+      this.body.length
+    );
+    return fullOutput;
+  }
+
+  /**
+   * Returns a formatted string of this response's headers and
+   * status line, but no body even if a body is present.
+   * <p>
+   * As the body of a response may not necessarily be
+   * convertible to a legible string, output of a response
+   * should be done using the {@link #toOutputBytes()}.
+   */
+  public String toHeadString() {
     StringBuilder responseString = new StringBuilder(this.statusString+"\r\n");
 
     for (String cookie : this.cookies.keySet()) {
@@ -583,20 +736,33 @@ public class Response extends HttpMessage {
             +"\r\n"
         );
       } else {
-        responseString.append(
-          "Set-Cookie: "
-            +cookie
-            +"="
-            +this.cookies.get(cookie)
-            +";\r\n"
-        );
+        responseString
+          .append("Set-Cookie: "+cookie+"="+this.cookies.get(cookie)+";\r\n");
       }
     }
 
     responseString.append(this.getHeadersString());
 
-    if (!this.body.equals("")) {
-      responseString.append(this.getBody());
+    return responseString.toString();
+  }
+
+  /**
+   * {@inheritDoc}
+   * <p>
+   * This method will return a formatted representation of
+   * this response's headers, status line, and body.
+   * <p>
+   * Getting response for output should not be done with this
+   * method. Use {@link #toOutputBytes()} for the proper
+   * output, as the bytes for the body may have come from a
+   * file, etc that may not be converted properly to readable
+   * text.
+   */
+  public String toString() {
+    StringBuilder responseString = new StringBuilder(this.toHeadString());
+
+    if (this.body.length != 0) {
+      responseString.append(new String(this.getBody(), StandardCharsets.UTF_8));
     }
 
     return responseString.toString();

@@ -1,5 +1,6 @@
 package webserver;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,13 @@ import java.util.Map;
  * bodies, and implementing sub classes are able to define
  * their own status line.
  * <p>
+ * This message will accept both Strings and byte arrays as
+ * valid forms of body. Strings will be converted into UTF-8
+ * byte arrays. For the sake of convenience, the majority of
+ * the constructors will use Strings for body, as byte arrays are
+ * less readable and should only be used to represent
+ * objects that cannot be Strings (eg. files).
+ * <p>
  * Created <b> 2021-01-01 </b>
  *
  * @since 0.0.1
@@ -23,12 +31,15 @@ abstract class HttpMessage {
   protected Map<String, String> headers;
   /** The cookies associated with the message. */
   protected Map<String, String> cookies;
-  /** The body of this HttpMessage, if present. */
-  protected String body;
+  /**
+   * A byte array body of this HttpMessage, if present.
+   * Strings should be encoded using UTF-8.
+   */
+  protected byte[] body;
 
   /**
    * A constructor for a new HttpMessage with no body or
-   * headers, for invokation by implementing subclasses. The
+   * headers, for invocation by implementing subclasses. The
    * headers will be initialized as empty.
    */
   public HttpMessage() {
@@ -37,20 +48,36 @@ abstract class HttpMessage {
 
   /**
    * A constructor for a new HttpMessage with a body but no
-   * headers, for invokation by implementing subclasses. The
-   * headers will be initialized as empty.
+   * headers, for invocation by implementing subclasses.
+   * <p>
+   * The headers will be initialized as empty.
    *
    * @param body The body of the message.
    */
   public HttpMessage(String body) {
     this.headers = new HashMap<>();
     this.cookies = new HashMap<>();
+    this.body = body.getBytes(StandardCharsets.UTF_8);
+  }
+
+  /**
+   * A constructor for a new HttpMessage with a byte array
+   * body and no headers, for invocation by implementing
+   * subclasses.
+   * <p>
+   * The headers will be initialized as empty.
+   *
+   * @param body The byte array with the body.
+   */
+  public HttpMessage(byte[] body) {
     this.body = body;
+    this.headers = new HashMap<>();
+    this.cookies = new HashMap<>();
   }
 
   /**
    * A constructor for a new HttpMessage with headers but no
-   * body, for invokation of implementing subclasses.
+   * body, for invocation of implementing subclasses.
    *
    * @param headers A {@code Map<String, String>} with
    *                applicable headers.
@@ -65,7 +92,7 @@ abstract class HttpMessage {
 
   /**
    * A constructor for a new HttpMessage with both a body and
-   * headers, for invokation of implementing subclasses.
+   * headers, for invocation of implementing subclasses.
    *
    * @param headers A {@code Map<String, String>} with
    *                applicable headers.
@@ -80,12 +107,12 @@ abstract class HttpMessage {
     this.headers = new HashMap<>();
     this.addHeaders(headers);
     this.cookies = new HashMap<>();
-    this.body = body;
+    this.body = body.getBytes(StandardCharsets.UTF_8);
   }
 
   /**
    * A constructor for a new HttpMessage with headers but no
-   * body, for invokation of implementing subclasses. This
+   * body, for invocation of implementing subclasses. This
    * constructor will accept a string array of headers,
    * separated by a colon.
    * <p>
@@ -113,7 +140,7 @@ abstract class HttpMessage {
 
   /**
    * A constructor for a new HttpMessage with headers and a
-   * body, for invokation of implementing subclasses. This
+   * body, for invocation of implementing subclasses. This
    * constructor will accept a string array of headers,
    * separated by a colon.
    * <p>
@@ -140,7 +167,7 @@ abstract class HttpMessage {
     this.headers = new HashMap<>();
     this.addHeaders(headers);
     this.cookies = new HashMap<>();
-    this.body = "";
+    this.body = body.getBytes(StandardCharsets.UTF_8);
   }
 
   /**
@@ -316,14 +343,14 @@ abstract class HttpMessage {
   }
 
   /**
-   * Retrieves this message's body.
+   * Retrieves this message's body, as a byte array.
    * <p>
-   * If this message has no body, an empty string will be
+   * If this message has no body, an empty array will be
    * returned.
    *
-   * @return this message's body.
+   * @return this message's body, as a byte array.
    */
-  public String getBody() {
+  public byte[] getBody() {
     return this.body;
   }
 

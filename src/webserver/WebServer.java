@@ -1,10 +1,14 @@
 package webserver;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -62,7 +66,7 @@ public class WebServer {
    * @see Request#getParam(String)
    */
   private HashMap<Pattern, ArrayList<String>> routeParamKeys;
-  /** The web cache to store cached pages. */
+  /** The web cache to store cached pages. This cache will only be used to store html files. */
   private WebLruCache cache;
 
   /**
@@ -381,6 +385,37 @@ public class WebServer {
   }
 
   /**
+   * Loads a provided file and returns the file bytes.
+   *
+   * @param path The path to find the file.
+   * @return a byte array with the file data.
+   * @throws IOException if an IO error occurs while reading the file.
+   * @throws FileNotFoundException If the file cannot be found.
+   */
+  public static byte[] loadFile(String path) throws IOException, FileNotFoundException {
+    File file = new File(path);
+    if (file.exists()) {
+      InputStream in = new FileInputStream(path);
+      ByteArrayOutputStream bout = new ByteArrayOutputStream();
+      DataOutputStream dout = new DataOutputStream(bout);
+      byte[] buffer = new byte[4096];
+
+      int data = in.read(buffer);
+      while (data >= 0) {
+        dout.write(buffer, 0, data);
+        data = in.read(buffer);
+      }
+
+      dout.flush();
+      dout.close();
+      in.close();
+      return bout.toByteArray();
+    } else {
+      throw new FileNotFoundException("File not found.");
+    }
+  }
+
+  /**
    * A connection handler designed to handle a connection from
    * a specified client.
    * <p>
@@ -430,7 +465,8 @@ public class WebServer {
     /** The input stream from the client. */
     private BufferedInputStream input;
     /** The output stream for the client. */
-    private PrintWriter output;
+    // private PrintWriter output;
+    private BufferedOutputStream output;
     /** Determines if the connection loop should run. */
     private boolean shouldRun = true;
 
@@ -451,13 +487,8 @@ public class WebServer {
         // BufferedReader.nextLine() to forever read
         this.input = new BufferedInputStream(this.client.getInputStream());
 
-        OutputStreamWriter utfWriter =
-          new OutputStreamWriter(
-            this.client.getOutputStream(),
-            StandardCharsets.UTF_8
-          );
-        BufferedWriter bufferedUtfWriter = new BufferedWriter(utfWriter);
-        this.output = new PrintWriter(bufferedUtfWriter);
+        // Use a buffered output stream to properly send files
+        this.output = new BufferedOutputStream(this.client.getOutputStream());
 
         this.connectionOpenTime = System.currentTimeMillis();
         this.curReq = 0;
@@ -513,7 +544,8 @@ public class WebServer {
 
           // Finally, output to user
           // Keep open if keep alive header exists
-          this.output.print(res);
+          byte[] outputResponse = res.toString().getBytes(StandardCharsets.UTF_8);
+          this.output.write(outputResponse, 0, outputResponse.length);
           this.output.flush();
 
           // TODO: do we even need to remove hop to hop headers
@@ -668,6 +700,17 @@ public class WebServer {
      * @param response The response to store.
      */
     private void attemptCacheStorage(String fullPath, Response response) {
+      // Ensure the body exists and has content
+      if (!response.hasHeader("Content-Type")) {
+        return;
+      }
+
+      // TODO: improve later
+      // Only store html files in the cache
+      if (!response.getHeader("Content-Type").equals("text/html")) {
+        return;
+      }
+
       if (response.hasHeader("Cache-Control")) {
         // Do not cache if it is labelled as "do not cache"
         String cacheControl = response.getHeader("Cache-Control");
@@ -694,13 +737,17 @@ public class WebServer {
      * @return an HTTP response to return to the user.
      */
     private Response generateResponseFromRequest(Request request) {
-      String cachedBody = cache.getCachedObject(request.getFullPath());
-      if (cachedBody != null) {
-        // Retrieve the cached object
-        if (request.getMethod().equals("HEAD")) {
-          return Response.okHtml(cachedBody, false);
+      // The cache should only store html files because those are the templated ones
+      // Therefore if there is a static param we ignore looking in the cache
+      if (request.getParam("static") == null) {
+        byte[] cachedBody = cache.getCachedObject(request.getFullPath());
+        if (cachedBody != null) {
+          // Retrieve the cached object
+          if (request.getMethod().equals("HEAD")) {
+            return Response.okByteHtml(cachedBody, false);
+          }
+          return Response.okByteHtml(cachedBody);
         }
-        return Response.okHtml(cachedBody);
       }
 
       RouteTarget handler = WebServer.this.getRoute(request);

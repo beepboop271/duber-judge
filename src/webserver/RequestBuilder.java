@@ -390,7 +390,6 @@ public class RequestBuilder {
           this.headers,
           this.body.toString()
         );
-      req.body = this.body.toString();
       return req;
     } catch (InvalidHeaderException e) {
       throw new HttpSyntaxException("A header was invalid", e);
