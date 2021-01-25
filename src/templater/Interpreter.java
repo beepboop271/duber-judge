@@ -42,8 +42,8 @@ public class Interpreter {
     while (itr.hasNext()) {
       StringResolvable toResolve = itr.next();
       if (toResolve.isTemplate()) {
-        String[] content = toResolve.getContent().split(".");
-        Object o = this.namespace.get(toResolve.getContent());
+        String[] content = toResolve.getContent().split("\\.");
+        Object o = this.namespace.get(content[0]);
         if (content.length > 1) {
           o = resolveAttributes(o, content);
         }
@@ -247,20 +247,21 @@ public class Interpreter {
     interpreted.append("<");
     interpreted.append(resolveStrings(elem.getName()));
     if (elem.getId() != null) {
-      interpreted.append(" id=");
+      interpreted.append(" id=\"");
       interpreted.append(resolveStrings(elem.getId()));
+      interpreted.append("\"");
     }
 
     Iterator<StringResolvables> classes = elem.getClasses();
     if (classes.hasNext()) {
-      interpreted.append(" class='");
+      interpreted.append(" class=\"");
       while (classes.hasNext()) {
         interpreted.append(resolveStrings(classes.next()));
         interpreted.append(" ");
       }
       // get rid of trailing whitespace
       interpreted.deleteCharAt(interpreted.length() - 1);
-      interpreted.append("'");
+      interpreted.append("\"");
     }
 
     Iterator<Map.Entry<String, StringResolvables>> attributes =
@@ -269,9 +270,9 @@ public class Interpreter {
       Map.Entry<String, StringResolvables> attribute = attributes.next();
       interpreted.append(" ");
       interpreted.append(attribute.getKey());
-      interpreted.append("='");
+      interpreted.append("=\"");
       interpreted.append(resolveStrings(attribute.getValue()));
-      interpreted.append("'");
+      interpreted.append("\"");
     }
 
     interpreted.append(">");
