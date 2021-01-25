@@ -29,17 +29,17 @@ html(lang="en") {
             }
           }
           li.nav-item {
-            a.nav-link(href="#") {
+            a.nav-link(href=${leaderboardLink}) {
               "Leaderboard"
             }
           }
           li.nav-item {
-            a.nav-link(href="#") {
+            a.nav-link(href=${problemsLink}) {
               "Practice Problems"
             }
           }
           li.nav-item.active {
-            a.nva-link(href="#") {
+            a.nva-link(href=${profileLink}) {
               ${user.getUsername}
             }
           }
@@ -81,27 +81,25 @@ html(lang="en") {
             }
           }
           div.card-body {
-            div{
-              div.list-group.user.problem-list {
-                for (problem : problems) {
-                  a.list-group-item.list-group-item-action(href=${problem.getLink}) {
-                    div.d-flex.w-100.justify-content-between {
-                      h5.mb-1 {
-                        ${problem.getTitle}
-                      }
-                      p {
-                        ${userProblemPoints} "/" ${problem.getPoints}
-                      }
+            div.list-group.user.problem-list {
+              for (problem : problems) {
+                a.list-group-item.list-group-item-action(href=${problem.getLink}) {
+                  div.d-flex.w-100.justify-content-between {
+                    h5.mb-1 {
+                      ${problem.getTitle}
                     }
-                    small.text-muted.mr-4 {
-                      "Attempted by: " ${problem.getNumSubmissions}
+                    p {
+                      ${userProblemPoints} "/" ${problem.getPoints}
                     }
-                    small.text-muted.mr-4 {
-                      "Category: " ${problem.getCategory}
-                    }
-                    small.text-muted.mr-4 {
-                      "Clear rate: " ${problem.getClearRate}
-                    }
+                  }
+                  small.text-muted.mr-4 {
+                    "Attempted by: " ${problem.getNumSubmissions}
+                  }
+                  small.text-muted.mr-4 {
+                    "Category: " ${problem.getCategory}
+                  }
+                  small.text-muted.mr-4 {
+                    "Clear rate: " ${problem.getClearRate}
                   }
                 }
               }
@@ -110,8 +108,6 @@ html(lang="en") {
         }
       }
     }
-
-
     script(src="../../lib/static/jquery-3.4.1.slim.min.js") {}
     script(src="../../lib/static/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
     script(src="./scripts.js") {}
