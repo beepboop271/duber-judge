@@ -1,0 +1,95 @@
+html(lang="en") {
+  head {
+    meta(name="dubj" content="pls work");
+    meta(charset="utf-8");
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no");
+
+    title {
+      "Duber Judge"
+    }
+
+    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+
+    link(rel="stylesheet" href="./styles.css");
+  }
+  body {
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
+      a.navbar-brand(href="#") {
+        "DubJ"
+      }
+      button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
+        span.navbar-toggler-icon{}
+      }
+      div.collapse.navbar-collapse#navbarNav {
+        ul.navbar-nav.ml-auto {
+          li.nav-item {
+            a.nav-link(href="#") {
+              "Home"
+              span.sr-only {
+                "(current)"
+              }
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${leaderboardLink}) {
+              "Leaderboard"
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${problemsLink}) {
+              "Practice Problems"
+            }
+          }
+          li.nav-item.active {
+            a.nav-link(href=${profileLink}) {
+              ${username}
+            }
+          }
+        }
+      }
+    }
+    div.create-problem-container {
+
+      h3 {
+        "Submit solution to problem "${problem.getTitle}
+      }
+
+      form.submit-solution.needs-validation(novalidate action="/" method="post") {
+
+        div.mb-3 {
+          label(for="solution") {
+            "Solution code:"
+          }
+          textarea.form-control#solution(name="solution" placeholder="// Code" required) {}
+          div.invalid-feedback {
+            "Please enter some valid code."
+          }
+        }
+
+        div.form-group {
+          label(for="points") {
+            "Language:"
+          }
+          select.custom-select(name="language" required) {
+            option(value="JAVA") {
+              "Java"
+            }
+            option(value="PYTHON") {
+              "Python"
+            }
+          }
+          div.invalid-feedback {
+            "Example invalid custom select feedback"
+          }
+        }
+
+        button.btn.btn-primary(type="submit") {
+          "Submit"
+        }
+      }
+    } 
+    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="./scripts.js") {}
+  }
+}
