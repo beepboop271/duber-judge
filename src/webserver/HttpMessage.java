@@ -16,9 +16,9 @@ import java.util.Map;
  * This message will accept both Strings and byte arrays as
  * valid forms of body. Strings will be converted into UTF-8
  * byte arrays. For the sake of convenience, the majority of
- * the constructors will use Strings for body, as byte arrays are
- * less readable and should only be used to represent
- * objects that cannot be Strings (eg. files).
+ * the constructors will use Strings for body, as byte
+ * arrays are less readable and should only be used to
+ * represent objects that cannot be Strings (eg. files).
  * <p>
  * Created <b> 2021-01-01 </b>
  *
