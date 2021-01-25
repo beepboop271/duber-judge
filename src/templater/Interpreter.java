@@ -1,5 +1,6 @@
 package templater;
 
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -40,7 +41,19 @@ public class Interpreter {
     while (itr.hasNext()) {
       StringResolvable toResolve = itr.next();
       if (toResolve.isTemplate()) {
-        sb.append(this.namespace.get(toResolve.getContent()).toString());
+        String[] content = toResolve.getContent().split(".");
+        Object o = this.namespace.get(toResolve.getContent());
+        if (content.length > 1) {
+          for (int i = 1; i < content.length; i++) {
+            try {
+              Method method = o.getClass().getMethod(content[i]);
+              o = method.invoke(o);
+            } catch (NoSuchMethodException | SecurityException e) {
+              e.printStackTrace();
+            }
+          }
+        }
+        sb.append(o.toString());
       } else {
         sb.append(toResolve.getContent());
       }
