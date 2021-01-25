@@ -6,20 +6,20 @@ html(lang="en") {
     title {
       "Duber Judge"
     }
-    link(rel="stylesheet" href="../../vendored/static/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
     link(rel="stylesheet" href="./styles.css");
   }
   
   body {
-    nav.navbar navbar-expand-lg.navbar-light.bg-light.sticky-top) {
-      a.navbar-brand.(href="#") {
-        DubJ
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top) {
+      a.navbar-brand(href="#") {
+        "DubJ"
       }
       button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
         span.navbar-toggler-icon {}
       }
       div.collapse navbar-collapse#navbarNav {
-        ul.navbar-nav ml-auto {
+        ul.navbar-nav.ml-auto {
           li.nav-item {
             a.nav-link(href="#") {
               "Home"
@@ -55,13 +55,13 @@ html(lang="en") {
               ${username}
             }
             p.card-text {
-              "Number of Submissions:" ${submissionsCount}
+              "Number of Submissions: "${submissionsCount}
             }
             p.card-text {
-              "Number of Problems:" ${problemsSolved}
+              "Number of Problems: "${problemsSolved}
             }
             p.card-text {
-              "Points:" ${currentPoints}
+              "Points: "${currentPoints}
             }
           }
         }
@@ -97,17 +97,17 @@ html(lang="en") {
                       ${problem.getTitle}
                     }
                     p {
-                      ${problem.getUserScore} "/" ${problem.getPoints}
+                      ${problem.getUserScore}"/"${problem.getPoints}
                     }
                   }
                   small.text-muted.mr-4 {
-                    "Attempted by: " ${problem.getNumSubmissions}
+                    "Attempted by: "${problem.getNumSubmissions}
                   }
                   small.text-muted.mr-4 {
-                    "Category: " ${problem.getCategory}
+                    "Category: "${problem.getCategory}
                   }
                   small.text-muted.mr-4 {
-                    "Clear rate: " ${problem.getClearRate}
+                    "Clear rate: "${problem.getClearRate}
                   }
                 }
               }
@@ -116,8 +116,8 @@ html(lang="en") {
         }
       }
     }
-    script(src="./vendored/static/jquery-3.4.1.slim.min.js") {}
-    script(src="./vendored/static/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
+    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
     script(src="./scripts.js") {}
   }
 }
