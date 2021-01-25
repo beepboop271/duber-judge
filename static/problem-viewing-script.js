@@ -6,7 +6,6 @@ var MathJax = {
 
 
 const input = $('#problem-viewing-latex-input')[0];
-console.log(input);
 const out = $('#problem-viewing-latex')[0];
 out.innerHTML = marked(input.value);
 
