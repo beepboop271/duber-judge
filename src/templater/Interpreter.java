@@ -1,5 +1,6 @@
 package templater;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
@@ -48,7 +49,13 @@ public class Interpreter {
             try {
               Method method = o.getClass().getMethod(content[i]);
               o = method.invoke(o);
-            } catch (NoSuchMethodException | SecurityException e) {
+            } catch (
+              NoSuchMethodException
+              | SecurityException
+              | IllegalAccessException
+              | IllegalArgumentException
+              | InvocationTargetException e
+            ) {
               e.printStackTrace();
             }
           }
@@ -59,6 +66,118 @@ public class Interpreter {
       }
     }
     return sb.toString();
+  }
+
+  /**
+   * Handles interpretation as it occurs on loops. This helper
+   * exists solely for aesthetic purposes, to maintain overall
+   * readability.
+   *
+   * @param loopTarget  The target array or collection to be
+   *                    looped over.
+   * @param loop        The {@code Loop} the walk is currently
+   *                    on.
+   * @param interpreted The {@code StringBuilder} of the
+   *                    interpreted HTML string thus far.
+   * @return StringBuilder, the updated HTML string's
+   *         StringBuilder.
+   */
+  public StringBuilder handleLoop(
+    Object loopTarget,
+    Loop loop,
+    StringBuilder interpreted
+  ) {
+    if (loopTarget instanceof Iterable<?>) {
+      for (Object item : (Iterable<?>)loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof boolean[]) {
+      for (Object item : (boolean[])loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof byte[]) {
+      for (Object item : (byte[])loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+
+    }
+    if (loopTarget instanceof short[]) {
+      for (Object item : (short[])loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof char[]) {
+      for (Object item : (char[])loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof int[]) {
+      for (Object item : (int[])loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof long[]) {
+      for (Object item : (float[])loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+
+    }
+    if (loopTarget instanceof float[]) {
+      for (Object item : (float[])loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof double[]) {
+      for (Object item : (double[])loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof Object[]) {
+      for (Object item : (Object[])loopTarget) {
+        interpreted = handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    throw new AssertionError("Attempting to loop over a non-array, non-iterable object");
+  }
+
+  /**
+   * Handles one round of interpretation for an item that's
+   * part of an array or a collection being looped over. This
+   * helper exists purely for aesthetic purposes.
+   *
+   * @param loop        The {@code Loop} the interpretation
+   *                    walk is currently in.
+   * @param interpreted The {@code StringBuilder} of the
+   *                    interpreted HTML string thus far.
+   * @param curItem     The {@code Object} part of the item
+   *                    being looped over that this walk is
+   *                    currently processing.
+   * @return StringBuilder, the updated HTML string's
+   *         StringBuilder.
+   */
+  public StringBuilder handleIteration(
+    Loop loop,
+    StringBuilder interpreted,
+    Object curItem
+  ) {
+    this.namespace.put(loop.getLoopVariable(), curItem);
+    Iterator<LanguageElement> children = loop.getChildren();
+    while (children.hasNext()) {
+      interpreted = interpretHelper(children.next(), interpreted);
+    }
+    return interpreted;
   }
 
   /**
@@ -101,17 +220,7 @@ public class Interpreter {
     if (curElem instanceof Loop) {
       Loop loop = (Loop)curElem;
       Object loopTarget = this.namespace.get(resolveStrings(loop.getTarget()));
-      if (loopTarget instanceof Iterable<?>) {
-        for (Object item : (Iterable<Object>)loopTarget) {
-          this.namespace.put(loop.getLoopVariable(), item);
-          Iterator<LanguageElement> children = loop.getChildren();
-          while (children.hasNext()) {
-            interpreted = interpretHelper(children.next(), interpreted);
-          }
-        }
-        return interpreted;
-      }
-      // TODO: else throw exception? also arrays?????
+      return handleLoop(loopTarget, loop, interpreted);
     }
 
     // only option left is element
