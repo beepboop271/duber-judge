@@ -117,7 +117,7 @@ html(lang="en") {
       }
     }
     script(src="./vendored/static/jquery-3.4.1.slim.min.js") {}
-    script(src="./vendored/static/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
+    script(src="./vendored/static/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
     script(src="./scripts.js") {}
   }
 }
