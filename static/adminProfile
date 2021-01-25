@@ -10,7 +10,7 @@ html(lang="en") {
 
     script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
 
-    link(rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
     link(rel="stylesheet" href="./styles.css");
 
@@ -65,7 +65,7 @@ html(lang="en") {
               }
             }
             a.settings-logo-wrapper text-dark(href="/") {
-              i.fas fa-cog{}
+              i.fas.fa-cog{}
             }
           }
         }
@@ -101,17 +101,17 @@ html(lang="en") {
                       ${problem.getTitle}
                     }
                     p {
-                      ${problem.getUserScore} "/" ${problem.getPoints}
+                      ${userScore}"/"${problem.getPoints}
                     }
                   }
                   small.text-muted.mr-4 {
-                    "Attempted by: " ${problem.getNumSubmissions}
+                    "Attempted by: "${problem.getNumSubmissions}
                   }
                   small.text-muted.mr-4 {
-                    "Category: " ${problem.getCategory}
+                    "Category: "${problem.getCategory}
                   }
                   small.text-muted.mr-4 {
-                    "Clear rate: " ${problem.getClearRate}
+                    "Clear rate: "${problem.getClearRate}
                   }
                 }
               }
@@ -120,8 +120,8 @@ html(lang="en") {
         }
       }
     }
-    script(src="./vendored/static/jquery-3.4.1.slim.min.js") {}
-    script(src="./vendored/static/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
     script(src="./scripts.js") {}
   }
 }
