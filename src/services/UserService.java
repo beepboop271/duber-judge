@@ -5,14 +5,11 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
 
-import dal.dao.ContestDao;
 import dal.dao.ContestSessionDao;
 import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
 import dal.dao.UserDao;
-import entities.Contest;
 import entities.ContestSession;
-import entities.ContestStatus;
 import entities.ContestSessionStatus;
 import entities.Entity;
 import entities.SubmissionResult;
@@ -21,7 +18,8 @@ import entities.UserType;
 import entities.entity_fields.UserField;
 
 /**
- * [description]
+ * Handles all the logic relating to users, such as registering
+ * new users, logging in, getting user profile information, etc.
  * <p>
  * Created on 2021.01.11.
  *
@@ -30,19 +28,24 @@ import entities.entity_fields.UserField;
  * @since 1.0.0
  */
 public class UserService {
-
   private UserDao userDao;
   private SubmissionDao submissionDao;
-  private ContestDao contestDao;
   private ContestSessionDao contestSessionDao;
 
+  /**
+   * Creates a new user service.
+   */
   public UserService() {
     this.userDao = new UserDao();
     this.submissionDao = new SubmissionDao();
-    this.contestDao = new ContestDao();
     this.contestSessionDao = new ContestSessionDao();
   }
 
+  /**
+   * Generates a random 16bytes salt.
+   *
+   * @return    The base64 encoded salt.
+   */
   private String generateSalt() {
     SecureRandom random = new SecureRandom();
     byte[] salt = new byte[16];
@@ -50,6 +53,14 @@ public class UserService {
     return Base64.getEncoder().encodeToString(salt);
   }
 
+  /**
+   * Appends a given salt to the end of the plain-text password
+   * and hashes it using SHA-256.
+   *
+   * @param password     The plain-text password.
+   * @param salt         The salt.
+   * @return             The hashed password as a base64 string.
+   */
   private String hashPassword(String password, String salt) {
     String hashed = null;
     try {
@@ -90,6 +101,15 @@ public class UserService {
     return password.matches("^(?=.*[0-9])(?=.*[a-zA-Z])\\S{6,25}$");
   }
 
+  /**
+   * Validates the desired user credentials.
+   *
+   * @param username                    The username.
+   * @param password                    The password.
+   * @throws IllegalArgumentException   If the desired credentials are invalid.
+   * @see #validateUsername(String)
+   * @see #validatePassword(String)
+   */
   private void validateUser(String username, String password)
     throws IllegalArgumentException {
     if (!this.validateUsername(username)) {
@@ -104,6 +124,14 @@ public class UserService {
     }
   }
 
+  /**
+   * Creates a new user.
+   *
+   * @param username                     The username.
+   * @param password                     The password.
+   * @return                             The user ID.
+   * @throws IllegalArgumentException    If the desired username or password is invalid.
+   */
   public long createUser(String username, String password)
     throws IllegalArgumentException {
     this.validateUser(username, password);
@@ -113,6 +141,16 @@ public class UserService {
       .add(new User(username, hashed, UserType.STANDARD, salt));
   }
 
+
+  /**
+   * Creates a user with admin privileges.
+   * Check {@link AdminService} to learn more about admin.
+   *
+   * @param username                  The username.
+   * @param password                  The password.
+   * @return                          The user ID.
+   * @throws IllegalArgumentException If the desired username or password is invalid.
+   */
   public long createAdmin(String username, String password)
     throws IllegalArgumentException {
     this.validateUser(username, password);
@@ -121,6 +159,16 @@ public class UserService {
     return this.userDao.add(new User(username, hashed, UserType.ADMIN, salt));
   }
 
+  /**
+   * Attempts to log in the user given their username and password.
+   * If the login is a success, it returns the user ID, otherwise,
+   * it throws an exception.
+   *
+   * @param username                   The username.
+   * @param password                   The password.
+   * @return                           The user ID.
+   * @throws IllegalArgumentException  Incorrect username or password.
+   */
   public long login(String username, String password)
     throws IllegalArgumentException {
     long id = 0;
@@ -141,6 +189,13 @@ public class UserService {
     return id;
   }
 
+  /**
+   * Given a user ID and a username, check if they refer to the same user.
+   *
+   * @param userId     The user ID.
+   * @param username   The username.
+   * @return           Whether or not they are the same user.
+   */
   public boolean isSameUser(long userId, String username) {
     try {
       return this.userDao.get(userId).getContent().getUsername().equals(username);
@@ -149,6 +204,18 @@ public class UserService {
     }
   }
 
+  /**
+   * Updates a user profile field,
+   * such as their username, description or profile picture.
+   *
+   * @param <T>                       The type of value the new field is.
+   * @param userId                    The user's ID.
+   * @param field                     The field that is being updated.
+   * @param value                     The new value of the field.
+   * @throws RecordNotFoundException  If the user is not found.
+   * @throws IllegalArgumentException If the new value is invalid.
+   * @see    InvalidArguments
+   */
   public <T> void updateUserProfile(long userId, UserField field, T value)
     throws RecordNotFoundException, IllegalArgumentException {
     switch (field) {
@@ -159,6 +226,14 @@ public class UserService {
     this.userDao.update(userId, field, value);
   }
 
+  /**
+   * Updates a user's password given their old password and new desired password.
+   *
+   * @param userId                    The user's ID.
+   * @param oldPassword               Their old password.
+   * @param newPassword               The new desired password.
+   * @throws IllegalArgumentException If the user is not found.
+   */
   public void updateUserPassword(
     long userId,
     String oldPassword,
@@ -185,6 +260,14 @@ public class UserService {
     }
   }
 
+  /**
+   * Checks whether or not this user is an admin.
+   *
+   * @param userId                    The user's ID.
+   * @return                          Whether or not the user is an admin.
+   * @throws RecordNotFoundException  If the user does not exist.
+   * @see AdminService
+   */
   public boolean isAdmin(long userId) throws RecordNotFoundException {
     User user = this.userDao.get(userId).getContent();
     return user.getUserType() == UserType.ADMIN;
@@ -257,10 +340,25 @@ public class UserService {
     return this.contestSessionDao.getContestsByStatus(userId, ContestSessionStatus.ONGOING);
   }
 
+  /**
+   * Gets the number of contests that the user is currently participating in.
+   *
+   * @param userId      The user's ID.
+   * @return            The number of contests.
+   */
   public int getNumActiveContests(long userId) {
     return this.contestSessionDao.getNumContests(userId);
   }
 
+  /**
+   * Gets the contests that the user is currently participating in
+   * and their corresponding statuses.
+   *
+   * @param userId          The user's ID.
+   * @param index           The index used for pagination.
+   * @param numSessions     The number of contests to retrieve for pagination.
+   * @return                A list of all contests.
+   */
   public ArrayList<Entity<ContestSession>> getActiveSessions(
     long userId,
     int index,
@@ -291,6 +389,12 @@ public class UserService {
     return this.submissionDao.countByUserAndProblem(userId, problemId);
   }
 
+  /**
+   * Gets the total number of points a user has.
+   *
+   * @param userId     The user's ID.
+   * @return           The number of points a user has.
+   */
   public int getPoints(long userId) {
     return this.userDao.getPoints(userId);
   }

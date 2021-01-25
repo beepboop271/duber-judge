@@ -52,6 +52,9 @@ public class ContestStatusUpdater {
     private ContestSessionDao contestSessionDao;
     private ContestDao contestDao;
 
+    /**
+     * Creates a new {@code StatusUpdater} {@code Runnable} object.
+     */
     public StatusUpdater() {
       this.contestSessionDao = new ContestSessionDao();
       this.contestDao = new ContestDao();

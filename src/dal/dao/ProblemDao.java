@@ -25,7 +25,7 @@ import entities.entity_fields.ProblemField;
 import services.InvalidArguments;
 
 /**
- * [description]
+ * {@code DAO} for {@link Problem}.
  * <p>
  * Created on 2021.01.10.
  *

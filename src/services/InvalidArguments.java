@@ -1,7 +1,7 @@
 package services;
 
 /**
- * [description]
+ * A list of invalid arguments that may be encountered.
  * <p>
  * Created on 2021.01.11.
  *

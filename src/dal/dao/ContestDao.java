@@ -12,7 +12,6 @@ import org.sqlite.SQLiteErrorCode;
 import dal.connection.ConnectDB;
 import dal.connection.GlobalConnectionPool;
 import entities.Contest;
-import entities.ContestSessionStatus;
 import entities.ContestStatus;
 import entities.Entity;
 import entities.PublishingState;
@@ -20,7 +19,7 @@ import entities.entity_fields.ContestField;
 import services.InvalidArguments;
 
 /**
- * [description]
+ * {@code DAO} for {@link Contest}.
  * <p>
  * Created on 2021.01.10.
  *

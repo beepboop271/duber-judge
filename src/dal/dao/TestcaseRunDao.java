@@ -13,7 +13,7 @@ import entities.ExecutionStatus;
 import entities.TestcaseRun;
 
 /**
- * [description]
+ * {@code DAO} for {@link TestcaseRun}.
  * <p>
  * Created on 2021.01.10.
  *
