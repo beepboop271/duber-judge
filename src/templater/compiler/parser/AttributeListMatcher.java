@@ -3,6 +3,7 @@ package templater.compiler.parser;
 import java.util.List;
 
 import templater.compiler.tokeniser.Token;
+import templater.language.AttributeElement;
 
 class AttributeListMatcher extends TokenMatchable<List<AttributeElement>> {
   @Override

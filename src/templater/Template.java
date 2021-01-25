@@ -7,6 +7,7 @@ import templater.compiler.LanguageElement;
 import templater.compiler.parser.Parser;
 import templater.compiler.tokeniser.Tokeniser;
 import templater.compiler.tokeniser.UnknownTokenException;
+import templater.language.Root;
 
 /**
  * A class representing an entire HTML template, consisting

@@ -4,16 +4,17 @@ import templater.compiler.tokeniser.Token;
 import templater.compiler.tokeniser.TokenKind;
 
 class TokenMatcher extends TokenMatchable<Token> {
-  private TokenKind kind;
-  private char punctuationChar;
+  private final TokenKind kind;
+  private final char punctuationChar;
 
   TokenMatcher(char c) {
-    this.punctuationChar = c;
     this.kind = TokenKind.PUNCTUATION;
+    this.punctuationChar = c;
   }
 
   TokenMatcher(TokenKind kind) {
     this.kind = kind;
+    this.punctuationChar = 0;
   }
 
   @Override

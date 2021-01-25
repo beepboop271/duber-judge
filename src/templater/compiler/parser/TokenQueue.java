@@ -17,7 +17,7 @@ public class TokenQueue extends ArrayListQueue<Token> {
   }
 
   public class Iterator extends ArrayListQueue<Token>.Iterator {
-    private ArrayDeque<Integer> marks;
+    private final ArrayDeque<Integer> marks;
 
     public Iterator() {
       super();

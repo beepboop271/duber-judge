@@ -1,7 +1,7 @@
 package templater.compiler.parser;
 
-import templater.StringResolvables;
 import templater.compiler.tokeniser.Token;
+import templater.language.StringResolvables;
 
 class IdAttributeMatcher extends TokenMatchable<StringResolvables> {
   @Override

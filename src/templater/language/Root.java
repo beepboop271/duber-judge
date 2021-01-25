@@ -1,4 +1,4 @@
-package templater;
+package templater.language;
 
 import java.util.List;
 
@@ -11,8 +11,7 @@ import templater.compiler.LanguageElement;
  * @author Kevin Qiao
  * @version 1.0
  */
-class Root extends Node {
-
+public class Root extends Node {
   /**
    * Creates a new {@code Root}, given a list of its children.
    *

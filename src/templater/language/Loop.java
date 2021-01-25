@@ -1,4 +1,4 @@
-package templater;
+package templater.language;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import templater.compiler.LanguageElement;
  * @version 1.0
  */
 public class Loop extends Node {
-  private StringResolvables target;
-  private String loopVariable;
+  private final StringResolvables target;
+  private final String loopVariable;
 
   /**
    * Creates a new {@code Loop}, given a list of children, the
@@ -40,7 +40,7 @@ public class Loop extends Node {
   /**
    * Retrieves the variable associated with this loop's target.
    *
-   * @return StringResolvables, the target variable. 
+   * @return The target variable.
    */
   public StringResolvables getTarget() {
     return this.target;
@@ -49,7 +49,7 @@ public class Loop extends Node {
   /**
    * Retrieves this loop's loop variable.
    *
-   * @return String, the loop variable.
+   * @return The loop variable.
    */
   public String getLoopVariable() {
     return this.loopVariable;

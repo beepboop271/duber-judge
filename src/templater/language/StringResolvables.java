@@ -1,4 +1,4 @@
-package templater;
+package templater.language;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +36,10 @@ public class StringResolvables extends LanguageElement implements
     return this.new Iterator();
   }
 
-  class Iterator implements java.util.Iterator<StringResolvable> {
+  public class Iterator implements java.util.Iterator<StringResolvable> {
     private final java.util.Iterator<Token> it;
 
-    Iterator() {
+    private Iterator() {
       this.it = StringResolvables.this.tokens.iterator();
     }
 

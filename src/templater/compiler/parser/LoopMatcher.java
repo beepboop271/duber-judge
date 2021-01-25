@@ -2,11 +2,12 @@ package templater.compiler.parser;
 
 import java.util.List;
 
-import templater.Loop;
 import templater.compiler.LanguageElement;
 import templater.compiler.parser.TokenQueue.Iterator;
 import templater.compiler.tokeniser.Token;
 import templater.compiler.tokeniser.TokenKind;
+import templater.language.AttributeElement;
+import templater.language.Loop;
 
 class LoopMatcher extends TokenMatchable<Loop> {
   @Override

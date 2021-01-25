@@ -6,6 +6,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 import templater.compiler.LanguageElement;
+import templater.language.Element;
+import templater.language.Loop;
+import templater.language.Root;
+import templater.language.StringResolvable;
+import templater.language.StringResolvables;
 
 /**
  * A class for a {@code Interpreter} that can read templates
@@ -213,7 +218,7 @@ public class Interpreter {
   }
 
   /**
-   * Appends to the given HTML string associated with the {@code Template} 
+   * Appends to the given HTML string associated with the {@code Template}
    * by recursively walking through the syntax tree and translating each
    * {@code LanguageElement}.
    *
@@ -276,7 +281,7 @@ public class Interpreter {
     }
 
     interpreted.append(">");
-    
+
     if (elem.isEmpty()) {
       return interpreted;
     }

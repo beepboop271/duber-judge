@@ -1,15 +1,15 @@
-package templater;
+package templater.language;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import templater.ReadOnlyIterator;
 import templater.compiler.LanguageElement;
 
 /**
- * A class representing a {@code Element}, an HTML
- * element.
+ * A class representing a {@code Element}, an HTML element.
  *
  * @author Kevin Qiao, Paula Yuan
  * @version 1.0
@@ -58,7 +58,7 @@ public class Element extends Node {
   /**
    * Retrieves this element's name.
    *
-   * @return StringResolvables, the name of this element.
+   * @return The name of this element.
    */
   public StringResolvables getName() {
     return this.name;
@@ -67,7 +67,7 @@ public class Element extends Node {
   /**
    * Retrieves this element's id.
    *
-   * @return StringResolvables, the element's id.
+   * @return The element's id.
    */
   public StringResolvables getId() {
     return this.id;
@@ -76,7 +76,7 @@ public class Element extends Node {
   /**
    * Retrieves whether this element is empty.
    *
-   * @return boolean, whether the element is empty.
+   * @return Whether the element is empty.
    */
   public boolean isEmpty() {
     return this.isEmpty;
@@ -85,8 +85,7 @@ public class Element extends Node {
   /**
    * Retrieves this element's attribute list as an iterator.
    *
-   * @return ReadOnlyIterator<Map.Entry<String,
-   *         StringResolvables>>, the attributes.
+   * @return The attributes.
    */
   public ReadOnlyIterator<Map.Entry<String, StringResolvables>> getAttributes() {
     return new ReadOnlyIterator<>(this.attributes.entrySet().iterator());
@@ -95,7 +94,7 @@ public class Element extends Node {
   /**
    * Retrieves this element's class list as an iterator.
    *
-   * @return ReadOnlyIterator<StringResolvables>, the classes.
+   * @return The classes.
    */
   public ReadOnlyIterator<StringResolvables> getClasses() {
     return new ReadOnlyIterator<>(this.classes.iterator());

@@ -2,11 +2,11 @@ package templater.compiler.parser;
 
 import java.util.Collection;
 
-import templater.Element;
 import templater.compiler.tokeniser.Token;
+import templater.language.Element;
 
 public class Parser {
-  private TokenQueue tokens;
+  private final TokenQueue tokens;
 
   public Parser(Collection<Token> tokens) {
     this.tokens = new TokenQueue(tokens);

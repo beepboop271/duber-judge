@@ -1,4 +1,4 @@
-package templater;
+package templater.language;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,7 +12,7 @@ import templater.compiler.LanguageElement;
  * @author Kevin Qiao
  * @version 1.0
  */
-class Node extends LanguageElement {
+public class Node extends LanguageElement {
   private final List<LanguageElement> children;
 
   /**
@@ -27,18 +27,9 @@ class Node extends LanguageElement {
   /**
    * Retrieves this node's children as an iterator.
    *
-   * @return Iterator<LanguageElement>, the children.
+   * @return The children.
    */
   public Iterator<LanguageElement> getChildren() {
     return this.children.iterator();
-  }
-
-  /**
-   * Adds a child to this node.
-   *
-   * @param n the {@code LanguageElement} to add as a child.
-   */
-  public void addChild(LanguageElement n) {
-    this.children.add(n);
   }
 }

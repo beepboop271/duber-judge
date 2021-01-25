@@ -1,4 +1,4 @@
-package templater;
+package templater.language;
 
 import templater.compiler.tokeniser.Token;
 import templater.compiler.tokeniser.TokenKind;
@@ -11,10 +11,10 @@ import templater.compiler.tokeniser.TokenKind;
  * @author Kevin Qiao
  * @version 1.0
  */
-class StringResolvable {
+public class StringResolvable {
   private final String content;
   private final boolean isTemplate;
-  
+
   /**
    * Creates a new {@code StringResolvable}, given a token.
    *

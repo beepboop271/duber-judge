@@ -3,11 +3,9 @@ package templater.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import templater.compiler.LanguageElement;
-
 class MatchUtils {
   static class OneOf<T> extends TokenMatchable<T> {
-    private TokenMatchable<? extends T>[] matchers;
+    private final TokenMatchable<? extends T>[] matchers;
 
     @SafeVarargs  // array is only read from-> never perform operations-> safe
     OneOf(TokenMatchable<? extends T>... matchers) {
@@ -27,7 +25,7 @@ class MatchUtils {
   }
 
   static class ZeroOrMore<T> extends TokenMatchable<List<T>> {
-    private TokenMatchable<T> matcher;
+    private final TokenMatchable<T> matcher;
 
     ZeroOrMore(TokenMatchable<T> matcher) {
       this.matcher = matcher;
@@ -49,7 +47,7 @@ class MatchUtils {
   }
 
   static class OneOrMore<T> extends TokenMatchable<List<T>> {
-    private TokenMatchable<T> matcher;
+    private final TokenMatchable<T> matcher;
 
     OneOrMore(TokenMatchable<T> matcher) {
       this.matcher = matcher;
