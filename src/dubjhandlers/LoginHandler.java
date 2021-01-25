@@ -83,8 +83,7 @@ public class LoginHandler implements RouteTarget {
 
   private Response getLoginSignupPage(Request req, boolean hasBody) {
     // TODO: get user from db so we can redirect them to profile
-    if (this.getActiveSession(req) == null) {
-
+    if (this.getActiveSession(req) != null) {
       return Response.temporaryRedirect("/problems");
     }
 
@@ -160,7 +159,7 @@ public class LoginHandler implements RouteTarget {
 
   private Response loadOriginalPage(boolean hasBody) {
     // login page is static, no need to call templater
-    String path = "/static/login.html";
+    String path = "./static/login.html";
     byte[] fileData;
     try {
       fileData = WebServer.loadFile(path);

@@ -484,6 +484,16 @@ public class Response extends HttpMessage {
   }
 
   /**
+   * Generates a generic {@code 404 Not Found} response, with
+   * no body.
+   *
+   * @return a 404 HTTP response object.
+   */
+  public static Response notFound() {
+    return new Response(404);
+  }
+
+  /**
    * Generates a generic HTML page to represent a
    * {@code 404 Not Found} response, with the associated
    * headers and the appropriate headers.

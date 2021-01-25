@@ -10,7 +10,7 @@ html(lang="en") {
 
     script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
 
-    link(rel="stylesheet" href="./lib/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
     link(rel="stylesheet" href="./styles.css");
 
@@ -105,8 +105,8 @@ html(lang="en") {
         }
       }
     }
-    script(src="../../lib/static/jquery-3.4.1.slim.min.js") {}
-    script(src="../../lib/static/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
+    script(src="../../vendored/static/jquery-3.4.1.slim.min.js") {}
+    script(src="../../vendored/static/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
     script(src="./scripts.js") {}
   }
 }
