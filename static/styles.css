@@ -122,3 +122,7 @@ body {
 #problem-viewing-latex-input {
   display: none;
 }
+
+.leaderboard {
+  width: 100%;
+}
