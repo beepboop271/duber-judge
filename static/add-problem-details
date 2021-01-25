@@ -1,0 +1,226 @@
+html(lang="en") {
+  head {
+    meta(name="dubj" content="pls work");
+    meta(charset="utf-8");
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no");
+
+    title {
+      "Duber Judge"
+    }
+
+    script(src="./static/vendored/marked-1.2.7.min.js") {}
+    script(src="./static/vendored/purify-2.2.6.min.js") {}
+    script(defer src="./static/vendored/mathjax-tex-chtml-3.1.2.js") {}
+
+    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+
+    link(rel="stylesheet" href="./styles.css");
+
+  }
+  body {
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
+      a.navbar-brand(href="#") {
+        "DubJ"
+      }
+      button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
+        span.navbar-toggler-icon{}
+      }
+      div.collapse.navbar-collapse#navbarNav {
+        ul.navbar-nav.ml-auto {
+          li.nav-item {
+            a.nav-link(href="#") {
+              "Home"
+              span.sr-only {
+                "(current)"
+              }
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${leaderboardLink}) {
+              "Leaderboard"
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${problemsLink}) {
+              "Practice Problems"
+            }
+          }
+          li.nav-item.active {
+            a.nva-link(href=${profileLink}) {
+              ${user.getUsername}
+            }
+          }
+        }
+      }
+    }
+    div.create-problem-container {
+      h3 {
+        "Practice problem"
+      }
+
+      form.create-practice-problem.needs-validation(novalidate action="/" method="post") {
+        div.mb-3 {
+          label(for="title") {
+            "Enter a title"
+          }
+          input.form-control#title(name="title" placeholder="Title" required) {}
+          div.invalid-feedback {
+            "Please enter a title"
+          }
+        }
+        
+        label(for="description") {
+          "Problem description:"
+        }
+        div.mb-3.add-problem.description" {
+          textarea.form-control#input-description(rows="5" cols="33") {
+"# CCC '19 S2 - Pretty Average Primes
+
+---
+
+*This is a demo of Markdown, Asciimath, and Latex.*
+
+**Canadian Computing Competition: 2019 Stage 1, Senior #2**
+
+*[Asciimath](http://asciimath.org/): Use* `@@` *as delimiters.*
+
+*Latex: Use* `\\\\(` *and* `\\\\)` *for inline math* \\\\(x+y\\\\)*, and* `\\\\[` *with* `\\\\]` *for display math* \\\\[x+y\\\\]
+*Two backslashes are required since the Markdown renderer uses* `\\` *as an escape character thus* `\\\\` *produces* \\\\.
+
+***Avoid mixing Asciimath and Latex within the same paragraph, this works very unreliably.***
+
+For various given positive integers @@N>3@@, find two primes, @@A@@ and @@B@@ such that @@N@@ is the average (mean) of @@A@@ and @@B@@. That is, @@N@@ should be equal to @@(A+B)/2@@.
+
+Recall that a prime number is an integer \\\\(P>1\\\\) which is only divisible by \\\\(1\\\\) and \\\\(P\\\\). For example, \\\\(2, 3, 5, 7, 11\\\\) are the first few primes, and \\\\(4, 6, 8, 9\\\\) are not prime numbers.
+
+## Input Specification
+
+The first line of input is the number @@T@@ (@@1<=T<=1000@@), which is the number of test cases. Each of the next @@T@@ lines contain one integer @@N_i@@ (@@4<=N_i<=1000000@@, @@1<=i<=T@@).
+
+For 6 of the available 15 marks, all \\\\(N_i< 1000\\\\).
+
+## Output Specification
+
+The output will consist of @@T@@ lines. The @@i^(th)@@ line of output will contain two integers, @@A_i@@ and @@B_i@@, separated by one space. It should be the case that @@N_i=(A_i+B_i)/2@@ and that @@A_i@@ and @@B_i@@ are prime numbers.
+
+If there are more than one possible @@A_i@@ and @@B_i@@ for a particular @@N_i@@, output any such pair. The order of the pair @@A_i@@ and @@B_i@@ does not matter.
+
+It will be the case that there will always be at least one set of values \\\\(A_i\\\\) and \\\\(B_i\\\\) for any given \\\\(N_i\\\\).
+
+*Note: dubj does not support a grader that is order agnostic.*
+
+## Sample Input 1
+
+```
+4
+8
+4
+7
+21
+```
+
+## Sample Output 1
+
+```
+3 13
+5 3
+7 7
+13 29
+```
+
+## Explanation of Possible Output for Sample Input
+
+Notice that:
+
+\\\\begin{align}
+  8 &= \\\\frac{3+13}{2} \\\\\\\\
+  4 &= \\\\frac{5+3}{2} \\\\\\\\
+  7 &= \\\\frac{7+7}{2} \\\\\\\\
+  21 &= \\\\frac{13+29}{2}
+\\\\end{align}
+
+It is interesting to note, that we can also write
+
+\\\\begin{align}
+  8 &= \\\\frac{5+11}{2} \\\\\\\\
+  21 &= \\\\frac{5+37}{2} = \\\\frac{11+31}{2} = \\\\frac{19+23}{2} \\\\\\\\
+  7 &= \\\\frac{3+11}{2}
+\\\\end{align}
+
+and so any of these pairs could have also been used in output. There is no pairs of primes other than @@3@@ and @@5@@ which average to the value of @@4@@."
+          }
+          div#output-description {}
+          div.invalid-feedback {
+            "Please enter a description."
+          }
+        }
+
+        div.mb-3 {
+          label(for="points") {
+            "Points:"
+          }
+          input.form-control.range#points(name="points" type="number" min="0" step="1" max="30" data-bind="value:points" required);
+        }
+
+        div.mb-3 {
+          label(for="memory") {
+            "Memory limit:"
+          }
+          input.form-control.range#memory(name="memoryLimit" type="number" min="0" max="300000" data-bind="value:points" required);
+        }
+
+        div.mb-3 {
+          label(for="output") {
+            "Output limit:"
+          }
+          input.form-control.range#output(name="outputLimit" type="number" min="0" max="9999999" data-bind="value:points" required);
+        }
+
+        div.form-group {
+          label(for="points") {
+            "Category:"
+          }
+          select.custom-select(name="category" required) {
+            option(value="GRAPH_THEORY") {
+              "Graph theory"
+            }
+            option(value="NUMBER_THEORY") {
+              "Number theory"
+            }
+            option(value="STRING_ANALYSIS") {
+              "String analysis"
+            }
+            option(value="DATA_STRUCTURES") {
+              "Data structures"
+            }
+            option(value="COMBINATORICS") {
+              "Combinatorics"
+            }
+            option(value="UNCATEGORIZED") {
+              "Uncategorized"
+            }
+          }
+          div.invalid-feedback {
+            "Example invalid custom select feedback"
+          }
+        }
+
+        div.mb-3 {
+          label(for="description") {
+            "Editorial:"
+          }
+          textarea.form-control#editorial(name="editorial" placeholder="Sample solution to the problem") {}
+        }
+
+        button.btn.btn-primary(type="submit") {
+          "Publish"
+        }
+      }
+    }
+
+    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="./scripts.js") {}
+    script(src="./editor.js") {}
+  }
+}
