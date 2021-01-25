@@ -1,7 +1,7 @@
 package templater;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class Templater {
 
   public static void prepareTemplate(String name, Path path)
     throws IOException, UnknownTokenException {
-    String s = new String(Files.readAllBytes(path), Charset.forName("UTF-8"));
+    String s = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
     Templater.templates.put(name, new Template(s));
   }
 
