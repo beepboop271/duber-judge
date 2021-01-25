@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import templater.language.Token;
+
 public class Tokeniser {
   private final List<TokenMatcher> tokenMatchers;
   private final CharListQueue input;

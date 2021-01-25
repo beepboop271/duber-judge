@@ -2,8 +2,6 @@ package templater.language;
 
 import java.util.List;
 
-import templater.compiler.LanguageElement;
-
 /**
  * A class representing an interable, to facilitate easy
  * creation of clusters of similar elements.

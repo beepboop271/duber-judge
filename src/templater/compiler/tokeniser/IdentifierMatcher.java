@@ -2,6 +2,8 @@ package templater.compiler.tokeniser;
 
 import java.util.regex.Pattern;
 
+import templater.language.TokenKind;
+
 class Identifier extends RegexMatcher {
   private static final Pattern REGEX =
     // identifier name from the CSS3 grammar

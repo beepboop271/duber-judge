@@ -1,7 +1,5 @@
 package templater.language;
 
-import templater.compiler.LanguageElement;
-
 public class AttributeElement extends LanguageElement {
   private final String key;
   private final StringResolvables value;

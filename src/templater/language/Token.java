@@ -1,14 +1,13 @@
-package templater.compiler.tokeniser;
+package templater.language;
 
-import templater.compiler.LanguageElement;
-import templater.compiler.TextFilePosition;
+import templater.compiler.tokeniser.TextFilePosition;
 
 public class Token extends LanguageElement {
   private final String content;
   private final TokenKind kind;
   private final TextFilePosition position;
 
-  Token(String content, TokenKind kind, TextFilePosition position) {
+  public Token(String content, TokenKind kind, TextFilePosition position) {
     this.content = content;
     this.kind = kind;
     this.position = position.clone();

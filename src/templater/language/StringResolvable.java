@@ -1,8 +1,5 @@
 package templater.language;
 
-import templater.compiler.tokeniser.Token;
-import templater.compiler.tokeniser.TokenKind;
-
 /**
  * A class representing an item with string content, whether
  * that be a literal string or a variable with a string

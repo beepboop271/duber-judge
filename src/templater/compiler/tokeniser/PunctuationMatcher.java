@@ -2,6 +2,8 @@ package templater.compiler.tokeniser;
 
 import java.util.regex.Pattern;
 
+import templater.language.TokenKind;
+
 class Punctuation extends RegexMatcher {
   private static final Pattern REGEX =
     // punctuation symbols. $ and % from ${} and %{} do not

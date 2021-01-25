@@ -1,4 +1,4 @@
-package templater.compiler;
+package templater.language;
 
 public class LanguageElement {
 }

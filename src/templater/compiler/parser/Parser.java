@@ -2,8 +2,8 @@ package templater.compiler.parser;
 
 import java.util.Collection;
 
-import templater.compiler.tokeniser.Token;
 import templater.language.Element;
+import templater.language.Token;
 
 public class Parser {
   private final TokenQueue tokens;

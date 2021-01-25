@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 
-import templater.compiler.LanguageElement;
 import templater.language.Element;
+import templater.language.LanguageElement;
 import templater.language.Loop;
 import templater.language.Root;
 import templater.language.StringResolvable;

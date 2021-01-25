@@ -2,13 +2,12 @@ package templater.compiler.parser;
 
 import java.util.List;
 
-import templater.compiler.LanguageElement;
-import templater.compiler.parser.TokenQueue.Iterator;
-import templater.compiler.tokeniser.Token;
+import templater.language.LanguageElement;
+import templater.language.Token;
 
 class BlockMatcher extends TokenMatchable<List<LanguageElement>> {
   @Override
-  protected List<LanguageElement> tryMatchInternal(Iterator input) {
+  protected List<LanguageElement> tryMatchInternal(TokenQueue.Iterator input) {
     Token brace = new TokenMatcher('{').tryMatch(input);
     if (brace == null) {
       return null;

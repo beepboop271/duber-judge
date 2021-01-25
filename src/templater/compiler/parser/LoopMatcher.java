@@ -2,16 +2,15 @@ package templater.compiler.parser;
 
 import java.util.List;
 
-import templater.compiler.LanguageElement;
-import templater.compiler.parser.TokenQueue.Iterator;
-import templater.compiler.tokeniser.Token;
-import templater.compiler.tokeniser.TokenKind;
 import templater.language.AttributeElement;
+import templater.language.LanguageElement;
 import templater.language.Loop;
+import templater.language.Token;
+import templater.language.TokenKind;
 
 class LoopMatcher extends TokenMatchable<Loop> {
   @Override
-  protected Loop tryMatchInternal(Iterator input) {
+  protected Loop tryMatchInternal(TokenQueue.Iterator input) {
     Token name = new TokenMatcher(TokenKind.IDENTIFIER).tryMatch(input);
     if ((name == null) || !(name.getContent().equals("for"))) {
       return null;

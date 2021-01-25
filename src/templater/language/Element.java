@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import templater.ReadOnlyIterator;
-import templater.compiler.LanguageElement;
 
 /**
  * A class representing a {@code Element}, an HTML element.

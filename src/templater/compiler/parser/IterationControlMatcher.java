@@ -1,9 +1,9 @@
 package templater.compiler.parser;
 
-import templater.compiler.tokeniser.Token;
-import templater.compiler.tokeniser.TokenKind;
 import templater.language.AttributeElement;
 import templater.language.StringResolvables;
+import templater.language.Token;
+import templater.language.TokenKind;
 
 class IterationControlMatcher extends TokenMatchable<AttributeElement> {
   @Override

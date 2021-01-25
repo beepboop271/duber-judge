@@ -2,8 +2,6 @@ package templater.language;
 
 import java.util.List;
 
-import templater.compiler.LanguageElement;
-
 /**
  * A class representing a node at the start (a.k.a. root) of
  * the syntax tree.

@@ -4,7 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 
 import templater.compiler.ArrayListQueue;
-import templater.compiler.tokeniser.Token;
+import templater.language.Token;
 
 public class TokenQueue extends ArrayListQueue<Token> {
   public TokenQueue(Collection<Token> tokens) {

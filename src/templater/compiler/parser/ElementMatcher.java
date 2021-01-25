@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import templater.compiler.LanguageElement;
-import templater.compiler.tokeniser.Token;
-import templater.compiler.tokeniser.TokenKind;
 import templater.language.AttributeElement;
 import templater.language.Element;
+import templater.language.LanguageElement;
 import templater.language.StringResolvables;
+import templater.language.Token;
+import templater.language.TokenKind;
 
 class ElementMatcher extends TokenMatchable<Element> {
   @Override

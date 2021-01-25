@@ -1,4 +1,4 @@
-package templater.compiler;
+package templater.compiler.tokeniser;
 
 public class TextFilePosition implements Cloneable {
   private int line;

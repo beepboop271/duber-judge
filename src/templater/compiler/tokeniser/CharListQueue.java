@@ -1,49 +1,16 @@
 package templater.compiler.tokeniser;
 
-import java.util.Collection;
 import java.util.NoSuchElementException;
 
 import templater.compiler.ArrayListQueue;
-import templater.compiler.TextFilePosition;
 
 public class CharListQueue extends ArrayListQueue<Character> implements
   CharSequence {
 
   private final TextFilePosition position = new TextFilePosition();
 
-  public CharListQueue(int requestedCapacity) {
-    super(requestedCapacity);
-  }
-
-  public CharListQueue() {
-    super();
-  }
-
-  public CharListQueue(Collection<Character> c) {
-    super(c);
-  }
-
-  public CharListQueue(Collection<Character> c, int requestedCapacity) {
-    super(c, requestedCapacity);
-  }
-
-  public CharListQueue(Character[] c) {
-    super(c);
-  }
-
-  public CharListQueue(Character[] c, int requestedCapacity) {
-    super(c, requestedCapacity);
-  }
-
   public CharListQueue(CharSequence c) {
     super(CharListQueue.charsToCharacters(c.toString().toCharArray()));
-  }
-
-  public CharListQueue(CharSequence c, int requestedCapacity) {
-    super(
-      CharListQueue.charsToCharacters(c.toString().toCharArray()),
-      requestedCapacity
-    );
   }
 
   private static Character[] charsToCharacters(char[] charArray) {
@@ -60,14 +27,6 @@ public class CharListQueue extends ArrayListQueue<Character> implements
       sb.append(c);
     }
     return sb.toString();
-  }
-
-  public void add(CharSequence c) {
-    this.add(c.toString().toCharArray());
-  }
-
-  public void add(char[] c) {
-    this.add(CharListQueue.charsToCharacters(c));
   }
 
   @Override

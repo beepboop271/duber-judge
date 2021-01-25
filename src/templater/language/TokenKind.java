@@ -1,4 +1,4 @@
-package templater.compiler.tokeniser;
+package templater.language;
 
 public enum TokenKind {
   IDENTIFIER,

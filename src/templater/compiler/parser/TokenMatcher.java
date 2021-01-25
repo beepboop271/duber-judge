@@ -1,7 +1,7 @@
 package templater.compiler.parser;
 
-import templater.compiler.tokeniser.Token;
-import templater.compiler.tokeniser.TokenKind;
+import templater.language.Token;
+import templater.language.TokenKind;
 
 class TokenMatcher extends TokenMatchable<Token> {
   private final TokenKind kind;

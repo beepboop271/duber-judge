@@ -3,9 +3,6 @@ package templater.language;
 import java.util.ArrayList;
 import java.util.List;
 
-import templater.compiler.LanguageElement;
-import templater.compiler.tokeniser.Token;
-
 /**
  * A class representing a series of
  * {@code StringResolvables}--items with string content,

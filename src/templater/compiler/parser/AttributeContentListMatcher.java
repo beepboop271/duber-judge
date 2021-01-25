@@ -2,9 +2,9 @@ package templater.compiler.parser;
 
 import java.util.List;
 
-import templater.compiler.tokeniser.Token;
-import templater.compiler.tokeniser.TokenKind;
 import templater.language.StringResolvables;
+import templater.language.Token;
+import templater.language.TokenKind;
 
 class AttributeContentListMatcher extends TokenMatchable<StringResolvables> {
   @Override
