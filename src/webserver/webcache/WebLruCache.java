@@ -3,9 +3,10 @@ package webserver.webcache;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * n implementationo of a Least Recently Used cache, used
- * for quick updates and retrieval of data that has already
- * been formatted and retrieved from the database.
+ * An implementation of a Least Recently Used cache, used
+ * for quick updates and retrieval of byte array data that
+ * has already been formatted and retrieved from the
+ * database.
  * <p>
  * This cache supports O(1) get, clear, and update for any
  * cached objects.
@@ -27,22 +28,22 @@ public class WebLruCache {
   /**
    * The head of the cache, for the most recently used object.
    */
-  private TimedNode<String> head;
+  private TimedNode<byte[]> head;
   /**
    * The tail of the cache, for the least recently used
    * object.
    */
-  private TimedNode<String> tail;
+  private TimedNode<byte[]> tail;
   /**
    * The id-to-node lookup table to get O(1) get time for all
    * cached objects, concurrent for thread safety.
    */
-  private ConcurrentHashMap<String, TimedNode<String>> lookup;
+  private ConcurrentHashMap<String, TimedNode<byte[]>> lookup;
   /**
    * The node-to-id lookup table to get O(1) get time for
    * nodes to keys, concurrent for thread safety.
    */
-  private ConcurrentHashMap<TimedNode<String>, String> reverseLookup;
+  private ConcurrentHashMap<TimedNode<byte[]>, String> reverseLookup;
   /** The total amount of capacity this cache has. */
   private int maxCapacity;
   /** If this web cache's cleanup thread should run. */
@@ -87,13 +88,13 @@ public class WebLruCache {
    * of time, after which it expires and is removed from the
    * cache.
    *
-   * @param item          The item to cache.
+   * @param item          The body array to cache.
    * @param id            The id associated with this item.
    * @param secondsToLive The amount of seconds this item has
    *                      to live.
    */
-  public void putCache(String item, String id, int secondsToLive) {
-    TimedNode<String> newNode;
+  public void putCache(byte[] item, String id, int secondsToLive) {
+    TimedNode<byte[]> newNode;
 
     synchronized (this.listLock) {
       if (this.lookup.size() >= this.maxCapacity) {
@@ -136,12 +137,12 @@ public class WebLruCache {
    * seconds to live from the old object.
    *
    * @param id      The id to update.
-   * @param newItem The new item to replace the old item.
+   * @param newItem The new array to replace the old item.
    */
-  public void updateCache(String id, String newItem) {
+  public void updateCache(String id, byte[] newItem) {
     if (checkCache(id)) {
       synchronized (this.listLock) {
-        TimedNode<String> node = this.lookup.get(id);
+        TimedNode<byte[]> node = this.lookup.get(id);
         // Push recently updated to top
         if (node.next != null) {
           node.next.prev = node.prev;
@@ -175,9 +176,9 @@ public class WebLruCache {
    * @param id The id of the cached object to fetch.
    * @return the cached object, or {@code null}.
    */
-  public String getCachedObject(String id) {
+  public byte[] getCachedObject(String id) {
     synchronized (this.listLock) {
-      TimedNode<String> node = this.lookup.get(id);
+      TimedNode<byte[]> node = this.lookup.get(id);
 
       if (node != null) {
         // Push recently got to top
@@ -258,7 +259,7 @@ public class WebLruCache {
           for (String toCheck : WebLruCache.this.lookup.keySet()) {
             if (WebLruCache.this.lookup.get(toCheck).isExpired()) {
               // Remove expired cache objects
-              TimedNode<String> toRemove = WebLruCache.this.lookup.get(toCheck);
+              TimedNode<byte[]> toRemove = WebLruCache.this.lookup.get(toCheck);
               WebLruCache.this.lookup.remove(toCheck);
               WebLruCache.this.reverseLookup.remove(toRemove);
 

@@ -14,6 +14,12 @@ import java.util.Set;
  * request status line or implement a method designed to
  * format this request into a proper HTTP request string.
  * <p>
+ * This request will convert body strings into UTF-8 byte
+ * arrays. For the sake of convenience, the majority of
+ * the constructors will use Strings for body, as byte arrays are
+ * less readable and should only be used to represent
+ * objects that cannot be Strings (eg. files).
+ * <p>
  * This request object stores both the full path (with query
  * strings), and a modified path that does not include query
  * strings. Query strings are parsed on initialization and
@@ -69,6 +75,7 @@ public class Request extends HttpMessage {
     this.params = new HashMap<>();
 
     this.initializePathAndQueries(fullPath);
+    this.initializeCookies();
   }
 
   /**
@@ -92,6 +99,31 @@ public class Request extends HttpMessage {
     this.params = new HashMap<>();
 
     this.initializePathAndQueries(fullPath);
+    this.initializeCookies();
+  }
+
+  /**
+   * Constructs a new Request with a byte array body but no headers.
+   *
+   * @param method   The HTTP method for the request.
+   * @param fullPath The full path for the request.
+   * @param protocol The HTTP protocol for this request.
+   * @param body     The byte array body of the request.
+   * @throws HttpSyntaxException if the path provided is
+   *                             invalid.
+   */
+  public Request(String method, String fullPath, String protocol, byte[] body)
+    throws HttpSyntaxException {
+    super(body);
+
+    this.method = method;
+    this.fullPath = fullPath;
+    this.protocol = protocol;
+    this.queryStrings = new HashMap<>();
+    this.params = new HashMap<>();
+
+    this.initializePathAndQueries(fullPath);
+    this.initializeCookies();
   }
 
   /**
@@ -125,7 +157,7 @@ public class Request extends HttpMessage {
    * Constructs a new Request with specified string array of
    * headers but no body.
    * <p>
-   * The body will be initialzed as an empty string.
+   * The body will be initialized as an empty string.
    * <p>
    * This constructor will accept a string array of headers,
    * separated by a colon.
@@ -190,6 +222,7 @@ public class Request extends HttpMessage {
     this.params = new HashMap<>();
 
     this.initializePathAndQueries(fullPath);
+    this.initializeCookies();
   }
 
   /**
@@ -233,6 +266,7 @@ public class Request extends HttpMessage {
     this.params = new HashMap<>();
 
     this.initializePathAndQueries(fullPath);
+    this.initializeCookies();
   }
 
   /**
@@ -253,9 +287,33 @@ public class Request extends HttpMessage {
       this.path = pathUri.getPath();
 
       int lastIndex = this.path.lastIndexOf("/");
-      this.endResource = this.path.substring(lastIndex + 1);
+      this.endResource = this.path.substring(lastIndex+1);
     } catch (URISyntaxException e) {
       throw new HttpSyntaxException("Provided path is invalid.", e);
+    }
+  }
+
+  /**
+   * Attempts to initialize the cookies from this request's
+   * list of headers.
+   * <p>
+   * Ensure that this method is called after initializing
+   * headers.
+   *
+   * @throws HttpSyntaxException if a cookie is malformed, as
+   *                             cookies come from the header.
+   */
+  private void initializeCookies() throws HttpSyntaxException {
+    if (!this.headers.containsKey("Cookie")) {
+      return;
+    }
+
+    try {
+      String cookieString = this.headers.get("Cookie");
+      this.addCookies(cookieString);
+
+    } catch (InvalidCookieException e) {
+      throw new HttpSyntaxException("A cookie was invalid.");
     }
   }
 
