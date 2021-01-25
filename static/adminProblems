@@ -45,7 +45,7 @@ html(lang="en") {
           }
           li.nav-item.active {
             a.nav-link(href=${profileLink}) {
-              ${user.getUsername}
+              ${username}
             }
           }
         }
@@ -58,13 +58,13 @@ html(lang="en") {
           div.card-body.d-flex.justify-content-between {
             div.admin-profile-text {
               h5.card-title {
-                ${user.getUsername}
+                ${username}
               }
               p.card-text {
                 "Admin"
               }
             }
-            a.settings-logo-wrapper text-dark(href="/") {
+            a.settings-logo-wrapper text-dark(href=${problemsPageLink}) {
               i.fas.fa-cog{}
             }
           }
@@ -76,12 +76,12 @@ html(lang="en") {
           div.card-header {
             ul.nav.nav-tabs.card-header-tabs {
               li.nav-item {
-                a.nav-link.text-dark(href="usersPageLink") {
+                a.nav-link.text-dark(href=${usersPageLink}) {
                   "Users"
                 }
               }
               li.nav-item {
-                a.nav-link.text-dark.active(href="problemsPageLink") {
+                a.nav-link.text-dark.active(href=${problemsPageLink}) {
                   "Problems"
                 }
               }

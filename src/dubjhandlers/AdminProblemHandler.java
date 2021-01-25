@@ -1,12 +1,20 @@
 package dubjhandlers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import dal.dao.RecordNotFoundException;
+import entities.Entity;
+import entities.Problem;
+import entities.ProfileProblem;
 import entities.Session;
 import entities.User;
 import services.AdminService;
 import services.ProblemService;
+import services.PublicService;
 import services.SessionService;
 import services.UserService;
+import templater.Templater;
 import webserver.Request;
 import webserver.Response;
 import webserver.RouteTarget;
@@ -38,6 +46,11 @@ public class AdminProblemHandler implements RouteTarget {
    */
   private ProblemService prs;
   /**
+   * The public service that this handler uses for db
+   * interaction.
+   */
+  private PublicService ps;
+  /**
    * The user service that this handler uses for db
    * interaction.
    */
@@ -51,6 +64,7 @@ public class AdminProblemHandler implements RouteTarget {
     this.as = new AdminService();
     this.prs = new ProblemService();
     this.us = new UserService();
+    this.ps = new PublicService();
   }
 
   /**
@@ -165,7 +179,54 @@ public class AdminProblemHandler implements RouteTarget {
    * @return a response with the admin problems page.
    */
   private Response getAllProblems(Request req, boolean hasBody) {
-    return Response.internalError();
+    Session currentSession = this.getActiveSession(req);
+    // verify and load admin information
+    if (currentSession == null) {
+      return Response.temporaryRedirect("/login");
+    }
+    long uid = currentSession.getUserId();
+    String username = "Profile";
+    try {
+      User user = this.getAdminUser(currentSession.getUserId());
+      if (user == null) {
+        return Response.forbidden();
+      }
+      
+      username = user.getUsername();
+    } catch (RecordNotFoundException e) {
+      return Response.internalError();
+    }
+
+    ArrayList<Entity<Problem>> practice =
+      ps.getPracticeProblemsByCreator(uid, 0, 500);
+    ArrayList<ProfileProblem> problems = new ArrayList<>();
+    for (Entity<Problem> entity : practice) {
+      Problem prob = entity.getContent();
+      problems.add(
+        new ProfileProblem(
+          "/problem/"+entity.getId(),
+          prob.getCategory(),
+          prob.getTitle(),
+          prob.getPoints(),
+          -1,
+          prob.getNumSubmissions(),
+          prob.getClearedSubmissions()
+        )
+      );
+    }
+
+    // load template params
+    HashMap<String, Object> templateParams = new HashMap<>();
+    templateParams.put("leaderboardLink", "/leaderboard");
+    templateParams.put("problemsLink", "/problems");
+    templateParams.put("profileLink", "/profile");
+    templateParams.put("username", username);
+    templateParams.put("problems", problems);
+    templateParams.put("usersPageLink", "/admin/users");
+    templateParams.put("problemsPageLink", "/admin/problems");
+
+    return Response
+      .okHtml(Templater.fillTemplate("adminProblems", templateParams));
   }
 
   /**
