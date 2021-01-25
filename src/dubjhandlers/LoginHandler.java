@@ -49,9 +49,9 @@ public class LoginHandler implements RouteTarget {
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
     switch (req.getEndResource()) {
       case "login":
-        return this.getLoginSignupPage(req, hasBody);
+        return this.getLoginPage(req, hasBody);
       case "signup":
-        return this.getLoginSignupPage(req, hasBody);
+        return this.getSignupPage(req, hasBody);
       default:
         return Response.notFoundHtml(req.getPath(), hasBody);
     }
@@ -81,13 +81,22 @@ public class LoginHandler implements RouteTarget {
     }
   }
 
-  private Response getLoginSignupPage(Request req, boolean hasBody) {
+  private Response getLoginPage(Request req, boolean hasBody) {
     // TODO: get user from db so we can redirect them to profile
     if (this.getActiveSession(req) != null) {
       return Response.temporaryRedirect("/problems");
     }
 
-    return this.loadOriginalPage(hasBody);
+    return this.loadPage("./static/login.html", hasBody);
+  }
+
+  private Response getSignupPage(Request req, boolean hasBody) {
+    // TODO: get user from db so we can redirect them to profile
+    if (this.getActiveSession(req) != null) {
+      return Response.temporaryRedirect("/problems");
+    }
+
+    return this.loadPage("./static/signup.html", hasBody);
   }
 
   private Response handleLogin(Request req) {
@@ -119,7 +128,7 @@ public class LoginHandler implements RouteTarget {
       return r;
     } catch (IllegalArgumentException e) {
       // Thrown if login failed
-      return this.loadOriginalPage(true);
+      return this.loadPage("./static/login.html", true);
     }
 
   }
@@ -153,13 +162,12 @@ public class LoginHandler implements RouteTarget {
       return r;
     } catch (IllegalArgumentException e) {
       // Thrown if sign up failed
-      return this.loadOriginalPage(true);
+      return this.loadPage("./static/signup.html", true);
     }
   }
 
-  private Response loadOriginalPage(boolean hasBody) {
+  private Response loadPage(String path, boolean hasBody) {
     // login page is static, no need to call templater
-    String path = "./static/login.html";
     byte[] fileData;
     try {
       fileData = WebServer.loadFile(path);
