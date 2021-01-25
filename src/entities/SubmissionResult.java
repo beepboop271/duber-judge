@@ -1,6 +1,7 @@
 package entities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An entity representing a submission result.
@@ -29,7 +30,7 @@ public class SubmissionResult {
    */
   private long memoryUsageBytes;
   /** The testcase runs. */
-  private ArrayList<TestcaseRun> testcaseRuns;
+  private List<TestcaseRun> testcaseRuns;
 
   /**
    * Constructs a new {@code SubmissionResult} instance with
@@ -55,7 +56,7 @@ public class SubmissionResult {
     int score,
     int runDurationMillis,
     long memoryUsageBytes,
-    ArrayList<TestcaseRun> testcaseRuns
+    List<TestcaseRun> testcaseRuns
   ) {
     this.submission = submission;
     this.score = score;
@@ -218,7 +219,7 @@ public class SubmissionResult {
    *
    * @return The testcase runs.
    */
-  public ArrayList<TestcaseRun> getTestcaseRuns() {
+  public List<TestcaseRun> getTestcaseRuns() {
     return this.testcaseRuns;
   }
 

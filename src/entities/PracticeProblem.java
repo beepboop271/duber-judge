@@ -1,7 +1,7 @@
 package entities;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An entity designed to represent a practice problem, which is a problem with an editorial.
@@ -101,7 +101,7 @@ public class PracticeProblem extends Problem {
     int numSubmissions,
     int clearedSubmissions,
     String editorial,
-    ArrayList<Entity<Batch>> batches,
+    List<Entity<Batch>> batches,
     PublishingState state
   ) {
     super(

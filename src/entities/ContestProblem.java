@@ -1,7 +1,7 @@
 package entities;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An entity designed to represent a specific contest problem, which
@@ -109,7 +109,7 @@ public class ContestProblem extends Problem {
     int submissionsLimit,
     long contestId,
     int clearedSubmissions,
-    ArrayList<Entity<Batch>> batches,
+    List<Entity<Batch>> batches,
     PublishingState state
   ) {
     super(

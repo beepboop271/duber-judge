@@ -1,7 +1,7 @@
 package judge;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -136,7 +136,7 @@ public class Judger {
     int timeLimitMillis = problem.getTimeLimitMillis();
     int memoryLimitKb = problem.getMemoryLimitKb();
     int outputLimitKb = problem.getOutputLimitKb();
-    ArrayList<Entity<Batch>> batches = problem.getBatches();
+    List<Entity<Batch>> batches = problem.getBatches();
 
     // store the futures in an array and wait for them to complete
     CompletableFuture<TestcaseRun[]>[] batchRunResults =
@@ -246,16 +246,16 @@ public class Judger {
 
   // // ------temp methods
 
-  // public static void display(SubmissionResult submission) {
-  //   System.out.println("Submission: " + submission);
-  //   System.out.println("Language: " + submission.getSubmission().getLanguage());
-  //   System.out.println("Status: " + submission.getStatus());
-  //   System.out.println("Score: " + submission.getScore());
-  //   System.out.println("Run duration (milliseconds): " + submission.getRunDurationMillis());
-  //   System.out.println("Memory used (bytes): " + submission.getMemoryUsedBytes());
-  //   System.out.println("Source Code:\n" + submission.getSubmission().getCode());
-  //   System.out.println();
-  // }
+  public static void display(SubmissionResult submission) {
+    System.out.println("Submission: " + submission);
+    System.out.println("Language: " + submission.getSubmission().getLanguage());
+    System.out.println("Status: " + submission.getStatus());
+    System.out.println("Score: " + submission.getScore());
+    System.out.println("Run duration (milliseconds): " + submission.getRunDurationMillis());
+    System.out.println("Memory used (bytes): " + submission.getMemoryUsageBytes());
+    System.out.println("Source Code:\n" + submission.getSubmission().getCode());
+    System.out.println();
+  }
 
   // public static void display(TestcaseRun run) {
   //   System.out.println("Testcase: " + run.getTestcase() + " of submission " + run.getSubmission());
