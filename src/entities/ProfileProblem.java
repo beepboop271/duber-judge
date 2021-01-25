@@ -98,6 +98,10 @@ public class ProfileProblem {
    * @return this problem's clear rate.
    */
   public int getClearRate() {
+    if (this.numSubmissions == 0) {
+      return 0;
+    }
+
     return (this.clearedSubmissions / this.numSubmissions) * 100;
   }
 }

@@ -45,7 +45,7 @@ html(lang="en") {
           }
           li.nav-item.active {
             a.nva-link(href=${profileLink}) {
-              ${user.getUsername}
+              ${username}
             }
           }
         }
@@ -74,7 +74,7 @@ html(lang="en") {
                 "Category: " ${problem.getCategory}
               }
               small.text-muted.mr-4 {
-                "Clear rate: " ${problem.getClearRate}
+                "Clear rate: " ${problem.getClearRate} "%"
               }
             }
           }
@@ -90,17 +90,17 @@ html(lang="en") {
             }
           }
           li.page-item.active {
-            a.page-link.text-dark(href={$page1Link}) {
+            a.page-link.text-dark(href=${page1Link}) {
               "1"
             }
           }
           li.page-item {
-            a.page-link.text-dark(href={$page2Link}) {
+            a.page-link.text-dark(href=${page2Link}) {
               "2"
             }
           }
           li.page-item {
-            a.page-link.text-dark(href={$page3Link}) {
+            a.page-link.text-dark(href=${page3Link}) {
               "3"
             }
           }
@@ -114,8 +114,8 @@ html(lang="en") {
         }
       }
     }
-    script(src="./vendored/static/jquery-3.4.1.slim.min.js") {}
-    script(src="./vendored/static/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
+    script(src="./vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
     script(src="./scripts.js") {}
   }
 }
