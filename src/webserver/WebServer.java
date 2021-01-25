@@ -737,6 +737,9 @@ public class WebServer {
      * @return an HTTP response to return to the user.
      */
     private Response generateResponseFromRequest(Request request) {
+      // Get handler and initialize parameters
+      RouteTarget handler = WebServer.this.getRoute(request);
+      
       // The cache should only store html files because those are the templated ones
       // Therefore if there is a static param we ignore looking in the cache
       if (request.getParam("static") == null) {
@@ -749,8 +752,6 @@ public class WebServer {
           return Response.okByteHtml(cachedBody);
         }
       }
-
-      RouteTarget handler = WebServer.this.getRoute(request);
 
       if (handler != null) {
         // Return the accepted response
