@@ -1,6 +1,5 @@
 package templater;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -15,16 +14,16 @@ import templater.compiler.LanguageElement;
  */
 public class Interpreter {
   /** The wrapped iterator to read from. */
-  private HashMap<String, Object> namespace;
+  private Map<String, Object> namespace;
 
   /**
    * Creates a new {@code Interpreter}, given the required
    * namespace.
    *
-   * @param namespace The {@code HashMap} dictating variable-value
+   * @param namespace The {@code Map} dictating variable-value
    *                  associations for this page.
    */
-  public Interpreter(HashMap<String, Object> namespace) {
+  public Interpreter(Map<String, Object> namespace) {
     this.namespace = namespace;
   }
 
