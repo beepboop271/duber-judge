@@ -38,7 +38,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
       ps.setLong(1, testcaseRun.getSubmissionId());
       ps.setLong(2, testcaseRun.getBatchId());
       ps.setLong(3, testcaseRun.getRunDurationMillis());
-      ps.setLong(4, testcaseRun.getMemoryUsageB());
+      ps.setLong(4, testcaseRun.getMemoryUsageBytes());
       ps.setString(5, testcaseRun.getStatus().name());
       ps.setString(6, testcaseRun.getOutput());
 
@@ -207,7 +207,7 @@ public class TestcaseRunDao implements Dao<TestcaseRun> {
       new TestcaseRun(
         result.getLong("submission_id"),
         result.getLong("batch_id"),
-        result.getLong("run_duration_millis"),
+        result.getInt("run_duration_millis"),
         result.getLong("memory_usage_b"),
         ExecutionStatus.valueOf(result.getString("status")),
         result.getString("output")

@@ -214,7 +214,7 @@ public class SubmissionDao implements Dao<SubmissionResult> {
         ),
         ExecutionStatus.valueOf(result.getString("status")),
         result.getInt("score"),
-        result.getLong("run_duration_millis"),
+        result.getInt("run_duration_millis"),
         result.getLong("memory_usage_b")
       )
     );
@@ -230,7 +230,9 @@ public class SubmissionDao implements Dao<SubmissionResult> {
    * @param numSubmissions   the number of submissions to retrieve
    * @return                 the list of submissions
    */
-  public ArrayList<Entity<SubmissionResult>> getByProblem(long problemId, int index, int numSubmissions) {
+  public ArrayList<Entity<SubmissionResult>> getByProblem(
+    long problemId, int index, int numSubmissions
+  ) {
     String sql = String.format(
                 "SELECT * FROM submissions\n"
                 +"WHERE problem_id = ?\n"
@@ -266,7 +268,7 @@ public class SubmissionDao implements Dao<SubmissionResult> {
    *
    * @param userId           the user Id
    * @param index            the offset of the submission in the query result
-   * @param numSubmissions   the number of submissions to retrive
+   * @param numSubmissions   the number of submissions to retrieve
    * @return                 the list of submissions
    */
   public ArrayList<Entity<SubmissionResult>>
@@ -311,7 +313,7 @@ public class SubmissionDao implements Dao<SubmissionResult> {
 
   /**
    * Get all the submissions made by a user ordered from latest to earliest.
-   * The index indicates the offset of the redord in the database.
+   * The index indicates the offset of the record in the database.
    * If no results are found, it will return an empty array.
    *
    * @param userId           the user id
@@ -350,7 +352,7 @@ public class SubmissionDao implements Dao<SubmissionResult> {
 
   /**
    * Get all the submissions made by a user of a problem ordered from latest to earliest.
-   * The index indicates the offset of the redord in the database.
+   * The index indicates the offset of the record in the database.
    * If no results are found, it will return an empty array.
    *
    * @param userId           the user id

@@ -16,38 +16,60 @@ public class TestcaseRun {
   /** The id of the associated batch. */
   private long batchId;
   /** The total duration of this run, in ms. */
-  private long runDurationMillis;
-  /** The total amount of memory used, in kB. */
-  private long memoryUsageB;
+  private int runDurationMillis;
+  /** The total amount of memory used, in bytes. */
+  private long memoryUsageBytes;
   /** The current status of this run. */
   private ExecutionStatus status;
   /** The output generated from the submission for this run. */
   private String output;
 
   /**
-   * Constructs a new TestcaseRun.
+   * Constructs a new {@code TestcaseRun}.
    *
-   * @param submissionId      the id of the associated submission.
+   * @param submissionId      the id of the associated
+   *                          submission.
    * @param batchId           the id of the associated batch.
-   * @param runDurationMillis the total duration of this run, in ms.
-   * @param memoryUsageB     the total amount of memory used, in kB.
+   * @param runDurationMillis the total duration of this run,
+   *                          in ms.
+   * @param memoryUsageBytes  the total amount of memory used,
+   *                          in bytes.
    * @param status            the current status of this run.
-   * @param output            the output generated from the submission for this run.
+   * @param output            the output generated from the
+   *                          submission for this run.
    */
   public TestcaseRun(
     long submissionId,
     long batchId,
-    long runDurationMillis,
-    long memoryUsageB,
+    int runDurationMillis,
+    long memoryUsageBytes,
     ExecutionStatus status,
     String output
   ) {
     this.submissionId = submissionId;
     this.batchId = batchId;
     this.runDurationMillis = runDurationMillis;
-    this.memoryUsageB = memoryUsageB;
+    this.memoryUsageBytes = memoryUsageBytes;
     this.status = status;
     this.output = output;
+  }
+
+  /**
+   * Constructs a new {@code TestcaseRun}.
+   *
+   * @param submissionId      the id of the associated submission.
+   * @param batchId           the id of the associated batch.
+   */
+  public TestcaseRun(
+    long submissionId,
+    long batchId
+  ) {
+    this.submissionId = submissionId;
+    this.batchId = batchId;
+    this.runDurationMillis = 0;
+    this.memoryUsageBytes = 0;
+    this.status = ExecutionStatus.PENDING;
+    this.output = "";
   }
 
   /**
@@ -73,17 +95,37 @@ public class TestcaseRun {
    *
    * @return the total amount of time this run took, in ms.
    */
-  public long getRunDurationMillis() {
+  public int getRunDurationMillis() {
     return this.runDurationMillis;
   }
 
   /**
-   * Retrieves the total amount of memory used, in kB.
+   * Sets the total amount of time this run took, in ms.
    *
-   * @return the total amount of memory used, in kB.
+   * @param duration The total amount of time this run took,
+   *                 in ms.
    */
-  public long getMemoryUsageB() {
-    return this.memoryUsageB;
+  public void setRunDurationMillis(int duration) {
+    this.runDurationMillis = duration;
+  }
+
+  /**
+   * Retrieves the total amount of memory used, in bytes.
+   *
+   * @return the total amount of memory used, in bytes.
+   */
+  public long getMemoryUsageBytes() {
+    return this.memoryUsageBytes;
+  }
+
+  /**
+   * Sets the total amount of memory used, in bytes.
+   *
+   * @param memoryUsageBytes The total amount of memory used, in
+   *                     bytes.
+   */
+  public void setMemoryUsageBytes(long memoryUsageBytes) {
+    this.memoryUsageBytes = memoryUsageBytes;
   }
 
   /**
@@ -96,11 +138,29 @@ public class TestcaseRun {
   }
 
   /**
-   * Retrieves the generated output for this run.
+   * Sets the current status of this testcase run.
    *
-   * @return the generated output for this run.
+   * @param status The current status of this submission.
+   */
+  public void setStatus(ExecutionStatus status) {
+    this.status = status;
+  }
+
+  /**
+   * Retrieves the outputted data for this run.
+   *
+   * @return the outputted data for this run.
    */
   public String getOutput() {
     return this.output;
+  }
+
+  /**
+   * Sets the outputted data for this run.
+   *
+   * @param output the outputted data for this run.
+   */
+  public void setOutput(String output) {
+    this.output = output;
   }
 }
