@@ -15,7 +15,7 @@ import templater.compiler.LanguageElement;
  * @version 1.0
  */
 public class Interpreter {
-  /** The wrapped iterator to read from. */
+  /** The namespace map whence template-mentioned objects are retrieved. */
   private Map<String, Object> namespace;
 
   /**
@@ -45,20 +45,7 @@ public class Interpreter {
         String[] content = toResolve.getContent().split(".");
         Object o = this.namespace.get(toResolve.getContent());
         if (content.length > 1) {
-          for (int i = 1; i < content.length; i++) {
-            try {
-              Method method = o.getClass().getMethod(content[i]);
-              o = method.invoke(o);
-            } catch (
-              NoSuchMethodException
-              | SecurityException
-              | IllegalAccessException
-              | IllegalArgumentException
-              | InvocationTargetException e
-            ) {
-              e.printStackTrace();
-            }
-          }
+          o = resolveAttributes(o, content);
         }
         sb.append(o.toString());
       } else {
@@ -69,87 +56,30 @@ public class Interpreter {
   }
 
   /**
-   * Handles interpretation as it occurs on loops. This helper
-   * exists solely for aesthetic purposes, to maintain overall
-   * readability.
+   * Determines the correct attribute of an object required
+   * according to the array of methods that need to be called
+   * on it to retrieve said attribute.
    *
-   * @param loopTarget  The target array or collection to be
-   *                    looped over.
-   * @param loop        The {@code Loop} the walk is currently
-   *                    on.
-   * @param interpreted The {@code StringBuilder} of the
-   *                    interpreted HTML string thus far.
-   * @return StringBuilder, the updated HTML string's
-   *         StringBuilder.
+   * @param o           The {@code Object} to operate on.
+   * @param methodsList The {@code String[]} of method names.
+   * @return Object, the required attribute
    */
-  public StringBuilder handleLoop(
-    Object loopTarget,
-    Loop loop,
-    StringBuilder interpreted
-  ) {
-    if (loopTarget instanceof Iterable<?>) {
-      for (Object item : (Iterable<?>)loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
+  public Object resolveAttributes(Object o, String[] methodsList) {
+    for (int i = 1; i < methodsList.length; i++) {
+      try {
+        Method method = o.getClass().getMethod(methodsList[i]);
+        o = method.invoke(o);
+      } catch (
+        NoSuchMethodException
+        | SecurityException
+        | IllegalAccessException
+        | IllegalArgumentException
+        | InvocationTargetException e
+      ) {
+        e.printStackTrace();
       }
-      return interpreted;
     }
-    if (loopTarget instanceof boolean[]) {
-      for (Object item : (boolean[])loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
-      }
-      return interpreted;
-    }
-    if (loopTarget instanceof byte[]) {
-      for (Object item : (byte[])loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
-      }
-      return interpreted;
-
-    }
-    if (loopTarget instanceof short[]) {
-      for (Object item : (short[])loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
-      }
-      return interpreted;
-    }
-    if (loopTarget instanceof char[]) {
-      for (Object item : (char[])loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
-      }
-      return interpreted;
-    }
-    if (loopTarget instanceof int[]) {
-      for (Object item : (int[])loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
-      }
-      return interpreted;
-    }
-    if (loopTarget instanceof long[]) {
-      for (Object item : (float[])loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
-      }
-      return interpreted;
-
-    }
-    if (loopTarget instanceof float[]) {
-      for (Object item : (float[])loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
-      }
-      return interpreted;
-    }
-    if (loopTarget instanceof double[]) {
-      for (Object item : (double[])loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
-      }
-      return interpreted;
-    }
-    if (loopTarget instanceof Object[]) {
-      for (Object item : (Object[])loopTarget) {
-        interpreted = handleIteration(loop, interpreted, item);
-      }
-      return interpreted;
-    }
-    throw new AssertionError("Attempting to loop over a non-array, non-iterable object");
+    return o;
   }
 
   /**
@@ -178,6 +108,95 @@ public class Interpreter {
       interpreted = interpretHelper(children.next(), interpreted);
     }
     return interpreted;
+  }
+
+  /**
+   * Handles interpretation as it occurs on loops. This helper
+   * exists solely for aesthetic purposes, to maintain overall
+   * readability.
+   *
+   * @param loopTarget  The target array or collection to be
+   *                    looped over.
+   * @param loop        The {@code Loop} the walk is currently
+   *                    on.
+   * @param interpreted The {@code StringBuilder} of the
+   *                    interpreted HTML string thus far.
+   * @return StringBuilder, the updated HTML string's
+   *         StringBuilder.
+   */
+  public StringBuilder handleLoop(
+    Object loopTarget,
+    Loop loop,
+    StringBuilder interpreted
+  ) {
+    if (loopTarget instanceof Iterable<?>) {
+      for (Object item : (Iterable<?>)loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (!loopTarget.getClass().isArray()) {
+      throw new IllegalArgumentException(
+        "Attempting to loop over a non-array, non-iterable object."
+      );
+    }
+    if (loopTarget instanceof boolean[]) {
+      for (Object item : (boolean[])loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof byte[]) {
+      for (Object item : (byte[])loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof short[]) {
+      for (Object item : (short[])loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof char[]) {
+      for (Object item : (char[])loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof int[]) {
+      for (Object item : (int[])loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof long[]) {
+      for (Object item : (float[])loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof float[]) {
+      for (Object item : (float[])loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof double[]) {
+      for (Object item : (double[])loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    if (loopTarget instanceof Object[]) {
+      for (Object item : (Object[])loopTarget) {
+        interpreted = this.handleIteration(loop, interpreted, item);
+      }
+      return interpreted;
+    }
+    throw new AssertionError(
+      "Unreachable line indicative of new array type previously unknown."
+    );
   }
 
   /**
