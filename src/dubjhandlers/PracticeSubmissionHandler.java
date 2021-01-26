@@ -1,9 +1,18 @@
 package dubjhandlers;
 
+import java.util.HashMap;
+
 import dal.dao.RecordNotFoundException;
+import entities.Entity;
+import entities.Language;
 import entities.Session;
+import entities.User;
+import services.InsufficientPermissionException;
 import services.ProblemService;
 import services.SessionService;
+import services.UserService;
+import templater.Templater;
+import webserver.HttpSyntaxException;
 import webserver.Request;
 import webserver.Response;
 import webserver.RouteTarget;
@@ -23,6 +32,8 @@ public class PracticeSubmissionHandler implements RouteTarget {
    * The session service this handler uses for db interaction.
    */
   private SessionService ss;
+  /** The user service this handler uses for db interaction. */
+  private UserService us;
 
   /**
    * Constructs a new PracticeSubmissionHandler.
@@ -30,6 +41,7 @@ public class PracticeSubmissionHandler implements RouteTarget {
   public PracticeSubmissionHandler() {
     this.prs = new ProblemService();
     this.ss = new SessionService();
+    this.us = new UserService();
   }
 
   /**
@@ -67,7 +79,7 @@ public class PracticeSubmissionHandler implements RouteTarget {
    * @return a response to the retrieval request.
    */
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
-    switch (req.getEndResource()) {
+    switch (req.getParam("action")) {
       case "submit":
         return this.getSubmitPage(req, hasBody);
       case "submissions":
@@ -85,7 +97,7 @@ public class PracticeSubmissionHandler implements RouteTarget {
    * @return a response to the POST request provided.
    */
   private Response handlePostRequest(Request req) {
-    switch (req.getEndResource()) {
+    switch (req.getParam("action")) {
       case "submit":
         return this.handleNewSubmission(req);
       default:
@@ -124,10 +136,38 @@ public class PracticeSubmissionHandler implements RouteTarget {
    * @return a response with the submit page.
    */
   private Response getSubmitPage(Request req, boolean hasBody) {
-    if (this.getActiveSession(req) == null) {
+    Session currentSession = this.getActiveSession(req);
+    String username = "Profile";
+    Entity<User> user;
+
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
-    return Response.internalError();
+
+    try {
+      user = this.us.getUser(currentSession.getUserId());
+      username = user.getContent().getUsername();
+    } catch (RecordNotFoundException e) {
+      System.out.println("user not found");
+    }
+
+    String title = "";
+    try {
+      title = this.prs.getProblem(Long.parseLong(req.getParam("problemId")))
+        .getContent().getTitle();
+    } catch (RecordNotFoundException e) {
+      System.out.println("problem doesn't exist");
+    }
+
+    // load template params
+    HashMap<String, Object> templateParams = new HashMap<>();
+    templateParams.put("leaderboardLink", "/leaderboard");
+    templateParams.put("problemsLink", "/problems");
+    templateParams.put("profileLink", "/profile");
+    templateParams.put("username", username);
+
+    templateParams.put("problemTitle", title);
+    return Response.okHtml(Templater.fillTemplate("submitSolution", templateParams));
   }
 
   /**
@@ -175,10 +215,28 @@ public class PracticeSubmissionHandler implements RouteTarget {
    *         submission.
    */
   private Response handleNewSubmission(Request req) {
-    if (this.getActiveSession(req) == null) {
+    Session currentSession = this.getActiveSession(req);
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
 
-    return Response.internalError();
+    HashMap<String, String> form = new HashMap<>();
+    try {
+      req.parseFormBody(form);
+      this.prs.submitSolution(
+        currentSession.getUserId(),
+        Long.parseLong(req.getParam("problemId")),
+        form.get("code"),
+        Language.valueOf(form.get("language"))
+      );
+    } catch (HttpSyntaxException e) {
+      return Response.badRequest();
+    } catch (InsufficientPermissionException e) {
+      return Response.temporaryRedirect("/login");
+    } catch (RecordNotFoundException e) {
+      return Response.temporaryRedirect("/problems");
+    }
+
+    return Response.seeOther("/profile");
   }
 }

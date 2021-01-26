@@ -8,9 +8,9 @@ html(lang="en") {
       "Duber Judge"
     }
 
-    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
-    link(rel="stylesheet" href="./styles.css");
+    link(rel="stylesheet" href="/styles.css");
   }
   body {
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
@@ -51,16 +51,16 @@ html(lang="en") {
     div.create-problem-container {
 
       h3 {
-        "Submit solution to problem "${problem.getTitle}
+        "Submit solution to problem "${problemTitle}
       }
 
-      form.submit-solution.needs-validation(novalidate="" action="/" method="post") {
+      form.submit-solution.needs-validation(novalidate="" action="./submit" method="post") {
 
         div.mb-3 {
-          label(for="solution") {
+          label(for="code") {
             "Solution code:"
           }
-          textarea.form-control#solution(name="solution" placeholder="// Code" required="") {}
+          textarea.form-control#solution(name="code" placeholder="// Code" required="") {}
           div.invalid-feedback {
             "Please enter some valid code."
           }
@@ -87,9 +87,9 @@ html(lang="en") {
           "Submit"
         }
       }
-    } 
-    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
-    script(src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
-    script(src="./scripts.js") {}
+    }
+    script(src="/static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="/scripts.js") {}
   }
 }

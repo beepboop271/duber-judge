@@ -57,7 +57,7 @@ html(lang="en") {
         ${problem.getTitle}
       }
       div.d-flex.justify-content-between {
-        textarea#problem-viewing-latex-input {}
+        textarea#problem-viewing-latex-input {${description}}
         div#problem-viewing-latex {}
         div.list-group#submission-panel {
           a.list-group-item.list-group-item-action(href="./submit-solution.html") {

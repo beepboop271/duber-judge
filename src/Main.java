@@ -33,13 +33,14 @@ public class Main {
 
     try {
       Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
-      Templater.prepareTemplate("adminUsers",
-      Paths.get("static/adminUsers"));
+      Templater.prepareTemplate("adminUsers", Paths.get("static/adminUsers"));
       Templater.prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
       Templater.prepareTemplate("problems", Paths.get("static/viewAllProblems"));
-      Templater
-      .prepareTemplate("adminProblems",
-      Paths.get("static/adminProblems"));
+      Templater.prepareTemplate("adminProblems", Paths.get("static/adminProblems"));
+      Templater.prepareTemplate("submitSolution", Paths.get("static/submit-solution"));
+      // Templater
+      // .prepareTemplate("adminProblems",
+      // Paths.get("static/adminProblems"));
     } catch (IOException e) {
       System.out.println("An exception occurred while preparing templates.");
     } catch (UnknownTokenException e) {
@@ -83,10 +84,10 @@ public class Main {
 
     server.route("/contest/:contestId/problem/:problemId", contestProblem);
 
-    server.route("/problem/:problemId/submit", practiceSubmission);
-    server.route("/problem/:problemId/submissions", practiceSubmission);
+    server.route("/problem/:problemId/:action(submit)", practiceSubmission);
+    server.route("/problem/:problemId/:action(submissions)", practiceSubmission);
     server.route(
-      "/problem/:problemId/submissions/:submissionId",
+      "/problem/:problemId/submissions/:action(:submissionId)",
       practiceSubmission
     );
 
