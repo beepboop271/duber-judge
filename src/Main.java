@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 
 import dubjhandlers.AdminHandler;
 import dubjhandlers.AdminProblemHandler;
@@ -15,6 +14,7 @@ import dubjhandlers.ProfileEditHandler;
 import dubjhandlers.ProfileHandler;
 import dubjhandlers.PublicProblemHandler;
 import dubjhandlers.StaticHandler;
+import judge.ChildProcesses;
 import entities.Category;
 import entities.PublishingState;
 import entities.entity_fields.ContestField;
@@ -22,14 +22,23 @@ import entities.entity_fields.ProblemField;
 import services.AdminService;
 import services.ProblemService;
 import services.SessionCleaner;
-import services.UserService;
 import templater.Templater;
 import templater.compiler.tokeniser.UnknownTokenException;
 import webserver.WebServer;
 
 public class Main {
   public static void main(String[] args) {
-    WebServer server = new WebServer(5000);
+    Main.initialize();
+    Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
+    Main.startWebServer(5000);
+  }
+
+  public static void initialize() {
+    ChildProcesses.initialize();
+  }
+
+  public static void startWebServer(int port) {
+    WebServer server = new WebServer(port);
     SessionCleaner sessCleaner = new SessionCleaner();
     sessCleaner.start();
 
