@@ -346,8 +346,8 @@ public class AdminTestcaseHandler implements RouteTarget {
       return Response.badRequest();
     }
 
-    // If body doesn't match expected, reject
-    if (!bodyParams.containsKey("input") || !bodyParams.containsKey("output")) {
+    // input can be an empty string but output can not
+    if (!bodyParams.containsKey("output")) {
       return Response.badRequest();
     }
 
@@ -361,8 +361,11 @@ public class AdminTestcaseHandler implements RouteTarget {
 
     // Create the actual testcase
     try {
-      String input = bodyParams.get("input");
+      String input = "";
       String output = bodyParams.get("output");
+      if (bodyParams.containsKey("input")) {
+        input = bodyParams.get("input");
+      }
 
       ArrayList<Entity<Testcase>> testcases = as.getTestcasesByBatch(batchId);
       int sequenceNumber = testcases.size()+1;

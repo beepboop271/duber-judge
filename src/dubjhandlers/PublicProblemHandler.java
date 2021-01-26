@@ -8,7 +8,6 @@ import entities.Entity;
 import entities.Problem;
 import entities.ProfileProblem;
 import entities.Session;
-import entities.SubmissionResult;
 import entities.User;
 import services.ProblemService;
 import services.PublicService;
@@ -116,8 +115,6 @@ public class PublicProblemHandler implements RouteTarget {
    * @return a response to the POST request provided.
    */
   private Response handlePostRequest(Request req) {
-    String probName = req.getParam("problemId");
-
     return Response.internalError();
   }
 
@@ -210,10 +207,6 @@ public class PublicProblemHandler implements RouteTarget {
    *         problem.
    */
   private Response getProblemLeaderboard(Request req, boolean hasBody) {
-    int probId = Integer.parseInt(req.getParam("problemId"));
-    ArrayList<Entity<SubmissionResult>> leaderboard =
-      ps.getProblemLeaderboard(probId, 0, 500);
-
     return Response.internalError();
   }
 

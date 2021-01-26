@@ -483,6 +483,11 @@ public class Request extends HttpMessage {
    * Parses and treats this request's body as if it were an
    * application/x-www-form-urlencoded body, and stores the
    * parsed queries in the provided map.
+   * <p>
+   * If an empty param, that is, a param with a name but no
+   * value, is provided, this method will not add the param to
+   * the map. To check if an expected param is empty, check
+   * for its presence in the provided map.
    *
    * @param toStoreIn The map to store the parsed results in.
    * @throws HttpSyntaxException if the body is badly formed.
