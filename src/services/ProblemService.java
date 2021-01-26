@@ -34,7 +34,7 @@ import judge.Judger;
  * @since 1.0.0
  */
 public class ProblemService {
-  private static final File tempFileDirectory = new File("temp/judge/");
+  private static final File TEMP_FILE_DIRECTORY = new File("temp/judge/");
 
   private ProblemDao problemDao;
   private ClarificationDao clarificationDao;
@@ -53,7 +53,7 @@ public class ProblemService {
     this.testcaseRunDao = new TestcaseRunDao();
     this.judger = new Judger(
       Runtime.getRuntime().availableProcessors(),
-      ProblemService.tempFileDirectory
+      ProblemService.TEMP_FILE_DIRECTORY
     );
   }
 
