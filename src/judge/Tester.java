@@ -217,6 +217,9 @@ public class Tester {
       // memory limit exceeded
       } else if (result.getMemoryUsageBytes() > this.memoryLimitKb*1024) {
         result.setStatus(ExecutionStatus.MEMORY_LIMIT_EXCEEDED);
+      // output limit exceeded
+      } else if (result.getOutput().getBytes().length > this.outputLimitKb*1024) {
+        result.setStatus(ExecutionStatus.OUTPUT_LIMIT_EXCEEDED);
       // invalid return code
       } else if (program.exitValue() != 0) {
         result.setStatus(ExecutionStatus.INVALID_RETURN);
