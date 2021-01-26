@@ -76,7 +76,7 @@ public class ContestDao implements Dao<Contest>, Updatable<ContestField> {
           ps.setString(1, ((Timestamp)value).toString());
           break;
         case DURATION_MINUTES:
-          ps.setInt(1, (int)value);
+          ps.setInt(1, (Integer)value);
           break;
         case STATUS:
           ps.setString(1, ((ContestStatus)value).toString());

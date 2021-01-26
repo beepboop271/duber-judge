@@ -151,7 +151,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           ps.setString(1, ((Category)value).toString());
           break;
         case CREATOR_ID:
-          ps.setLong(1, (long)value);
+          ps.setLong(1, (Long)value);
           break;
         case CREATED_AT:
           ps.setString(1, ((Timestamp)value).toString());
@@ -166,29 +166,29 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           ps.setString(1, (String)value);
           break;
         case POINTS:
-          ps.setInt(1, (int)value);
+          ps.setInt(1, (Integer)value);
           break;
         case TIME_LIMIT_MILLIS:
-          ps.setInt(1, (int)value);
+          ps.setInt(1, (Integer)value);
           break;
         case MEMORY_LIMIT_KB:
-          ps.setInt(1, (int)value);
+          ps.setInt(1, (Integer)value);
           break;
         case OUTPUT_LIMIT_KB:
-          ps.setInt(1, (int)value);
+          ps.setInt(1, (Integer)value);
           break;
         case NUM_SUBMISSIONS:
-          ps.setInt(1, (int)value);
+          ps.setInt(1, (Integer)value);
           break;
         case CLEARED_SUBMISSIONS:
-          ps.setInt(1, (int)value);
+          ps.setInt(1, (Integer)value);
           break;
 
         case SUBMISSIONS_LIMIT:
-          ps.setInt(1, (int)value);
+          ps.setInt(1, (Integer)value);
           break;
         case CONTEST_ID:
-          ps.setLong(1, (long)value);
+          ps.setLong(1, (Long)value);
           break;
 
         case EDITORIAL:

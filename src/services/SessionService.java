@@ -87,7 +87,7 @@ public class SessionService {
     }
     switch (field) {
       case USER_ID:
-        Sessions.tokenToSessions.get(token).setUserId((long)value);;
+        Sessions.tokenToSessions.get(token).setUserId((Long)value);
     }
   }
 
