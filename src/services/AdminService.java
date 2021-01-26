@@ -191,7 +191,6 @@ public class AdminService {
     Timestamp lastModifiedAt,
     String title,
     String description,
-    int points,
     int timeLimitMillis,
     int memoryLimitKb,
     int outputLimitKb,
@@ -204,7 +203,7 @@ public class AdminService {
     this.checkProblemCreation(
       createdAt,
       lastModifiedAt,
-      points,
+      0,
       timeLimitMillis,
       memoryLimitKb,
       outputLimitKb,
@@ -219,7 +218,7 @@ public class AdminService {
         lastModifiedAt,
         title,
         description,
-        points,
+        0,
         timeLimitMillis,
         memoryLimitKb,
         outputLimitKb,
@@ -238,7 +237,6 @@ public class AdminService {
     Timestamp lastModifiedAt,
     String title,
     String description,
-    int points,
     int timeLimitMillis,
     int memoryLimitKb,
     int outputLimitKb,
@@ -251,7 +249,7 @@ public class AdminService {
     this.checkProblemCreation(
       createdAt,
       lastModifiedAt,
-      points,
+      0,
       timeLimitMillis,
       memoryLimitKb,
       outputLimitKb,
@@ -266,7 +264,7 @@ public class AdminService {
         lastModifiedAt,
         title,
         description,
-        points,
+        0,
         timeLimitMillis,
         memoryLimitKb,
         outputLimitKb,
@@ -363,18 +361,15 @@ public class AdminService {
     }
   }
 
-  public long createBatch(
-    long adminId,
-    long problemId,
-    int sequence,
-    int points
-  ) throws InsufficientPermissionException,
-    IllegalArgumentException {
+  public long createBatch(long adminId, long problemId, int sequence, int points)
+    throws InsufficientPermissionException,
+    IllegalArgumentException, RecordNotFoundException {
     if (points < 0) {
       throw new IllegalArgumentException("Points cannot be negative.");
     }
-    long id =
-      this.batchDao.add(new Batch(problemId, adminId, sequence, points));
+    long id = this.batchDao.add(new Batch(problemId, adminId, sequence, points));
+    Problem prob = this.problemDao.get(problemId).getContent();
+    this.problemDao.update(problemId, ProblemField.POINTS, prob.getPoints()+points);
     return id;
   }
 
