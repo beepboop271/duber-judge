@@ -242,28 +242,4 @@ public class Judger {
     }
     return result;
   }
-
-
-  // // ------temp methods
-
-  public static void display(SubmissionResult submission) {
-    System.out.println("Submission: " + submission);
-    System.out.println("Language: " + submission.getSubmission().getLanguage());
-    System.out.println("Status: " + submission.getStatus());
-    System.out.println("Score: " + submission.getScore());
-    System.out.println("Run duration (milliseconds): " + submission.getRunDurationMillis());
-    System.out.println("Memory used (bytes): " + submission.getMemoryUsageBytes());
-    System.out.println("Source Code:\n" + submission.getSubmission().getCode());
-    System.out.println();
-  }
-
-  // public static void display(TestcaseRun run) {
-  //   System.out.println("Testcase: " + run.getTestcase() + " of submission " + run.getSubmission());
-  //   System.out.println("Status: " + run.getStatus());
-  //   System.out.println("Run duration (milliseconds): " + run.getRunDurationMillis());
-  //   System.out.println("Memory used (bytes): " + run.getMemoryUsedBytes());
-  //   System.out.println("Output: " + run.getOutput());
-  //   System.out.println();
-  // }
-
 }
