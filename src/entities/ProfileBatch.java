@@ -10,7 +10,7 @@ import java.util.List;
  * Created <b>2021-01-25</b>.
  *
  * @since 0.0.7
- * @version 0.0.7
+ * @version1.0.0
  * @author Joseph Wang
  */
 public class ProfileBatch {

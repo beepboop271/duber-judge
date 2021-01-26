@@ -24,9 +24,39 @@ import templater.compiler.tokeniser.UnknownTokenException;
 import webserver.WebServer;
 
 public class Main {
+  public static void main(String[] args) {
+    Main.initialize();
+    promptCreateAdmin();
+    Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
+    System.out.println("Server started at 5000");
+    Main.startWebServer(5000);
+  }
 
   public static void initialize() {
     ChildProcesses.initialize();
+  }
+
+  /**
+   * Prompts the user to see if they wish to create an admin
+   * account.
+   */
+  public static void promptCreateAdmin() {
+    Scanner input = new Scanner(System.in);
+    System.out.println("\n\n");
+    System.out.println("An admin account is required to add problems.");
+    System.out.println("So if you do not already have one already, you should create one.");
+    System.out.print("Do you wish to create a new admin account (y/n): ");
+    String answer = input.nextLine();
+    while (!answer.equals("y") && !answer.equals("n")) {
+      System.out.println("Please enter a valid option and try again.");
+      System.out.print("Do you wish to create a new admin account (y/n): ");
+      answer = input.nextLine();
+    }
+    if (answer.equals("y")) {
+      createAdmin(input);
+    }
+
+    input.close();
   }
 
   /**
@@ -70,28 +100,6 @@ public class Main {
         }
       }
     }
-  }
-
-  /**
-   * Prompts the user to see if they wish to create an admin account.
-   */
-  public static void promptCreateAdmin() {
-    Scanner input = new Scanner(System.in);
-    System.out.println("\n\n");
-    System.out.println("An admin account is required to add problems.");
-    System.out.println("So if you do not already have one already, you should create one.");
-    System.out.print("Do you wish to create a new admin account (y/n): ");
-    String answer = input.nextLine();
-    while (!answer.equals("y") && !answer.equals("n")) {
-      System.out.println("Please enter a valid option and try again.");
-      System.out.print("Do you wish to create a new admin account (y/n): ");
-      answer = input.nextLine();
-    }
-    if (answer.equals("y")) {
-      createAdmin(input);
-    }
-
-    input.close();
   }
 
   /**
@@ -220,14 +228,5 @@ public class Main {
     server.route("/editor.js", staticHandler);
 
     server.run();
-  }
-
-
-  public static void main(String[] args) {
-    Main.initialize();
-    promptCreateAdmin();
-    Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
-    System.out.println("Server started at 5000");
-    Main.startWebServer(5000);
   }
 }

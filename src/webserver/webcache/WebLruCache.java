@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created <b> 2020-01-08 </b>.
  *
  * @since 0.0.1
- * @version 0.0.2
+ * @version1.0.0
  * @author Joseph Wang
  */
 public class WebLruCache {
@@ -247,7 +247,7 @@ public class WebLruCache {
    * Created <b> 2021-01-19 </b>.
    *
    * @since 0.0.2
-   * @version 0.0.2
+   * @version1.0.0
    * @author Joseph Wang
    */
   private final class CleanupRunnable implements Runnable {

@@ -98,7 +98,7 @@ html(lang="en") {
                     i.fas.fa-edit.h4 {}
                   }
                   small.text-muted.mr-4 {
-                    "Attempted by: "${problem.getNumSubmissions}
+                    "Total Submissions: "${problem.getNumSubmissions}
                   }
                   small.text-muted.mr-4 {
                     "Category: "${problem.getCategory}
