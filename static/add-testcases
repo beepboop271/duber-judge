@@ -75,22 +75,23 @@ html(lang="en") {
         div.col-8 {
           div.tab-content#nav-tabContent {
             for (batch : batches) {
-              div.tab-pane.fade.show.active#batch-${batch.getSequence}(role="tabpanel" aria-labelledby="batch-"${batch.getSequence}"-list") {
-              div.list-group.user.problem-list {
-                for (testcase : "batch.getTestcases") {
-                  a.list-group-item.list-group-item-action(href=${testcase.getLink}) {
-                    div.d-flex.w-100.justify-content-between {
-                      h5 {
-                        "Testcase "${testcase.getSequence}
+              div.tab-pane.fade.show.active#batch-${batch.getSequence}(role="tabpanel" aria-labelledby="batch-"${batch.getSequence}"-list") { 
+                div.list-group.user.problem-list {
+                  for (testcase : "batch.getTestcases") {
+                    a.list-group-item.list-group-item-action(href=${testcase.getLink}) {
+                      div.d-flex.w-100.justify-content-between {
+                        h5 {
+                          "Testcase "${testcase.getSequence}
+                        }
+                        i.fas.fa-edit.h4 {}
                       }
-                      i.fas.fa-edit.h4 {}
                     }
                   }
-                }
-                a.list-group-item.list-group-item-action(href=${batch.getAddTestcaseLink}) {
-                  div.d-flex.w-100.justify-content-center {
-                    p.h3 {
-                      i.fas.fa-plus-circle{}
+                  a.list-group-item.list-group-item-action(href=${batch.getAddTestcaseLink}) {
+                    div.d-flex.w-100.justify-content-center {
+                      p.h3 {
+                        i.fas.fa-plus-circle{}
+                      }
                     }
                   }
                 }
