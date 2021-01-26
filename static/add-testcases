@@ -20,7 +20,7 @@ html(lang="en") {
         "DubJ"
       }
       button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
-        span.navbar-toggler-icon{}
+        span.navbar-toggler-icon {}
       }
       div.collapse.navbar-collapse#navbarNav {
         ul.navbar-nav.ml-auto {
@@ -61,6 +61,7 @@ html(lang="en") {
             for (batch : batches) {
               a.list-group-item.list-group-item-action.active#batch-${batch.getSequence}-list(data-toggle="list" href="#batch-"${batch.getSequence} role="tab" aria-controls="home") {
                 "Batch "${batch.getSequence}
+              }
             }
             a.list-group-item.list-group-item-action#add-batch-list(data-toggle="list" href="#add-batch" role="tab" aria-controls="profile") {
               div.d-flex.w-100.justify-content-center {
@@ -74,9 +75,9 @@ html(lang="en") {
         div.col-8 {
           div.tab-content#nav-tabContent {
             for (batch : batches) {
-              div.tab-pane.fade.show.active#batch-"${batch.getSequence}(role="tabpanel" aria-labelledby="batch-"${batch.getSequence}"-list") {
+              div.tab-pane.fade.show.active#batch-${batch.getSequence}(role="tabpanel" aria-labelledby="batch-"${batch.getSequence}"-list") {
               div.list-group.user.problem-list {
-                for (testcase : batch.getTestcases) {
+                for (testcase : ${batch.getTestcases}) {
                   a.list-group-item.list-group-item-action(href=${testcase.getLink}) {
                     div.d-flex.w-100.justify-content-between {
                       h5 { 
@@ -96,13 +97,13 @@ html(lang="en") {
               }
             }
             div.tab-pane.fade#add-batch(role="tabpanel" aria-labelledby="add-batch-list") {
-              form.create-practice-problem.needs-validation(novalidate action="./" method="post") {
+              form.create-practice-problem.needs-validation(novalidate="" action="./" method="post") {
                 input(name="action" type="hidden" value="createBatch");
                 div.mb-3 {
                   label(for="points") {
                     "Points:"
                   }
-                  input.form-control.range#points(name="points" type="number" min="0" step="1" max="30" data-bind="value:points" required);
+                  input.form-control.range#points(name="points" type="number" min="0" step="1" max="30" data-bind="value:points" required="");
                 }
                 button.btn-primary.btn(type="submit") {
                   "Create"

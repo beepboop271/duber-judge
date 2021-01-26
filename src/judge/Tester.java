@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -138,7 +138,7 @@ public class Tester {
      */
     @Override
     public void run() {
-      ArrayList<Entity<Testcase>> testcases = this.batch.getContent().getTestcases();
+      List<Entity<Testcase>> testcases = this.batch.getContent().getTestcases();
       TestcaseRun[] testcaseRuns = new TestcaseRun[testcases.size()];
       boolean batchPassed = true;
       for (int i = 0; i < testcases.size(); i++) {
@@ -208,7 +208,7 @@ public class Tester {
         return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, result);
       }
       result.setRunDurationMillis(runDurationMillis);
-      result.setMemoryUsageBytes(childProcess.getMemoryUsedBytes());
+      result.setMemoryUsageBytes(childProcess.getMemoryUsageBytes());
 
       // timed out
       if (program.isAlive()) {
