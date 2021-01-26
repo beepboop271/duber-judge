@@ -270,7 +270,7 @@ public class Interpreter {
     interpreted.append("<");
     interpreted.append(resolveStrings(elem.getName()));
     if (elem.getId() != null) {
-      interpreted.append("id=\"");
+      interpreted.append(" id=\"");
       interpreted.append(resolveStrings(elem.getId()));
       interpreted.append("\"");
     }

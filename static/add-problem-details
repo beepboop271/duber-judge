@@ -8,13 +8,13 @@ html(lang="en") {
       "Duber Judge"
     }
 
-    script(src="./static/vendored/marked-1.2.7.min.js") {}
-    script(src="./static/vendored/purify-2.2.6.min.js") {}
-    script(defer="" src="./static/vendored/mathjax-tex-chtml-3.1.2.js") {}
+    script(src="/static/vendored/marked-1.2.7.min.js") {}
+    script(src="/static/vendored/purify-2.2.6.min.js") {}
+    script(defer="" src="/static/vendored/mathjax-tex-chtml-3.1.2.js") {}
 
-    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
-    link(rel="stylesheet" href="./styles.css");
+    link(rel="stylesheet" href="/styles.css");
 
   }
   body {
@@ -47,7 +47,7 @@ html(lang="en") {
           }
           li.nav-item.active {
             a.nav-link(href=${profileLink}) {
-              ${user.getUsername}
+              ${username}
             }
           }
         }
@@ -58,7 +58,7 @@ html(lang="en") {
         "Practice problem"
       }
 
-      form.create-practice-problem.needs-validation(novalidate="" action="/" method="post") {
+      form.create-practice-problem.needs-validation(novalidate="" action=${postUrl} method="post") {
         div.mb-3 {
           label(for="title") {
             "Enter a title"
@@ -73,7 +73,7 @@ html(lang="en") {
           "Problem description:"
         }
         div.mb-3.add-problem.description {
-          textarea.form-control#input-description(rows="5" cols="33") {
+          textarea.form-control#input-description(name="description" rows="5" cols="33") {
 "# CCC '19 S2 - Pretty Average Primes
 
 ---
@@ -154,23 +154,37 @@ and so any of these pairs could have also been used in output. There is no pairs
             "Please enter a description."
           }
         }
+		
+		div.mb-3 {
+          label(for="points") {
+            "Points:"
+          }
+          input.form-control.range#points(name="points" type="number" min="0" max="50" data-bind="value:points" required="");
+        }
 
         div.mb-3 {
           label(for="memory") {
-            "Memory limit:"
+            "Memory limit (kB):"
           }
           input.form-control.range#memory(name="memoryLimit" type="number" min="0" max="300000" data-bind="value:points" required="");
         }
 
         div.mb-3 {
           label(for="output") {
-            "Output limit:"
+            "Output limit (kB):"
           }
           input.form-control.range#output(name="outputLimit" type="number" min="0" max="9999999" data-bind="value:points" required="");
         }
+		
+		div.mb-3 {
+          label(for="time") {
+            "Time limit (ms):"
+          }
+          input.form-control.range#time(name="timeLimit" type="number" min="0" max="9999999" data-bind="value:points" required="");
+        }
 
         div.form-group {
-          label(for="points") {
+          label(for="category") {
             "Category:"
           }
           select.custom-select(name="category" required="") {
@@ -199,7 +213,7 @@ and so any of these pairs could have also been used in output. There is no pairs
         }
 
         div.mb-3 {
-          label(for="description") {
+          label(for="editorial") {
             "Editorial:"
           }
           textarea.form-control#editorial(name="editorial" placeholder="Sample solution to the problem") {}
@@ -211,9 +225,9 @@ and so any of these pairs could have also been used in output. There is no pairs
       }
     }
 
-    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
-    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
-    script(src="./scripts.js") {}
-    script(src="./editor.js") {}
+    script(src="/static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="/static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="/scripts.js") {}
+    script(src="/editor.js") {}
   }
 }

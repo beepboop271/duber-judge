@@ -63,7 +63,7 @@ html(lang="en") {
           a.list-group-item.list-group-item-action(href=${submitLink}) {
             "Submit"
           }
-          a.list-group-item.list-group-item-action(href="${allSubmissionsLink}") {
+          a.list-group-item.list-group-item-action(href=${allSubmissionsLink}) {
             "View submissions"
           }
           a.list-group-item.list-group-item-action(href="#") {

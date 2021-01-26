@@ -224,7 +224,7 @@ public class ProfileHandler implements RouteTarget {
         body = Templater.fillTemplate("userProfile", templateParams);
       }
 
-      return Response.okHtml(body, hasBody);
+      return Response.okNoCacheHtml(body, hasBody);
     } catch (RecordNotFoundException e) {
       // TODO: some sort of user failsafe later?
       return Response.internalError();

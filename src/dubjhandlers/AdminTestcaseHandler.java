@@ -1,7 +1,5 @@
 package dubjhandlers;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -132,7 +130,7 @@ public class AdminTestcaseHandler implements RouteTarget {
    */
   private Response handlePostRequest(Request req) {
     switch (req.getEndResource()) {
-      case "testcase":
+      case "testcases":
         return this.addBatch(req);
       case "add":
         return this.addTestcase(req);
@@ -216,34 +214,38 @@ public class AdminTestcaseHandler implements RouteTarget {
       }
 
       int probId = Integer.parseInt(probIdStr);
-      Entity<Problem> prob = ps.getProblem(probId);
+      Entity<Problem> prob = as.getNestedProblem(probId);
       List<Entity<Batch>> batches = prob.getContent().getBatches();
       ArrayList<ProfileBatch> allBatches = new ArrayList<>();
 
-      // TODO: note this does not preserve batches
-      for (Entity<Batch> entity : batches) {
-        Batch batch = entity.getContent();
-        List<Entity<Testcase>> testcases = entity.getContent().getTestcases();
-        ArrayList<ProfileTestcase> profTestcases = new ArrayList<>();
+      if (batches != null) {
+        for (Entity<Batch> entity : batches) {
+          Batch batch = entity.getContent();
+          List<Entity<Testcase>> testcases = entity.getContent().getTestcases();
+          ArrayList<ProfileTestcase> profTestcases = new ArrayList<>();
 
-        for (Entity<Testcase> testcase : testcases) {
-          profTestcases.add(
-            new ProfileTestcase(
-              "/admin/"+probId+"/testcases/"+testcase.getId(),
-              testcase.getId(),
-              testcase.getContent()
+          // make sure these fields are not null
+          if (testcases != null) {
+            for (Entity<Testcase> testcase : testcases) {
+              profTestcases.add(
+                new ProfileTestcase(
+                  "/admin/"+probId+"/testcases/"+testcase.getId(),
+                  testcase.getId(),
+                  testcase.getContent()
+                )
+              );
+            }
+
+          }
+          allBatches.add(
+            new ProfileBatch(
+              profTestcases,
+              entity.getId(),
+              batch.getSequence(),
+              "/admin/problem/"+probId+"/testcases/"+entity.getId()+"add"
             )
           );
         }
-
-        allBatches.add(
-          new ProfileBatch(
-            profTestcases,
-            entity.getId(),
-            batch.getSequence(),
-            "/admin/problem/"+probId+"/testcases/"+entity.getId()+"add"
-          )
-        );
       }
 
       // load template params
@@ -293,27 +295,22 @@ public class AdminTestcaseHandler implements RouteTarget {
     // parse and use the problem id and batch ids
     String probIdStr = req.getParam("problemId");
     String batchIdStr = req.getParam("batchId");
-    try {
-      if (!probIdStr.matches("^\\d+$") || !batchIdStr.matches("^\\d+$")) {
-        return Response.notFoundHtml(req.getPath());
-      }
-
-      int probId = Integer.parseInt(probIdStr);
-      HashMap<String, Object> templateParams = new HashMap<>();
-      templateParams.put("leaderboardLink", "/leaderboard");
-      templateParams.put("problemsLink", "/problems");
-      templateParams.put("profileLink", "/profile");
-      templateParams.put("username", username);
-      templateParams.put(
-        "postUrl",
-        "/admin/problem/"+probId+"/testcases/"+batchIdStr+"add"
-      );
-
-      return Response
-        .okHtml(Templater.fillTemplate("addTestcaseDetails", templateParams));
-    } catch (RecordNotFoundException e) {
+    if (!probIdStr.matches("^\\d+$") || !batchIdStr.matches("^\\d+$")) {
       return Response.notFoundHtml(req.getPath());
     }
+
+    int probId = Integer.parseInt(probIdStr);
+    HashMap<String, Object> templateParams = new HashMap<>();
+    templateParams.put("leaderboardLink", "/leaderboard");
+    templateParams.put("problemsLink", "/problems");
+    templateParams.put("profileLink", "/profile");
+    templateParams.put("username", username);
+    templateParams
+      .put("postUrl", "/admin/problem/"+probId+"/testcases/"+batchIdStr+"add");
+
+    return Response.okNoCacheHtml(
+      Templater.fillTemplate("addTestcaseDetails", templateParams)
+    );
   }
 
   /**
@@ -365,10 +362,7 @@ public class AdminTestcaseHandler implements RouteTarget {
     }
 
     // If body doesn't match expected, reject
-    if (
-      !bodyParams.containsKey("testcase-input")
-        || !bodyParams.containsKey("testcase-output")
-    ) {
+    if (!bodyParams.containsKey("input") || !bodyParams.containsKey("output")) {
       return Response.badRequest();
     }
 
@@ -382,20 +376,17 @@ public class AdminTestcaseHandler implements RouteTarget {
 
     // Create the actual testcase
     try {
-      String input = URLDecoder.decode(bodyParams.get("username"), "UTF-8");
-      String output = URLDecoder.decode(bodyParams.get("password"), "UTF-8");
+      String input = bodyParams.get("username");
+      String output = bodyParams.get("password");
 
       Batch batch = as.getBatch(uid, batchId).getContent();
-      as.createTestcase(
-        uid,
-        batchId,
-        batch.getTestcases().size()+1,
-        input,
-        output
-      );
-    } catch (UnsupportedEncodingException e) {
-      // UTF-8 should be supported for sometime, but if not, internal error
-      return Response.internalError();
+      int sequenceNumber;
+      if (batch.getTestcases() == null) {
+        sequenceNumber = 1;
+      } else {
+        sequenceNumber = batch.getTestcases().size()+1;
+      }
+      as.createTestcase(uid, batchId, sequenceNumber, input, output);
     } catch (RecordNotFoundException e) {
       // Not found, return not found html
       return Response.notFoundHtml(req.getPath());
@@ -458,8 +449,15 @@ public class AdminTestcaseHandler implements RouteTarget {
     // Create the actual testcase
     try {
       int points = Integer.parseInt(bodyParams.get("points"));
-      Problem prob = this.prs.getProblem(probId).getContent(); 
-      as.createBatch(uid, probId, prob.getBatches().size()+1, points);
+      Problem prob = this.prs.getProblem(probId).getContent();
+      int sequenceNumber;
+      if (prob.getBatches() == null) {
+        sequenceNumber = 1;
+      } else {
+        sequenceNumber = prob.getBatches().size()+1;
+      }
+
+      this.as.createBatch(uid, probId, sequenceNumber, points);
 
     } catch (RecordNotFoundException e) {
       // Not found, return not found html

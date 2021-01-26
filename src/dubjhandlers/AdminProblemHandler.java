@@ -1,20 +1,25 @@
 package dubjhandlers;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import dal.dao.RecordNotFoundException;
+import entities.Category;
 import entities.Entity;
 import entities.Problem;
 import entities.ProfileProblem;
+import entities.PublishingState;
 import entities.Session;
 import entities.User;
 import services.AdminService;
+import services.InsufficientPermissionException;
 import services.ProblemService;
 import services.PublicService;
 import services.SessionService;
 import services.UserService;
 import templater.Templater;
+import webserver.HttpSyntaxException;
 import webserver.Request;
 import webserver.Response;
 import webserver.RouteTarget;
@@ -105,6 +110,8 @@ public class AdminProblemHandler implements RouteTarget {
     switch (req.getEndResource()) {
       case "problems":
         return this.getAllProblems(req, hasBody);
+      case "add":
+        return this.getAddProblemPage(req, hasBody);
       default:
         return this.findProblem(req, hasBody);
     }
@@ -122,7 +129,7 @@ public class AdminProblemHandler implements RouteTarget {
    */
   private Response handlePostRequest(Request req) {
     switch (req.getEndResource()) {
-      case "problems":
+      case "add":
         return this.addProblem(req);
       default:
         return Response.forbidden();
@@ -204,7 +211,7 @@ public class AdminProblemHandler implements RouteTarget {
       Problem prob = entity.getContent();
       problems.add(
         new ProfileProblem(
-          "admin/problem/"+entity.getId()+"/testcases",
+          "/admin/problem/"+entity.getId()+"/testcases",
           prob.getCategory(),
           prob.getTitle(),
           prob.getPoints(),
@@ -224,9 +231,49 @@ public class AdminProblemHandler implements RouteTarget {
     templateParams.put("problems", problems);
     templateParams.put("usersPageLink", "/admin/users");
     templateParams.put("problemsPageLink", "/admin/problems");
+    templateParams.put("addProblemLink", "/admin/problems/add");
 
     return Response
-      .okHtml(Templater.fillTemplate("adminProblems", templateParams));
+      .okNoCacheHtml(Templater.fillTemplate("adminProblems", templateParams));
+  }
+
+  /**
+   * Retrieves the add problem page.
+   * <p>
+   *
+   * @param req     The request to handle.
+   * @param hasBody Whether the response should have a body or
+   *                not.
+   * @return a response with the admin version of one problem.
+   */
+  private Response getAddProblemPage(Request req, boolean hasBody) {
+    Session currentSession = this.getActiveSession(req);
+    // verify and load admin information
+    if (currentSession == null) {
+      return Response.temporaryRedirect("/login");
+    }
+    long uid = currentSession.getUserId();
+    String username = "Profile";
+    try {
+      User user = this.getAdminUser(uid);
+      if (user == null) {
+        return Response.forbidden();
+      }
+      username = user.getUsername();
+    } catch (RecordNotFoundException e) {
+      return Response.internalError();
+    }
+
+    // load adding page
+    HashMap<String, Object> templateParams = new HashMap<>();
+    templateParams.put("leaderboardLink", "/leaderboard");
+    templateParams.put("problemsLink", "/problems");
+    templateParams.put("profileLink", "/profile");
+    templateParams.put("username", username);
+    templateParams.put("postUrl", "/admin/problems/add");
+
+    return Response
+      .okHtml(Templater.fillTemplate("addProblemDetails", templateParams));
   }
 
   /**
@@ -240,23 +287,6 @@ public class AdminProblemHandler implements RouteTarget {
    * @return a response with the admin version of one problem.
    */
   private Response findProblem(Request req, boolean hasBody) {
-    Session currentSession = this.getActiveSession(req);
-    // verify and load admin information
-    if (currentSession == null) {
-      return Response.temporaryRedirect("/login");
-    }
-    long uid = currentSession.getUserId();
-    String username = "Profile";
-    try {
-      User user = this.getAdminUser(currentSession.getUserId());
-      if (user == null) {
-        return Response.forbidden();
-      }
-      username = user.getUsername();
-    } catch (RecordNotFoundException e) {
-      return Response.internalError();
-    }
-
     return Response.internalError();
   }
 
@@ -273,6 +303,80 @@ public class AdminProblemHandler implements RouteTarget {
    *         problem.
    */
   private Response addProblem(Request req) {
-    return Response.internalError();
+    Session currentSession = this.getActiveSession(req);
+    // verify and load admin information
+    if (currentSession == null) {
+      return Response.temporaryRedirect("/login");
+    }
+    long uid = currentSession.getUserId();
+
+    try {
+      // Ensure the user is an admin before adding
+      if (!us.isAdmin(uid)) {
+        return Response.forbidden();
+      }
+    } catch (RecordNotFoundException e) {
+      return Response.internalError();
+    }
+
+    HashMap<String, String> bodyParams = new HashMap<>();
+
+    try {
+      // get form results
+      req.parseFormBody(bodyParams);
+    } catch (HttpSyntaxException e) {
+      return Response.badRequest();
+    }
+
+    // If body doesn't match expected, reject
+    if (
+      !bodyParams.containsKey("title")
+        || !bodyParams.containsKey("description")
+        || !bodyParams.containsKey("points")
+        || !bodyParams.containsKey("category")
+        || !bodyParams.containsKey("memoryLimit")
+        || !bodyParams.containsKey("outputLimit")
+        || !bodyParams.containsKey("timeLimit")
+        || !bodyParams.containsKey("editorial")
+    ) {
+      return Response.badRequest();
+    }
+
+    String memoryLimit = bodyParams.get("memoryLimit");
+    String outputLimit = bodyParams.get("outputLimit");
+    String timeLimit = bodyParams.get("timeLimit");
+
+    // Make sure certain fields are indeed numbers
+    if (
+      !timeLimit.matches("^\\d+$")
+        || !outputLimit.matches("^\\d+$")
+        || !memoryLimit.matches("^\\d+$")
+    ) {
+      return Response.badRequest();
+    }
+
+    // Create the actual testcase
+    try {
+      this.as.createPracticeProblem(
+        uid,
+        Category.valueOf(bodyParams.get("category")),
+        new Timestamp(System.currentTimeMillis()),
+        new Timestamp(System.currentTimeMillis()),
+        bodyParams.get("title"),
+        bodyParams.get("description"),
+        Integer.parseInt(timeLimit),
+        Integer.parseInt(memoryLimit),
+        Integer.parseInt(outputLimit),
+        0,
+        1,
+        bodyParams.get("editorial"),
+        PublishingState.PUBLISHED
+      );
+    } catch (InsufficientPermissionException e) {
+      // Forbid them from posting if they cannot
+      return Response.forbidden();
+    }
+
+    return Response.seeOther("/admin/problems");
   }
 }

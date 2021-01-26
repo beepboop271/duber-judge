@@ -732,7 +732,7 @@ public class WebServer {
       // TODO check if the request is a HEAD, and if so, dont
       // actually use the body
       if (!cache.checkCache(fullPath)) {
-        cache.putCache(response.getBody(), fullPath, 60);
+        cache.putCache(response.getBody(), fullPath, 5);
       }
     }
 

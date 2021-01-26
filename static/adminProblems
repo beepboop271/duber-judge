@@ -111,7 +111,7 @@ html(lang="en") {
                   }
                 }
               }
-              a.list-group-item.list-group-item-action(href="#") {
+              a.list-group-item.list-group-item-action(href=${addProblemLink}) {
                 div.d-flex.w-100.justify-content-center {
                   p.h1 {
                     i.fas.fa-plus-circle {} 

@@ -123,8 +123,10 @@ public class Main {
         .prepareTemplate("problems", Paths.get("static/viewAllProblems"));
       Templater
         .prepareTemplate("adminProblems", Paths.get("static/adminProblems"));
-      // Templater
-      //   .prepareTemplate("addTestcases", Paths.get("static/add-testcases"));
+        Templater
+        .prepareTemplate("addProblemDetails", Paths.get("static/add-problem-details"));
+      Templater
+        .prepareTemplate("addTestcases", Paths.get("static/add-testcases"));
       Templater
         .prepareTemplate("addTestcaseDetails", Paths.get("static/add-testcase-details"));
     } catch (IOException e) {
@@ -198,6 +200,7 @@ public class Main {
     server.route("/admin/contests", admin);
     server.route("/admin/clarifications/:clarificationId", admin);
     server.route("/admin/problems", adminProblem);
+    server.route("/admin/problems/add", adminProblem);
     server.route("/admin/problem/:problemId", adminProblem);
 
     server.route("/admin/problem/:problemId/testcases", adminTestcase);
@@ -217,6 +220,7 @@ public class Main {
     server.route("/styles.css", staticHandler);
     server.route("/scripts.js", staticHandler);
     server.route("/problem-viewing-script.js", staticHandler);
+    server.route("/editor.js", staticHandler);
 
     server.run();
   }
