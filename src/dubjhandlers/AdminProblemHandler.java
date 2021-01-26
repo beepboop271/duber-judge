@@ -191,7 +191,7 @@ public class AdminProblemHandler implements RouteTarget {
       if (user == null) {
         return Response.forbidden();
       }
-      
+
       username = user.getUsername();
     } catch (RecordNotFoundException e) {
       return Response.internalError();
@@ -204,7 +204,7 @@ public class AdminProblemHandler implements RouteTarget {
       Problem prob = entity.getContent();
       problems.add(
         new ProfileProblem(
-          "/problem/"+entity.getId(),
+          "admin/problem/"+entity.getId()+"/testcases",
           prob.getCategory(),
           prob.getTitle(),
           prob.getPoints(),
@@ -240,6 +240,23 @@ public class AdminProblemHandler implements RouteTarget {
    * @return a response with the admin version of one problem.
    */
   private Response findProblem(Request req, boolean hasBody) {
+    Session currentSession = this.getActiveSession(req);
+    // verify and load admin information
+    if (currentSession == null) {
+      return Response.temporaryRedirect("/login");
+    }
+    long uid = currentSession.getUserId();
+    String username = "Profile";
+    try {
+      User user = this.getAdminUser(currentSession.getUserId());
+      if (user == null) {
+        return Response.forbidden();
+      }
+      username = user.getUsername();
+    } catch (RecordNotFoundException e) {
+      return Response.internalError();
+    }
+
     return Response.internalError();
   }
 

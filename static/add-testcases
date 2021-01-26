@@ -10,13 +10,13 @@ html(lang="en") {
 
     script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
 
-    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
-    link(rel="stylesheet" href="./styles.css");
+    link(rel="stylesheet" href="/styles.css");
   }
   body {
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
-      a.navbar-brand(href="#") {
+      a.navbar-brand(href=${homeLink}) {
         "DubJ"
       }
       button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
@@ -25,7 +25,7 @@ html(lang="en") {
       div.collapse.navbar-collapse#navbarNav {
         ul.navbar-nav.ml-auto {
           li.nav-item {
-            a.nav-link(href="#") {
+            a.nav-link(href=${homeLink}) {
               "Home"
               span.sr-only {
                 "(current)"
@@ -44,7 +44,7 @@ html(lang="en") {
           }
           li.nav-item.active {
             a.nva-link(href=${profileLink}) {
-              ${user.getUsername}
+              ${username}
             }
           }
         }
@@ -87,7 +87,7 @@ html(lang="en") {
                     }
                   }
                 }
-                a.list-group-item.list-group-item-action(href=${addNewTestcaseLink}) {
+                a.list-group-item.list-group-item-action(href=${batch.getAddTestcaseLink}) {
                   div.d-flex.w-100.justify-content-center {
                     p.h3 {
                       i.fas.fa-plus-circle{}
@@ -97,7 +97,7 @@ html(lang="en") {
               }
             }
             div.tab-pane.fade#add-batch(role="tabpanel" aria-labelledby="add-batch-list") {
-              form.create-practice-problem.needs-validation(novalidate="" action="./" method="post") {
+              form.create-practice-problem.needs-validation(novalidate="" action="${batchPostUrl}" method="post") {
                 input(name="action" type="hidden" value="createBatch");
                 div.mb-3 {
                   label(for="points") {
@@ -115,8 +115,8 @@ html(lang="en") {
       }
     }
 
-    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
-    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
-    script(src="./scripts.js") {}
+    script(src="/static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="/static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="/scripts.js") {}
   }
 }

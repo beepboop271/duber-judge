@@ -217,6 +217,7 @@ public class PublicProblemHandler implements RouteTarget {
     return Response.internalError();
   }
 
+  //TODO: make an admin verification method
   /**
    * Retrieves the templated html file for a specific problem
    * and its details.
@@ -259,7 +260,7 @@ public class PublicProblemHandler implements RouteTarget {
       templateParams.put("allSubmissionsLink", "/problem/" + probId + "/submissions");
       templateParams.put("homeLink", "/problems");
 
-      String body = Templater.fillTemplate("viewProblem", templateParams);
+      String body = Templater.fillTemplate("addTestcases", templateParams);
       return Response.okHtml(body, hasBody);
     } catch (RecordNotFoundException e) {
       return Response.notFoundHtml(req.getPath());
