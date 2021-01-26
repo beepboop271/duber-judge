@@ -12,7 +12,7 @@ html(lang="en") {
 
     link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
-    link(rel="stylesheet" href="./styles.css"/);
+    link(rel="stylesheet" href="./styles.css");
   }
   body {
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{

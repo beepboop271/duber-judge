@@ -16,7 +16,7 @@ html(lang="en") {
 
   }
   body {
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top {
       a.navbar-brand(href="#") {
         "DubJ"
       }

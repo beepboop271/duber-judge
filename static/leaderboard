@@ -7,9 +7,8 @@ html(lang="en") {
     title {
       "Duber Judge"
     }
-    script(src="./static/vendored/marked-1.2.7.min.js") {}
-    script(src="./static/vendored/purify-2.2.6.min.js") {}
-    script(defer="" src="./staticvendored/mathjax-tex-chtml-3.1.2.js") {}
+
+    script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
 
     link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
@@ -17,7 +16,7 @@ html(lang="en") {
 
   }
   body {
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top {
       a.navbar-brand(href="#") {
         "DubJ"
       }
@@ -45,36 +44,41 @@ html(lang="en") {
             }
           }
           li.nav-item.active {
-            a.nva-link(href=${profileLink}) {
-              ${user.getUsername}
+            a.nav-link(href=${profileLink}) {
+              ${username}
             }
           }
         }
       }
     }
-    div.problem-container {
-      h3.problem-title.mt-3 {
-        ${problem.getTitle}
+
+    div.page-container {
+
+      h2 {
+        "Leaderboard"
       }
-      div.d-flex.justify-content-between {
-        textarea#problem-viewing-latex-input {}
-        div#problem-viewing-latex {}
-        div.list-group#submission-panel {
-          a.list-group-item.list-group-item-action(href="./submit-solution.html") {
-            "Submit"
-          }
-          a.list-group-item.list-group-item.action(href="#") {
-            "View submissions"
-          }
-          a.list-group-item.list-group-item.action(href="#") {
-            "Request clarification"
+      
+      div.list-group.user.leaderboard {
+        for (user : users) {
+          a.list-group-item.list-group-item-action(href=${userPageLink}) {
+            div.d-flex.w-100.justify-content-between {
+              h5.mb-1 {
+                "Username"
+              }
+            }
+            small.text-muted.mr-4 {
+              "Points: "${user.getPoints}
+            }
+            small.text-muted mr-4 {
+              "Num problems: "${user.getProblemsSolved}
+            }
           }
         }
       }
     }
+
     script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
-    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
-    script(src="./problem-viewing-script.js") {}
+    script(src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
     script(src="./scripts.js") {}
   }
 }

@@ -10,7 +10,7 @@ html(lang="en") {
 
     script(src="./static/vendored/marked-1.2.7.min.js") {}
     script(src="./static/vendored/purify-2.2.6.min.js") {}
-    script(defer src="./static/vendored/mathjax-tex-chtml-3.1.2.js") {}
+    script(defer="" src="./static/vendored/mathjax-tex-chtml-3.1.2.js") {}
 
     link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
@@ -58,12 +58,12 @@ html(lang="en") {
         "Practice problem"
       }
 
-      form.create-practice-problem.needs-validation(novalidate action="/" method="post") {
+      form.create-practice-problem.needs-validation(novalidate="" action="/" method="post") {
         div.mb-3 {
           label(for="title") {
             "Enter a title"
           }
-          input.form-control#title(name="title" placeholder="Title" required) {}
+          input.form-control#title(name="title" placeholder="Title" required="") {}
           div.invalid-feedback {
             "Please enter a title"
           }
@@ -72,7 +72,7 @@ html(lang="en") {
         label(for="description") {
           "Problem description:"
         }
-        div.mb-3.add-problem.description" {
+        div.mb-3.add-problem.description {
           textarea.form-control#input-description(rows="5" cols="33") {
 "# CCC '19 S2 - Pretty Average Primes
 
@@ -159,28 +159,28 @@ and so any of these pairs could have also been used in output. There is no pairs
           label(for="points") {
             "Points:"
           }
-          input.form-control.range#points(name="points" type="number" min="0" step="1" max="30" data-bind="value:points" required);
+          input.form-control.range#points(name="points" type="number" min="0" step="1" max="30" data-bind="value:points" required="");
         }
 
         div.mb-3 {
           label(for="memory") {
             "Memory limit:"
           }
-          input.form-control.range#memory(name="memoryLimit" type="number" min="0" max="300000" data-bind="value:points" required);
+          input.form-control.range#memory(name="memoryLimit" type="number" min="0" max="300000" data-bind="value:points" required="");
         }
 
         div.mb-3 {
           label(for="output") {
             "Output limit:"
           }
-          input.form-control.range#output(name="outputLimit" type="number" min="0" max="9999999" data-bind="value:points" required);
+          input.form-control.range#output(name="outputLimit" type="number" min="0" max="9999999" data-bind="value:points" required="");
         }
 
         div.form-group {
           label(for="points") {
             "Category:"
           }
-          select.custom-select(name="category" required) {
+          select.custom-select(name="category" required="") {
             option(value="GRAPH_THEORY") {
               "Graph theory"
             }
