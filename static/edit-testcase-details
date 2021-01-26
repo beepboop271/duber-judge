@@ -51,7 +51,11 @@ html(lang="en") {
     }
     div.create-problem-container {
 
-      form.create-testcase.needs-validation(novalidate="" action=${postUrl} method="post") {
+      h3 {
+        "Batch #"${batch.getSequence}" Testcase #"${testcase.getSequence}
+      }
+
+      form.create-testcase.needs-validation(novalidate="" action="/" method="post") {
 
         div#details {
           div.mb-3 {

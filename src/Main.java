@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import dubjhandlers.AdminHandler;
 import dubjhandlers.AdminProblemHandler;
+import dubjhandlers.AdminTestcaseHandler;
 import dubjhandlers.ContestHandler;
 import dubjhandlers.ContestProblemHandler;
 import dubjhandlers.ContestSubmissionHandler;
@@ -16,6 +17,7 @@ import dubjhandlers.PublicProblemHandler;
 import dubjhandlers.StaticHandler;
 import entities.Category;
 import entities.PublishingState;
+import entities.entity_fields.ContestField;
 import entities.entity_fields.ProblemField;
 import services.AdminService;
 import services.ProblemService;
@@ -32,17 +34,22 @@ public class Main {
     sessCleaner.start();
 
     try {
-      Templater.prepareTemplate("viewProblem", Paths.get("static/view-problem"));
+      Templater
+        .prepareTemplate("viewProblem", Paths.get("static/view-problem"));
       Templater.prepareTemplate("leaderboard", Paths.get("static/leaderboard"));
       Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
       Templater.prepareTemplate("adminUsers", Paths.get("static/adminUsers"));
-      Templater.prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
-      Templater.prepareTemplate("problems", Paths.get("static/viewAllProblems"));
-      Templater.prepareTemplate("adminProblems", Paths.get("static/adminProblems"));
       Templater.prepareTemplate("submitSolution", Paths.get("static/submit-solution"));
-      // Templater
-      // .prepareTemplate("adminProblems",
-      // Paths.get("static/adminProblems"));
+      Templater
+        .prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
+      Templater
+        .prepareTemplate("problems", Paths.get("static/viewAllProblems"));
+      Templater
+        .prepareTemplate("adminProblems", Paths.get("static/adminProblems"));
+      Templater
+        .prepareTemplate("addTestcases", Paths.get("static/add-testcases"));
+      Templater
+        .prepareTemplate("addTestcaseDetails", Paths.get("static/add-testcase-details"));
     } catch (IOException e) {
       System.out.println("An exception occurred while preparing templates.");
     } catch (UnknownTokenException e) {
@@ -62,6 +69,7 @@ public class Main {
     ContestSubmissionHandler contestSubmission = new ContestSubmissionHandler();
     AdminHandler admin = new AdminHandler();
     AdminProblemHandler adminProblem = new AdminProblemHandler();
+    AdminTestcaseHandler adminTestcase = new AdminTestcaseHandler();
     StaticHandler staticHandler = new StaticHandler();
 
     server.route("/", home);
@@ -80,7 +88,7 @@ public class Main {
     server.route("/contest/:contestId/problems", contest);
     server.route("/contest/:contestId/leaderboard", contest);
 
-    //TODO route /problem to /problems
+    // TODO route /problem to /problems
     server.route("/problems", publicProblem);
     server.route("/problem/:problemId", publicProblem);
     server.route("/problem/:problemId/leaderboard", publicProblem);
@@ -114,6 +122,12 @@ public class Main {
     server.route("/admin/clarifications/:clarificationId", admin);
     server.route("/admin/problems", adminProblem);
     server.route("/admin/problem/:problemId", adminProblem);
+
+    server.route("/admin/problem/:problemId/testcases", adminTestcase);
+    server
+      .route("/admin/problem/:problemId/testcases/:testcaseId", adminTestcase);
+    server.route("/admin/problem/:problemId/testcases/:batchId/add", adminTestcase);
+
     // server.route("/admin/contest/:contestId", admin);
     // server.route("/admin/contest/:contestId/problems",
     // admin);
