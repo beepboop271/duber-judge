@@ -43,4 +43,6 @@ public enum ExecutionStatus {
 
   /** The testcase run / submission passed all required testing. */
   ALL_CLEAR,
+
+  PENDING
 }
