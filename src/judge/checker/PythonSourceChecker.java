@@ -19,7 +19,6 @@ public class PythonSourceChecker implements SourceChecker {
 
   @Override
   public boolean isClean(String source) {
-    //TODO: get list externally
     String[] illegalSegments = new String[] {
       "import os"
     };
