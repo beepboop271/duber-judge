@@ -155,13 +155,6 @@ and so any of these pairs could have also been used in output. There is no pairs
           }
         }
 		
-		div.mb-3 {
-          label(for="points") {
-            "Points:"
-          }
-          input.form-control.range#points(name="points" type="number" min="0" max="50" data-bind="value:points" required="");
-        }
-
         div.mb-3 {
           label(for="memory") {
             "Memory limit (kB):"
