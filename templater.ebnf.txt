@@ -1,0 +1,27 @@
+Element = ElementName, [{ClassAttribute}], [IdAttribute], [AttributeList], (Body | ';');
+ElementName = (Identifier - Keyword), [AnyContentList];
+(* We need to use exclusion at parse time because it is
+impossible to determine in the tokeniser whether 'for' refers
+to a for loop or the attribute for on a label *)
+Keyword = 'for';
+
+Body = '{', [{Element | NoIdentContentList | Loop}], '}';
+
+ClassAttribute = '.', AnyContentList;
+IdAttribute = '#', AnyContentList;
+
+AttributeList = '(', [{Attribute}], ')';
+Attribute = Identifier, '=', NoIdentContentList, [','];
+
+Loop = 'for', IterationControl, Body;
+IterationControl = '(', Identifier, ':', AnyContentList, ')';
+
+AnyContentList = {Identifier | StringLiteral | TemplateLiteral};
+NoIdentContentList = {StringLiteral | TemplateLiteral};
+
+Identifier = 'See templater.compiler.tokeniser.IdentifierMatcher';
+(* Somewhat complex and unnecessary to write diagrams for. *)
+StringLiteral = 'See templater.compiler.tokeniser.StringLiteralMatcher';
+(* Somewhat complex and unnecessary to write diagrams for. *)
+TemplateLiteral = 'See templater.compiler.tokeniser.TemplateLiteralMatcher';
+(* Somewhat complex and unnecessary to write diagrams for. *)

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta name="generator" content="ebnf2railroad" />
+  <title>.\templater.ebnf</title>
+  <style type="text/css">
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+:root {
+    --subtleText: #777;
+    --highlightText: hotpink;
+    --itemHeadingBackground: #eee;
+    --background: white;
+    --borderColor: #ccc;
+    --textColor: #111;
+
+    --diagramBackground: #f8f8f8;
+    --diagramLines: black;
+    --diagramText: black;
+    --terminalLines: black;
+    --terminalFill: #feffdf;
+    --nonTerminalLines: black;
+    --nonTerminalFill: #feffdf;
+    --specialSequenceLines: black;
+    --specialSequenceFill: #ffe79a;
+
+    --ebnfCodeBackground: #e8e8e8;
+    --ebnfIdentifier: #ef5a5a;
+    --ebnfTerminal: #ffa952;
+    --ebnfBaseColor: #777;
+}
+
+.theme-dark {
+    --subtleText: #777;
+    --highlightText: hotpink;
+    --itemHeadingBackground: #444;
+    --background: #333;
+    --borderColor: lightblue;
+    --textColor: #ddd;
+
+    --diagramBackground: #222;
+    --diagramLines: #3e432e;
+    --diagramText: #a7d129;
+    --terminalLines: #a7d129;
+    --terminalFill: #3e432e;
+    --nonTerminalLines: #a7d129;
+    --nonTerminalFill: #3e432e;
+    --specialSequenceLines: #a7d129;
+    --specialSequenceFill: #444;
+
+    --ebnfCodeBackground: #3e432e;
+    --ebnfIdentifier: lightblue;
+    --ebnfTerminal: #a7d129;
+    --ebnfBaseColor: #ddd;
+}
+
+html {
+    font-family: sans-serif;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--background);
+    color: var(--textColor);
+}
+
+a {
+    color: inherit;
+}
+
+a:visited {
+    color: var(--subtleText);
+}
+
+a:active, a:focus, a:hover {
+    color: var(--highlightText);
+}
+
+header {
+    border-bottom: 1px solid var(--borderColor);
+    padding: 1rem;
+}
+
+header button {
+  display: none;
+}
+
+main {
+    overflow: hidden;
+    margin-left: 300px;
+}
+
+nav {
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    padding: 1rem 2rem 1rem 1rem;
+    z-index: 5;
+    background: var(--background);
+    width: 300px;
+    float: left;
+    overflow: auto;
+}
+
+nav h3 {
+    white-space: nowrap;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav a {
+    display: inline-block;
+    color: var(--subtleText);
+    text-decoration: none;
+    padding: 0.33rem 0;
+}
+
+article {
+    width: 100%;
+    overflow: hidden;
+    padding: 1rem 2rem;
+    border-left: 1px solid var(--borderColor);
+}
+
+article + footer {
+    padding: 1rem 2rem;
+    border-left: 1px solid var(--borderColor);
+    background: var(--itemHeadingBackground);
+}
+
+code {
+    width: 100%;
+}
+
+pre {
+    overflow: auto;
+}
+
+pre > code {
+    display: block;
+    padding: 1em;
+    background: var(--diagramBackground);
+}
+
+h4 {
+    padding: 2rem;
+    margin: 4rem -2rem 1rem -2rem;
+    background: var(--itemHeadingBackground);
+    font-size: 125%;
+}
+
+blockquote {
+    margin-left: 0;
+    margin-top: calc(1em - 1px);
+    margin-bottom: calc(1em - 1px);
+    padding: 1px 0 1px 1rem;
+    border-left: 1rem solid var(--ebnfCodeBackground);
+}
+
+dfn {
+    font-style: normal;
+    cursor: default;
+}
+
+.diagram-container {
+    background: var(--diagramBackground);
+    margin-bottom: 0.25rem;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+}
+
+/* Responsiveness */
+@media (max-width: 800px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  header {
+    padding: 0.5rem 1rem;
+    display: flex;
+  }
+
+  header h1 {
+    margin: 0 auto 0 0;
+    display: flex;
+    align-items: center;
+  }
+
+  header button {
+    display: initial;
+    position: relative;
+    z-index: 10;
+  }
+
+  header button::after {
+    content: '☰';
+    margin-left: auto;
+    font-size: 1.5rem;
+  }
+
+  main {
+    display: block;
+    position: relative;
+    margin-left: 0;
+  }
+
+  nav {
+    height: auto;
+    display: block;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translateX(300px);
+    padding-top: 3rem;
+    background: var(--background);
+    box-shadow: 0 0 0 1000000rem rgba(0, 0, 0, 0.35);
+  }
+
+  .menu-open nav {
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateX(0px);
+  }
+
+  nav a {
+    padding: 0.66rem 0;
+  }
+
+  article {
+    margin-left: 0;
+    border-left: 0;
+    padding: 1rem;
+  }
+  article + footer {
+    padding: 1rem;
+    border-left: 0;
+  }
+}
+
+/* EBNF text representation styling */
+code.ebnf {
+  padding: 1em;
+  background: var(--ebnfCodeBackground);
+  font-weight: bold;
+  color: var(--ebnfBaseColor);
+  white-space: pre-wrap;
+  display: inline-block;
+  width: 100%;
+}
+.ebnf-identifier {
+  color: var(--ebnfIdentifier);
+}
+.ebnf-terminal {
+  color: var(--ebnfTerminal);
+}
+.ebnf-non-terminal {
+  font-weight: normal;
+}
+.ebnf-comment {
+  font-weight: normal;
+  font-style: italic;
+  color: #999;
+}
+
+/* EBNF diagram representation styling */
+svg.railroad-diagram {
+  width: 100%;
+}
+svg.railroad-diagram path {
+  stroke-width: 3;
+  stroke: var(--diagramLines);
+  fill: rgba(0,0,0,0);
+}
+svg.railroad-diagram text {
+  font: bold 14px monospace;
+  text-anchor: middle;
+  fill: var(--diagramText);
+}
+svg.railroad-diagram text.diagram-text {
+  font-size: 12px;
+}
+svg.railroad-diagram text.diagram-arrow {
+  font-size: 16px;
+}
+svg.railroad-diagram text.label {
+  text-anchor: start;
+}
+svg.railroad-diagram text.comment {
+  font: italic 12px monospace;
+}
+svg.railroad-diagram g.non-terminal text {
+  /*font-style: italic;*/
+}
+svg.railroad-diagram g.special-sequence rect {
+  fill: var(--specialSequenceFill);
+  stroke: var(--specialSequenceLines);
+}
+svg.railroad-diagram g.special-sequence text {
+  font-style: italic;
+}
+svg.railroad-diagram rect {
+  stroke-width: 3;
+}
+svg.railroad-diagram rect.group-box {
+  stroke: gray;
+  stroke-dasharray: 10 5;
+  fill: none;
+}
+svg.railroad-diagram g.non-terminal rect {
+  fill: var(--nonTerminalFill);
+  stroke: var(--nonTerminalLines);
+}
+svg.railroad-diagram g.terminal rect {
+  fill: var(--terminalFill);
+  stroke: var(--terminalLines);
+}
+svg.railroad-diagram path.diagram-text {
+  stroke-width: 3;
+  stroke: black;
+  fill: white;
+  cursor: help;
+}
+svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+  fill: #eee;
+}
+</style>
+</head>
+<body>
+
+  <script type="text/javascript">
+    const htmlTag = document.getElementsByTagName("html")[0];
+    const options = (document.location.search || "")
+      .slice(1)
+      .split("&")
+      .map(kv => kv.split("="))
+      .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
+    if (options["theme"]) {
+      htmlTag.classList.add("theme-" + options["theme"]);
+    }
+  </script>
+  <header>
+    <h1>.\templater.ebnf</h1>
+    <button type="button"></button>
+  </header>
+  <nav>
+
+    <h3>Root element:</h3>
+    <ul class="nav-alphabetical">
+    <li class="root-node"><a href="#Element">Element</a>
+        <dfn title="recursive">♺</dfn>
+
+      </li>
+    </ul>
+
+
+    <h3>Quick navigation:</h3>
+    <ul class="nav-alphabetical">
+    <li><a href="#Attribute">Attribute</a>
+
+
+      </li><li><a href="#AttributeList">AttributeList</a>
+
+
+      </li><li><a href="#Body">Body</a>
+        <dfn title="recursive">♺</dfn>
+
+      </li><li><a href="#ClassAttribute">ClassAttribute</a>
+
+
+      </li><li><a href="#ElementName">ElementName</a>
+
+
+      </li><li><a href="#IdAttribute">IdAttribute</a>
+
+
+      </li><li><a href="#IterationControl">IterationControl</a>
+
+
+      </li><li><a href="#Keyword">Keyword</a>
+
+
+      </li><li><a href="#Loop">Loop</a>
+
+
+      </li><li><a href="#NoIdentContentList">NoIdentContentList</a>
+
+
+      </li>
+    </ul>
+
+
+    <h3>Common elements:</h3>
+    <ul class="nav-alphabetical">
+    <li class="common-node"><a href="#AnyContentList">AnyContentList</a>
+
+
+      </li><li class="common-node"><a href="#Identifier">Identifier</a>
+
+
+      </li><li class="common-node"><a href="#StringLiteral">StringLiteral</a>
+
+
+      </li><li class="common-node"><a href="#TemplateLiteral">TemplateLiteral</a>
+
+
+      </li>
+    </ul>
+
+
+  </nav>
+  <main>
+  <article>
+    <section>
+  <h4 id="Element">Element</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="558" style="max-height: 157px;" viewBox="0 0 558 157"><g transform="translate(.5 .5)"><g><path d="M20 30v20m0 -10h20"></path></g><path d="M40 40h10"></path><g><path d="M50 40h0"></path><path d="M50 40h10"></path><g><path d="M60 40h57.75"></path><path d="M440.25 40h57.75"></path><g class="non-terminal"><path d="M117.75 40h0"></path><path d="M231.25 40h0"></path><rect x="117.75" y="29" width="113.5" height="22"></rect><a xlink:href="#ElementName"><text x="174.5" y="44">ElementName</text></a></g><path d="M231.25 40h10"></path><g><path d="M241.25 40h0"></path><path d="M440.25 40h0"></path><path d="M241.25 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path><g><path d="M261.25 20h159"></path></g><path d="M420.25 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path><path d="M241.25 40h20"></path><g><path d="M261.25 40h0"></path><path d="M420.25 40h0"></path><path d="M261.25 40h10"></path><g class="non-terminal"><path d="M271.25 40h0"></path><path d="M410.25 40h0"></path><rect x="271.25" y="29" width="139" height="22"></rect><a xlink:href="#ClassAttribute"><text x="340.75" y="44">ClassAttribute</text></a></g><path d="M410.25 40h10"></path><path d="M271.25 40a10 10 0 0 0 -10 10v0a10 10 0 0 0 10 10"></path><g><path d="M271.25 60h139"></path></g><path d="M410.25 60a10 10 0 0 0 10 -10v0a10 10 0 0 0 -10 -10"></path></g><path d="M420.25 40h20"></path></g></g><path d="M498 40a10 10 0 0 1 10 10v8a10 10 0 0 1 -10 10h-438a10 10 0 0 0 -10 10v8a10 10 0 0 0 10 10"></path><g><path d="M60 96h10"></path><path d="M488 96h10"></path><g><path d="M70 96h0"></path><path d="M223.5 96h0"></path><path d="M70 96a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path><g><path d="M90 76h113.5"></path></g><path d="M203.5 76a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path><path d="M70 96h20"></path><g class="non-terminal"><path d="M90 96h0"></path><path d="M203.5 96h0"></path><rect x="90" y="85" width="113.5" height="22"></rect><a xlink:href="#IdAttribute"><text x="146.75" y="100">IdAttribute</text></a></g><path d="M203.5 96h20"></path></g><g><path d="M223.5 96h0"></path><path d="M394 96h0"></path><path d="M223.5 96a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path><g><path d="M243.5 76h130.5"></path></g><path d="M374 76a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path><path d="M223.5 96h20"></path><g class="non-terminal"><path d="M243.5 96h0"></path><path d="M374 96h0"></path><rect x="243.5" y="85" width="130.5" height="22"></rect><a xlink:href="#AttributeList"><text x="308.75" y="100">AttributeList</text></a></g><path d="M374 96h20"></path></g><g><path d="M394 96h0"></path><path d="M488 96h0"></path><path d="M394 96h20"></path><g class="non-terminal"><path d="M414 96h0"></path><path d="M468 96h0"></path><rect x="414" y="85" width="54" height="22"></rect><a xlink:href="#Body"><text x="441" y="100">Body</text></a></g><path d="M468 96h20"></path><path d="M394 96a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path><g class="terminal"><path d="M414 126h12.75"></path><path d="M455.25 126h12.75"></path><rect x="426.75" y="115" width="28.5" height="22" rx="10" ry="10"></rect><text x="441" y="130">;</text></g><path d="M468 126a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path></g></g><path d="M498 96h10"></path><path d="M508 96h0"></path></g><path d="M508 96h10"></path><path d="M 518 96 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">Element</span> = <a class="ebnf-non-terminal" href="#ElementName">ElementName</a> , { <a class="ebnf-non-terminal" href="#ClassAttribute">ClassAttribute</a> } ,
+  [ <a class="ebnf-non-terminal" href="#IdAttribute">IdAttribute</a> ] , [ <a class="ebnf-non-terminal" href="#AttributeList">AttributeList</a> ] , ( <a class="ebnf-non-terminal" href="#Body">Body</a> | <span class="ebnf-terminal">";"</span> ) <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>Element</strong>:<p>
+<ul>
+<li><a href="#Body">Body</a></li>
+</ul>
+  <p><strong>Element</strong> is referencing:<p>
+<ul>
+<li><a href="#ElementName">ElementName</a></li><li><a href="#ClassAttribute">ClassAttribute</a></li><li><a href="#IdAttribute">IdAttribute</a></li><li><a href="#AttributeList">AttributeList</a></li><li><a href="#Body">Body</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="ElementName">ElementName</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="479" style="max-height: 71px;" viewBox="0 0 479 71"><g transform="translate(.5 .5)"><g><path d="M20 30v20m0 -10h20"></path></g><path d="M40 40h10"></path><g><path d="M50 40h0"></path><path d="M429 40h0"></path><g class="non-terminal"><path d="M50 40h0"></path><path d="M240 40h0"></path><rect x="50" y="29" width="190" height="22"></rect><text x="145" y="44">Identifier - Keyword</text></g><path d="M240 40h10"></path><g><path d="M250 40h0"></path><path d="M429 40h0"></path><path d="M250 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path><g><path d="M270 20h139"></path></g><path d="M409 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path><path d="M250 40h20"></path><g class="non-terminal"><path d="M270 40h0"></path><path d="M409 40h0"></path><rect x="270" y="29" width="139" height="22"></rect><a xlink:href="#AnyContentList"><text x="339.5" y="44">AnyContentList</text></a></g><path d="M409 40h20"></path></g></g><path d="M429 40h10"></path><path d="M 439 40 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">ElementName</span> = <a class="ebnf-non-terminal" href="#Identifier">Identifier</a> - <a class="ebnf-non-terminal" href="#Keyword">Keyword</a> , [ <a class="ebnf-non-terminal" href="#AnyContentList">AnyContentList</a> ] <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>ElementName</strong>:<p>
+<ul>
+<li><a href="#Element">Element</a></li>
+</ul>
+  <p><strong>ElementName</strong> is referencing:<p>
+<ul>
+<li><a href="#Keyword">Keyword</a></li><li><a href="#Identifier">Identifier</a></li><li><a href="#AnyContentList">AnyContentList</a></li>
+</ul>
+</section>
+<p>We need to use exclusion at parse time because it is
+impossible to determine in the tokeniser whether 'for' refers
+to a for loop or the attribute for on a label </p><section>
+  <h4 id="Keyword">Keyword</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="145.5" style="max-height: 62px;" viewBox="0 0 145.5 62"><g transform="translate(.5 .5)"><g><path d="M20 21v20m10 -20v20m-10 -10h20"></path></g><path d="M40 31h10"></path><g class="terminal"><path d="M50 31h0"></path><path d="M95.5 31h0"></path><rect x="50" y="20" width="45.5" height="22" rx="10" ry="10"></rect><text x="72.75" y="35">for</text></g><path d="M95.5 31h10"></path><path d="M 105.5 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">Keyword</span> = <span class="ebnf-terminal">"for"</span> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>Keyword</strong>:<p>
+<ul>
+<li><a href="#ElementName">ElementName</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="Body">Body</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="450" style="max-height: 139px;" viewBox="0 0 450 139"><g transform="translate(.5 .5)"><g><path d="M20 30v20m0 -10h20"></path></g><path d="M40 40h10"></path><g><path d="M50 40h0"></path><path d="M400 40h0"></path><g class="terminal"><path d="M50 40h0"></path><path d="M78.5 40h0"></path><rect x="50" y="29" width="28.5" height="22" rx="10" ry="10"></rect><text x="64.25" y="44">{</text></g><path d="M78.5 40h10"></path><g><path d="M88.5 40h0"></path><path d="M361.5 40h0"></path><path d="M88.5 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path><g><path d="M108.5 20h233"></path></g><path d="M341.5 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path><path d="M88.5 40h20"></path><g><path d="M108.5 40h0"></path><path d="M341.5 40h0"></path><path d="M108.5 40h10"></path><g><path d="M118.5 40h0"></path><path d="M331.5 40h0"></path><path d="M118.5 40h20"></path><g class="non-terminal"><path d="M138.5 40h46.75"></path><path d="M264.75 40h46.75"></path><rect x="185.25" y="29" width="79.5" height="22"></rect><a xlink:href="#Element"><text x="225" y="44">Element</text></a></g><path d="M311.5 40h20"></path><path d="M118.5 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path><g class="non-terminal"><path d="M138.5 70h0"></path><path d="M311.5 70h0"></path><rect x="138.5" y="59" width="173" height="22"></rect><a xlink:href="#NoIdentContentList"><text x="225" y="74">NoIdentContentList</text></a></g><path d="M311.5 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path><path d="M118.5 40a10 10 0 0 1 10 10v40a10 10 0 0 0 10 10"></path><g class="non-terminal"><path d="M138.5 100h59.5"></path><path d="M252 100h59.5"></path><rect x="198" y="89" width="54" height="22"></rect><a xlink:href="#Loop"><text x="225" y="104">Loop</text></a></g><path d="M311.5 100a10 10 0 0 0 10 -10v-40a10 10 0 0 1 10 -10"></path></g><path d="M331.5 40h10"></path><path d="M118.5 40a10 10 0 0 0 -10 10v59a10 10 0 0 0 10 10"></path><g><path d="M118.5 119h213"></path></g><path d="M331.5 119a10 10 0 0 0 10 -10v-59a10 10 0 0 0 -10 -10"></path></g><path d="M341.5 40h20"></path></g><path d="M361.5 40h10"></path><g class="terminal"><path d="M371.5 40h0"></path><path d="M400 40h0"></path><rect x="371.5" y="29" width="28.5" height="22" rx="10" ry="10"></rect><text x="385.75" y="44">}</text></g></g><path d="M400 40h10"></path><path d="M 410 40 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">Body</span> = <span class="ebnf-terminal">"{"</span> , { <a class="ebnf-non-terminal" href="#Element">Element</a> | <a class="ebnf-non-terminal" href="#NoIdentContentList">NoIdentContentList</a> | <a class="ebnf-non-terminal" href="#Loop">Loop</a> } , <span class="ebnf-terminal">"}"</span> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>Body</strong>:<p>
+<ul>
+<li><a href="#Element">Element</a></li><li><a href="#Loop">Loop</a></li>
+</ul>
+  <p><strong>Body</strong> is referencing:<p>
+<ul>
+<li><a href="#Element">Element</a></li><li><a href="#NoIdentContentList">NoIdentContentList</a></li><li><a href="#Loop">Loop</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="ClassAttribute">ClassAttribute</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="287.5" style="max-height: 62px;" viewBox="0 0 287.5 62"><g transform="translate(.5 .5)"><g><path d="M20 21v20m0 -10h20"></path></g><path d="M40 31h10"></path><g><path d="M50 31h0"></path><path d="M237.5 31h0"></path><g class="terminal"><path d="M50 31h0"></path><path d="M78.5 31h0"></path><rect x="50" y="20" width="28.5" height="22" rx="10" ry="10"></rect><text x="64.25" y="35">.</text></g><path d="M78.5 31h10"></path><path d="M88.5 31h10"></path><g class="non-terminal"><path d="M98.5 31h0"></path><path d="M237.5 31h0"></path><rect x="98.5" y="20" width="139" height="22"></rect><a xlink:href="#AnyContentList"><text x="168" y="35">AnyContentList</text></a></g></g><path d="M237.5 31h10"></path><path d="M 247.5 31 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">ClassAttribute</span> = <span class="ebnf-terminal">"."</span> , <a class="ebnf-non-terminal" href="#AnyContentList">AnyContentList</a> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>ClassAttribute</strong>:<p>
+<ul>
+<li><a href="#Element">Element</a></li>
+</ul>
+  <p><strong>ClassAttribute</strong> is referencing:<p>
+<ul>
+<li><a href="#AnyContentList">AnyContentList</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="IdAttribute">IdAttribute</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="287.5" style="max-height: 62px;" viewBox="0 0 287.5 62"><g transform="translate(.5 .5)"><g><path d="M20 21v20m0 -10h20"></path></g><path d="M40 31h10"></path><g><path d="M50 31h0"></path><path d="M237.5 31h0"></path><g class="terminal"><path d="M50 31h0"></path><path d="M78.5 31h0"></path><rect x="50" y="20" width="28.5" height="22" rx="10" ry="10"></rect><text x="64.25" y="35">#</text></g><path d="M78.5 31h10"></path><path d="M88.5 31h10"></path><g class="non-terminal"><path d="M98.5 31h0"></path><path d="M237.5 31h0"></path><rect x="98.5" y="20" width="139" height="22"></rect><a xlink:href="#AnyContentList"><text x="168" y="35">AnyContentList</text></a></g></g><path d="M237.5 31h10"></path><path d="M 247.5 31 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">IdAttribute</span> = <span class="ebnf-terminal">"#"</span> , <a class="ebnf-non-terminal" href="#AnyContentList">AnyContentList</a> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>IdAttribute</strong>:<p>
+<ul>
+<li><a href="#Element">Element</a></li>
+</ul>
+  <p><strong>IdAttribute</strong> is referencing:<p>
+<ul>
+<li><a href="#AnyContentList">AnyContentList</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="AttributeList">AttributeList</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="333.5" style="max-height: 80px;" viewBox="0 0 333.5 80"><g transform="translate(.5 .5)"><g><path d="M20 30v20m0 -10h20"></path></g><path d="M40 40h10"></path><g><path d="M50 40h0"></path><path d="M283.5 40h0"></path><g class="terminal"><path d="M50 40h0"></path><path d="M78.5 40h0"></path><rect x="50" y="29" width="28.5" height="22" rx="10" ry="10"></rect><text x="64.25" y="44">(</text></g><path d="M78.5 40h10"></path><g><path d="M88.5 40h0"></path><path d="M245 40h0"></path><path d="M88.5 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path><g><path d="M108.5 20h116.5"></path></g><path d="M225 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path><path d="M88.5 40h20"></path><g><path d="M108.5 40h0"></path><path d="M225 40h0"></path><path d="M108.5 40h10"></path><g class="non-terminal"><path d="M118.5 40h0"></path><path d="M215 40h0"></path><rect x="118.5" y="29" width="96.5" height="22"></rect><a xlink:href="#Attribute"><text x="166.75" y="44">Attribute</text></a></g><path d="M215 40h10"></path><path d="M118.5 40a10 10 0 0 0 -10 10v0a10 10 0 0 0 10 10"></path><g><path d="M118.5 60h96.5"></path></g><path d="M215 60a10 10 0 0 0 10 -10v0a10 10 0 0 0 -10 -10"></path></g><path d="M225 40h20"></path></g><path d="M245 40h10"></path><g class="terminal"><path d="M255 40h0"></path><path d="M283.5 40h0"></path><rect x="255" y="29" width="28.5" height="22" rx="10" ry="10"></rect><text x="269.25" y="44">)</text></g></g><path d="M283.5 40h10"></path><path d="M 293.5 40 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">AttributeList</span> = <span class="ebnf-terminal">"("</span> , { <a class="ebnf-non-terminal" href="#Attribute">Attribute</a> } , <span class="ebnf-terminal">")"</span> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>AttributeList</strong>:<p>
+<ul>
+<li><a href="#Element">Element</a></li>
+</ul>
+  <p><strong>AttributeList</strong> is referencing:<p>
+<ul>
+<li><a href="#Attribute">Attribute</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="Attribute">Attribute</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="525" style="max-height: 71px;" viewBox="0 0 525 71"><g transform="translate(.5 .5)"><g><path d="M20 30v20m0 -10h20"></path></g><path d="M40 40h10"></path><g><path d="M50 40h0"></path><path d="M475 40h0"></path><g class="non-terminal"><path d="M50 40h0"></path><path d="M155 40h0"></path><rect x="50" y="29" width="105" height="22"></rect><a xlink:href="#Identifier"><text x="102.5" y="44">Identifier</text></a></g><path d="M155 40h10"></path><path d="M165 40h10"></path><g class="terminal"><path d="M175 40h0"></path><path d="M203.5 40h0"></path><rect x="175" y="29" width="28.5" height="22" rx="10" ry="10"></rect><text x="189.25" y="44">=</text></g><path d="M203.5 40h10"></path><path d="M213.5 40h10"></path><g class="non-terminal"><path d="M223.5 40h0"></path><path d="M396.5 40h0"></path><rect x="223.5" y="29" width="173" height="22"></rect><a xlink:href="#NoIdentContentList"><text x="310" y="44">NoIdentContentList</text></a></g><path d="M396.5 40h10"></path><g><path d="M406.5 40h0"></path><path d="M475 40h0"></path><path d="M406.5 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path><g><path d="M426.5 20h28.5"></path></g><path d="M455 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path><path d="M406.5 40h20"></path><g class="terminal"><path d="M426.5 40h0"></path><path d="M455 40h0"></path><rect x="426.5" y="29" width="28.5" height="22" rx="10" ry="10"></rect><text x="440.75" y="44">,</text></g><path d="M455 40h20"></path></g></g><path d="M475 40h10"></path><path d="M 485 40 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">Attribute</span> = <a class="ebnf-non-terminal" href="#Identifier">Identifier</a> , <span class="ebnf-terminal">"="</span> , <a class="ebnf-non-terminal" href="#NoIdentContentList">NoIdentContentList</a> , [ <span class="ebnf-terminal">","</span> ] <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>Attribute</strong>:<p>
+<ul>
+<li><a href="#AttributeList">AttributeList</a></li>
+</ul>
+  <p><strong>Attribute</strong> is referencing:<p>
+<ul>
+<li><a href="#Identifier">Identifier</a></li><li><a href="#NoIdentContentList">NoIdentContentList</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="Loop">Loop</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="395.5" style="max-height: 62px;" viewBox="0 0 395.5 62"><g transform="translate(.5 .5)"><g><path d="M20 21v20m0 -10h20"></path></g><path d="M40 31h10"></path><g><path d="M50 31h0"></path><path d="M345.5 31h0"></path><g class="terminal"><path d="M50 31h0"></path><path d="M95.5 31h0"></path><rect x="50" y="20" width="45.5" height="22" rx="10" ry="10"></rect><text x="72.75" y="35">for</text></g><path d="M95.5 31h10"></path><path d="M105.5 31h10"></path><g class="non-terminal"><path d="M115.5 31h0"></path><path d="M271.5 31h0"></path><rect x="115.5" y="20" width="156" height="22"></rect><a xlink:href="#IterationControl"><text x="193.5" y="35">IterationControl</text></a></g><path d="M271.5 31h10"></path><path d="M281.5 31h10"></path><g class="non-terminal"><path d="M291.5 31h0"></path><path d="M345.5 31h0"></path><rect x="291.5" y="20" width="54" height="22"></rect><a xlink:href="#Body"><text x="318.5" y="35">Body</text></a></g></g><path d="M345.5 31h10"></path><path d="M 355.5 31 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">Loop</span> = <span class="ebnf-terminal">"for"</span> , <a class="ebnf-non-terminal" href="#IterationControl">IterationControl</a> , <a class="ebnf-non-terminal" href="#Body">Body</a> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>Loop</strong>:<p>
+<ul>
+<li><a href="#Body">Body</a></li>
+</ul>
+  <p><strong>Loop</strong> is referencing:<p>
+<ul>
+<li><a href="#IterationControl">IterationControl</a></li><li><a href="#Body">Body</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="IterationControl">IterationControl</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="509.5" style="max-height: 62px;" viewBox="0 0 509.5 62"><g transform="translate(.5 .5)"><g><path d="M20 21v20m0 -10h20"></path></g><path d="M40 31h10"></path><g><path d="M50 31h0"></path><path d="M459.5 31h0"></path><g class="terminal"><path d="M50 31h0"></path><path d="M78.5 31h0"></path><rect x="50" y="20" width="28.5" height="22" rx="10" ry="10"></rect><text x="64.25" y="35">(</text></g><path d="M78.5 31h10"></path><path d="M88.5 31h10"></path><g class="non-terminal"><path d="M98.5 31h0"></path><path d="M203.5 31h0"></path><rect x="98.5" y="20" width="105" height="22"></rect><a xlink:href="#Identifier"><text x="151" y="35">Identifier</text></a></g><path d="M203.5 31h10"></path><path d="M213.5 31h10"></path><g class="terminal"><path d="M223.5 31h0"></path><path d="M252 31h0"></path><rect x="223.5" y="20" width="28.5" height="22" rx="10" ry="10"></rect><text x="237.75" y="35">:</text></g><path d="M252 31h10"></path><path d="M262 31h10"></path><g class="non-terminal"><path d="M272 31h0"></path><path d="M411 31h0"></path><rect x="272" y="20" width="139" height="22"></rect><a xlink:href="#AnyContentList"><text x="341.5" y="35">AnyContentList</text></a></g><path d="M411 31h10"></path><path d="M421 31h10"></path><g class="terminal"><path d="M431 31h0"></path><path d="M459.5 31h0"></path><rect x="431" y="20" width="28.5" height="22" rx="10" ry="10"></rect><text x="445.25" y="35">)</text></g></g><path d="M459.5 31h10"></path><path d="M 469.5 31 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">IterationControl</span> = <span class="ebnf-terminal">"("</span> , <a class="ebnf-non-terminal" href="#Identifier">Identifier</a> , <span class="ebnf-terminal">":"</span> ,
+  <a class="ebnf-non-terminal" href="#AnyContentList">AnyContentList</a> , <span class="ebnf-terminal">")"</span> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>IterationControl</strong>:<p>
+<ul>
+<li><a href="#Loop">Loop</a></li>
+</ul>
+  <p><strong>IterationControl</strong> is referencing:<p>
+<ul>
+<li><a href="#Identifier">Identifier</a></li><li><a href="#AnyContentList">AnyContentList</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="AnyContentList">AnyContentList</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="327.5" style="max-height: 139px;" viewBox="0 0 327.5 139"><g transform="translate(.5 .5)"><g><path d="M20 30v20m0 -10h20"></path></g><g><path d="M40 40h0"></path><path d="M287.5 40h0"></path><path d="M40 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path><g><path d="M60 20h207.5"></path></g><path d="M267.5 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path><path d="M40 40h20"></path><g><path d="M60 40h0"></path><path d="M267.5 40h0"></path><path d="M60 40h10"></path><g><path d="M70 40h0"></path><path d="M257.5 40h0"></path><path d="M70 40h20"></path><g class="non-terminal"><path d="M90 40h21.25"></path><path d="M216.25 40h21.25"></path><rect x="111.25" y="29" width="105" height="22"></rect><a xlink:href="#Identifier"><text x="163.75" y="44">Identifier</text></a></g><path d="M237.5 40h20"></path><path d="M70 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path><g class="non-terminal"><path d="M90 70h8.5"></path><path d="M229 70h8.5"></path><rect x="98.5" y="59" width="130.5" height="22"></rect><a xlink:href="#StringLiteral"><text x="163.75" y="74">StringLiteral</text></a></g><path d="M237.5 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path><path d="M70 40a10 10 0 0 1 10 10v40a10 10 0 0 0 10 10"></path><g class="non-terminal"><path d="M90 100h0"></path><path d="M237.5 100h0"></path><rect x="90" y="89" width="147.5" height="22"></rect><a xlink:href="#TemplateLiteral"><text x="163.75" y="104">TemplateLiteral</text></a></g><path d="M237.5 100a10 10 0 0 0 10 -10v-40a10 10 0 0 1 10 -10"></path></g><path d="M257.5 40h10"></path><path d="M70 40a10 10 0 0 0 -10 10v59a10 10 0 0 0 10 10"></path><g><path d="M70 119h187.5"></path></g><path d="M257.5 119a10 10 0 0 0 10 -10v-59a10 10 0 0 0 -10 -10"></path></g><path d="M267.5 40h20"></path></g><path d="M 287.5 40 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">AnyContentList</span> =
+  { <a class="ebnf-non-terminal" href="#Identifier">Identifier</a>
+  | <a class="ebnf-non-terminal" href="#StringLiteral">StringLiteral</a>
+  | <a class="ebnf-non-terminal" href="#TemplateLiteral">TemplateLiteral</a>
+  } <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>AnyContentList</strong>:<p>
+<ul>
+<li><a href="#ElementName">ElementName</a></li><li><a href="#ClassAttribute">ClassAttribute</a></li><li><a href="#IdAttribute">IdAttribute</a></li><li><a href="#IterationControl">IterationControl</a></li>
+</ul>
+  <p><strong>AnyContentList</strong> is referencing:<p>
+<ul>
+<li><a href="#Identifier">Identifier</a></li><li><a href="#StringLiteral">StringLiteral</a></li><li><a href="#TemplateLiteral">TemplateLiteral</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="NoIdentContentList">NoIdentContentList</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="327.5" style="max-height: 109px;" viewBox="0 0 327.5 109"><g transform="translate(.5 .5)"><g><path d="M20 30v20m0 -10h20"></path></g><g><path d="M40 40h0"></path><path d="M287.5 40h0"></path><path d="M40 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path><g><path d="M60 20h207.5"></path></g><path d="M267.5 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path><path d="M40 40h20"></path><g><path d="M60 40h0"></path><path d="M267.5 40h0"></path><path d="M60 40h10"></path><g><path d="M70 40h0"></path><path d="M257.5 40h0"></path><path d="M70 40h20"></path><g class="non-terminal"><path d="M90 40h8.5"></path><path d="M229 40h8.5"></path><rect x="98.5" y="29" width="130.5" height="22"></rect><a xlink:href="#StringLiteral"><text x="163.75" y="44">StringLiteral</text></a></g><path d="M237.5 40h20"></path><path d="M70 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path><g class="non-terminal"><path d="M90 70h0"></path><path d="M237.5 70h0"></path><rect x="90" y="59" width="147.5" height="22"></rect><a xlink:href="#TemplateLiteral"><text x="163.75" y="74">TemplateLiteral</text></a></g><path d="M237.5 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path></g><path d="M257.5 40h10"></path><path d="M70 40a10 10 0 0 0 -10 10v29a10 10 0 0 0 10 10"></path><g><path d="M70 89h187.5"></path></g><path d="M257.5 89a10 10 0 0 0 10 -10v-29a10 10 0 0 0 -10 -10"></path></g><path d="M267.5 40h20"></path></g><path d="M 287.5 40 h 20 m 0 -10 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">NoIdentContentList</span> = { <a class="ebnf-non-terminal" href="#StringLiteral">StringLiteral</a> | <a class="ebnf-non-terminal" href="#TemplateLiteral">TemplateLiteral</a> } <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>NoIdentContentList</strong>:<p>
+<ul>
+<li><a href="#Body">Body</a></li><li><a href="#Attribute">Attribute</a></li>
+</ul>
+  <p><strong>NoIdentContentList</strong> is referencing:<p>
+<ul>
+<li><a href="#StringLiteral">StringLiteral</a></li><li><a href="#TemplateLiteral">TemplateLiteral</a></li>
+</ul>
+</section>
+<section>
+  <h4 id="Identifier">Identifier</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="545" style="max-height: 62px;" viewBox="0 0 545 62"><g transform="translate(.5 .5)"><g><path d="M20 21v20m10 -20v20m-10 -10h20"></path></g><path d="M40 31h10"></path><g class="terminal"><path d="M50 31h0"></path><path d="M495 31h0"></path><rect x="50" y="20" width="445" height="22" rx="10" ry="10"></rect><text x="272.5" y="35">See templater.compiler.tokeniser.IdentifierMatcher</text></g><path d="M495 31h10"></path><path d="M 505 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">Identifier</span> = <span class="ebnf-terminal">"See templater.compiler.tokeniser.IdentifierMatcher"</span> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>Identifier</strong>:<p>
+<ul>
+<li><a href="#ElementName">ElementName</a></li><li><a href="#Attribute">Attribute</a></li><li><a href="#IterationControl">IterationControl</a></li><li><a href="#AnyContentList">AnyContentList</a></li>
+</ul>
+</section>
+<p>Somewhat complex and unnecessary to write diagrams for. </p><section>
+  <h4 id="StringLiteral">StringLiteral</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="570.5" style="max-height: 62px;" viewBox="0 0 570.5 62"><g transform="translate(.5 .5)"><g><path d="M20 21v20m10 -20v20m-10 -10h20"></path></g><path d="M40 31h10"></path><g class="terminal"><path d="M50 31h0"></path><path d="M520.5 31h0"></path><rect x="50" y="20" width="470.5" height="22" rx="10" ry="10"></rect><text x="285.25" y="35">See templater.compiler.tokeniser.StringLiteralMatcher</text></g><path d="M520.5 31h10"></path><path d="M 530.5 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">StringLiteral</span> = <span class="ebnf-terminal">"See templater.compiler.tokeniser.StringLiteralMatcher"</span> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>StringLiteral</strong>:<p>
+<ul>
+<li><a href="#AnyContentList">AnyContentList</a></li><li><a href="#NoIdentContentList">NoIdentContentList</a></li>
+</ul>
+</section>
+<p>Somewhat complex and unnecessary to write diagrams for. </p><section>
+  <h4 id="TemplateLiteral">TemplateLiteral</h4>
+  <div class="diagram-container"><svg class="railroad-diagram" width="587.5" style="max-height: 62px;" viewBox="0 0 587.5 62"><g transform="translate(.5 .5)"><g><path d="M20 21v20m10 -20v20m-10 -10h20"></path></g><path d="M40 31h10"></path><g class="terminal"><path d="M50 31h0"></path><path d="M537.5 31h0"></path><rect x="50" y="20" width="487.5" height="22" rx="10" ry="10"></rect><text x="293.75" y="35">See templater.compiler.tokeniser.TemplateLiteralMatcher</text></g><path d="M537.5 31h10"></path><path d="M 547.5 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g></svg>
+</div>
+  <code class="ebnf"><span class="ebnf-identifier">TemplateLiteral</span> = <span class="ebnf-terminal">"See templater.compiler.tokeniser.TemplateLiteralMatcher"</span> <span class="ebnf-end">;</span></code>
+  <p>Items referencing <strong>TemplateLiteral</strong>:<p>
+<ul>
+<li><a href="#AnyContentList">AnyContentList</a></li><li><a href="#NoIdentContentList">NoIdentContentList</a></li>
+</ul>
+</section>
+<p>Somewhat complex and unnecessary to write diagrams for. </p>
+  </article>
+  <footer>
+    <p><a href="?theme=dark" data-theme="dark">Dark</a> - <a href="?theme=light" data-theme="light">Light</a></p>
+  </footer>
+  </main>
+  <script type="text/javascript">
+    document.querySelector("header button").addEventListener("click", function() {
+      document.getElementsByTagName("html")[0].classList.toggle("menu-open");
+    });
+    document.querySelector("nav").addEventListener("click", function(event) {
+      if (event.target.tagName !== "A") return;
+      htmlTag.classList.remove("menu-open");
+    });
+    document.querySelectorAll("footer a").forEach(element =>
+      element.addEventListener("click", function(event) {
+        event.preventDefault();
+        const theme = event.target.getAttribute("data-theme");
+        const remove = Array.from(htmlTag.classList).filter(className => className.startsWith("theme-"));
+        remove.forEach(name => htmlTag.classList.remove(name));
+        htmlTag.classList.add("theme-" + theme);
+      })
+    );
+  </script>
+
+</body>
+</html>
