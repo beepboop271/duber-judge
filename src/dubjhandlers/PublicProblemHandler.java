@@ -29,7 +29,7 @@ import webserver.RouteTarget;
  *
  * @since 0.0.7
  * @version1.0.0
- * @author Joseph Wang
+ * @author Joseph Wang, Shari Sun
  */
 public class PublicProblemHandler implements RouteTarget {
   /**
@@ -149,7 +149,7 @@ public class PublicProblemHandler implements RouteTarget {
     String username = "Sign In";
     User user;
 
-    if (currentSession != null) {
+    if (currentSession != null && currentSession.isLoggedIn()) {
       try {
         user = this.us.getUser(currentSession.getUserId()).getContent();
         username = user.getUsername();
@@ -220,7 +220,7 @@ public class PublicProblemHandler implements RouteTarget {
     String username = "Sign In";
     User user;
 
-    if (currentSession != null) {
+    if (currentSession != null && currentSession.isLoggedIn()) {
       try {
         user = this.us.getUser(currentSession.getUserId()).getContent();
         username = user.getUsername();

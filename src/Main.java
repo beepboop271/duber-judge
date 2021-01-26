@@ -161,6 +161,7 @@ public class Main {
 
     server.route("/login", login);
     server.route("/signup", login);
+    server.route("/logout", login);
 
     server.route("/profile", profile);
     server.route("/profile/:username", profile);

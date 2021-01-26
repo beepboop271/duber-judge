@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import dal.dao.RecordNotFoundException;
 import entities.Session;
+import entities.entity_fields.SessionField;
 import services.SessionService;
 import services.UserService;
 import webserver.HttpSyntaxException;
@@ -25,7 +26,7 @@ import webserver.WebServer;
  *
  * @since 0.0.7
  * @version1.0.0
- * @author Joseph Wang
+ * @author Joseph Wang, Shari Sun
  */
 public class LoginHandler implements RouteTarget {
   /**
@@ -85,6 +86,8 @@ public class LoginHandler implements RouteTarget {
         return this.getLoginPage(req, hasBody);
       case "signup":
         return this.getSignupPage(req, hasBody);
+      case "logout":
+        return this.getLogoutPage(req, hasBody);
       default:
         return Response.notFoundHtml(req.getPath(), hasBody);
     }
@@ -145,12 +148,22 @@ public class LoginHandler implements RouteTarget {
    * @return a response with the login page.
    */
   private Response getLoginPage(Request req, boolean hasBody) {
-    // TODO: get user from db so we can redirect them to profile
-    if (this.getActiveSession(req) != null) {
+    Session curSession = this.getActiveSession(req);
+    if (curSession != null && curSession.isLoggedIn()) {
       return Response.temporaryRedirect("/problems");
     }
 
     return this.loadPage("./static/login.html", hasBody);
+  }
+
+  private Response getLogoutPage(Request req, boolean hasBody) {
+    // TODO: get user from db so we can redirect them to profile
+    Session curSession = this.getActiveSession(req);
+    if (curSession != null && curSession.isLoggedIn()) {
+      this.ss.updateSession(curSession.getToken(), SessionField.USER_ID, -1L);
+    }
+
+    return Response.temporaryRedirect("/problems");
   }
 
   /**
@@ -163,7 +176,8 @@ public class LoginHandler implements RouteTarget {
    */
   private Response getSignupPage(Request req, boolean hasBody) {
     // TODO: get user from db so we can redirect them to profile
-    if (this.getActiveSession(req) != null) {
+    Session curSession = this.getActiveSession(req);
+    if (curSession != null && curSession.isLoggedIn()) {
       return Response.temporaryRedirect("/problems");
     }
 
@@ -192,10 +206,18 @@ public class LoginHandler implements RouteTarget {
       String password = bodyParams.get("password");
 
       long uid = us.login(username, password);
-      String token = ss.createSession(uid);
+      Session curSession = this.getActiveSession(req);
 
       Response r = Response.seeOther("/profile/"+username);
-      r.addCookie("token", token, 60*30);
+      if (curSession != null) {
+        this.ss.updateSession(curSession.getToken(), SessionField.USER_ID, uid);
+      } else {
+        String token = ss.createSession(uid);
+        r.addCookie("token", token, 60*60);
+      }
+
+
+
 
       return r;
     } catch (IllegalArgumentException e) {
@@ -237,10 +259,15 @@ public class LoginHandler implements RouteTarget {
       String password = bodyParams.get("password");
 
       long uid = us.createUser(username, password);
-      String token = ss.createSession(uid);
+      Session curSession = this.getActiveSession(req);
 
       Response r = Response.seeOther("/profile/"+username);
-      r.addCookie("token", token, 60*30);
+      if (curSession != null) {
+        this.ss.updateSession(curSession.getToken(), SessionField.USER_ID, uid);
+      } else {
+        String token = ss.createSession(uid);
+        r.addCookie("token", token, 60*60);
+      }
 
       return r;
     } catch (IllegalArgumentException e) {

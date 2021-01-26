@@ -63,6 +63,7 @@ html(lang="en") {
             p.card-text {
               "Points: "${currentPoints}
             }
+            a.btn.btn-outline-dark.mt-2#logout-button(role="button" href="/logout") {"Logout"}
           }
         }
       }

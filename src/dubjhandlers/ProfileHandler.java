@@ -26,7 +26,7 @@ import webserver.RouteTarget;
  *
  * @since 0.0.7
  * @version1.0.0
- * @author Joseph Wang
+ * @author Joseph Wang, Shari Sun
  */
 public class ProfileHandler implements RouteTarget {
   UserService us = new UserService();
@@ -119,7 +119,7 @@ public class ProfileHandler implements RouteTarget {
   private Response getProfileRedirect(Request req, boolean hasBody) {
     // Redirect to login if no session
     Session curSession = this.getActiveSession(req);
-    if (curSession == null) {
+    if (curSession == null || !curSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
 
@@ -151,7 +151,7 @@ public class ProfileHandler implements RouteTarget {
   private Response loadProfile(Request req, boolean hasBody) {
     // Redirect to login if no session
     Session curSession = this.getActiveSession(req);
-    if (curSession == null) {
+    if (curSession == null || !curSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     String curUser = "";

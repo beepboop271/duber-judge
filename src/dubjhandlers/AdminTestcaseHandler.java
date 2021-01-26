@@ -31,7 +31,7 @@ import webserver.RouteTarget;
  *
  * @since 0.0.7
  * @version1.0.0
- * @author Joseph Wang
+ * @author Joseph Wang, Shari Sun
  */
 public class AdminTestcaseHandler implements RouteTarget {
   /**
@@ -176,7 +176,7 @@ public class AdminTestcaseHandler implements RouteTarget {
   private Response getAllTestcases(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     String username = "Sign In";
@@ -263,7 +263,7 @@ public class AdminTestcaseHandler implements RouteTarget {
   private Response getAddTestcasePage(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
@@ -323,7 +323,7 @@ public class AdminTestcaseHandler implements RouteTarget {
   private Response addTestcase(Request req) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
@@ -391,7 +391,7 @@ public class AdminTestcaseHandler implements RouteTarget {
   private Response addBatch(Request req) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();

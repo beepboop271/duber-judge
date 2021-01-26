@@ -34,7 +34,7 @@ html(lang="en") {
             }
           }
           li.nav-item {
-            a.nav-link(href="/leaderboard") {
+            a.nav-link.active(href="/leaderboard") {
               "Leaderboard"
             }
           }
@@ -43,7 +43,7 @@ html(lang="en") {
               "Practice Problems"
             }
           }
-          li.nav-item.active {
+          li.nav-item {
             a.nav-link(href="/profile") {
               ${username}
             }

@@ -30,8 +30,8 @@ import webserver.RouteTarget;
  * Created <b> 2020-01-25 </b>.
  *
  * @since 0.0.7
- * @version1.0.0
- * @author Joseph Wang
+ * @version 1.0.0
+ * @author Joseph Wang, Shari Sun
  */
 public class AdminProblemHandler implements RouteTarget {
   /**
@@ -181,7 +181,7 @@ public class AdminProblemHandler implements RouteTarget {
   private Response getAllProblems(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
@@ -242,7 +242,7 @@ public class AdminProblemHandler implements RouteTarget {
   private Response getAddProblemPage(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
@@ -298,7 +298,7 @@ public class AdminProblemHandler implements RouteTarget {
   private Response addProblem(Request req) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();

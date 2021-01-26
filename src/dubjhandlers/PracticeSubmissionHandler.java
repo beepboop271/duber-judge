@@ -36,7 +36,7 @@ import webserver.RouteTarget;
  *
  * @since 0.0.7
  * @version1.0.0
- * @author Joseph Wang, Shari Sun
+ * @author Shari Sun, Joseph Wang
  */
 public class PracticeSubmissionHandler implements RouteTarget {
   /**
@@ -215,7 +215,7 @@ public class PracticeSubmissionHandler implements RouteTarget {
   private Response getSubmission(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // Verify session and data
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();

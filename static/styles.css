@@ -125,3 +125,13 @@ body {
 .leaderboard {
   width: 100%;
 }
+
+#logout-button {
+  width: 100%;
+}
+
+a.btn-outline-dark:hover {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #343a40;
+}

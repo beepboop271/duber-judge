@@ -28,7 +28,7 @@ import webserver.RouteTarget;
  *
  * @since 0.0.7
  * @version1.0.0
- * @author Joseph Wang
+ * @author Joseph Wang, Shari Sun
  */
 public class HomeHandler implements RouteTarget {
   /**
