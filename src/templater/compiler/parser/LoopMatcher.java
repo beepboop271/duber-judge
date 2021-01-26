@@ -8,6 +8,13 @@ import templater.language.Loop;
 import templater.language.Token;
 import templater.language.TokenKind;
 
+/**
+ * Matches an entire loop: header and body.
+ *
+ * <pre>
+ * Loop = 'for', IterationControl, Body;
+ * </pre>
+ */
 class LoopMatcher extends TokenMatchable<Loop> {
   @Override
   protected Loop tryMatchInternal(TokenQueue.Iterator input) {
@@ -21,7 +28,7 @@ class LoopMatcher extends TokenMatchable<Loop> {
       throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
-    List<LanguageElement> body = new BlockMatcher().tryMatch(input);
+    List<LanguageElement> body = new BodyMatcher().tryMatch(input);
     if (body == null) {
       throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }

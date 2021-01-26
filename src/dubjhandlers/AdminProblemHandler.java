@@ -353,6 +353,11 @@ public class AdminProblemHandler implements RouteTarget {
       return Response.badRequest();
     }
 
+    String editorial = "";
+    if (bodyParams.containsKey("editorial")) {
+      editorial = bodyParams.get("editorial");
+    }
+    
     // Create the actual testcase
     try {
       this.as.createPracticeProblem(
@@ -367,7 +372,7 @@ public class AdminProblemHandler implements RouteTarget {
         Integer.parseInt(outputLimit),
         0,
         1,
-        bodyParams.get("editorial"),
+        editorial,
         PublishingState.PUBLISHED
       );
     } catch (InsufficientPermissionException e) {

@@ -410,8 +410,10 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
 
       //add the testcases to batch and batches to problem
       if (initialized) {
-        batch.getContent().setTestcases(testcases);
-        batches.add(batch);
+        if (batch != null) {
+          batch.getContent().setTestcases(testcases);
+          batches.add(batch);
+        }
         problem.getContent().setBatches(batches);
       } else {
         throw new RecordNotFoundException();
