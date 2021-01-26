@@ -2,9 +2,9 @@ package dubjhandlers;
 
 import java.util.ArrayList;
 
-import dal.dao.UserPoints;
 import entities.Contest;
 import entities.Entity;
+import entities.User;
 import services.PublicService;
 import webserver.Request;
 import webserver.Response;
@@ -116,7 +116,7 @@ public class HomeHandler implements RouteTarget {
    * @return a response with the contests page.
    */
   private Response getLeaderboardPage(Request req, boolean hasBody) {
-    ArrayList<UserPoints> leaderboard = this.ps.getLeaderboard(0, 50);
+    ArrayList<Entity<User>> leaderboard = this.ps.getLeaderboard(0, 50);
 
     // call templater
     String body =

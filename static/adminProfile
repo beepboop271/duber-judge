@@ -64,7 +64,7 @@ html(lang="en") {
                 "Admin"
               }
             }
-            a.settings-logo-wrapper text-dark(href="/") {
+            a.settings-logo-wrapper text-dark(href="/admin/problems") {
               i.fas.fa-cog{}
             }
           }

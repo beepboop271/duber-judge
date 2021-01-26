@@ -33,13 +33,13 @@ public class Main {
 
     try {
       Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
-      // Templater.prepareTemplate("adminUsers",
-      // Paths.get("static/adminUsers"));
+      Templater.prepareTemplate("adminUsers",
+      Paths.get("static/adminUsers"));
       Templater.prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
       Templater.prepareTemplate("problems", Paths.get("static/viewAllProblems"));
-      // Templater
-      // .prepareTemplate("adminProblems",
-      // Paths.get("static/adminProblems"));
+      Templater
+      .prepareTemplate("adminProblems",
+      Paths.get("static/adminProblems"));
     } catch (IOException e) {
       System.out.println("An exception occurred while preparing templates.");
     } catch (UnknownTokenException e) {
