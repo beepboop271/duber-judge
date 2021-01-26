@@ -3,5 +3,6 @@
 /lib
 .project
 .classpath
+/src/static
 
 *.db
