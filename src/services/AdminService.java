@@ -313,7 +313,13 @@ public class AdminService {
   }
 
   public Entity<Problem> getNestedProblem(long problemId) throws RecordNotFoundException {
-    return this.problemDao.getNested(problemId);
+    Entity<Problem> problem = this.problemDao.get(problemId);
+    ArrayList<Entity<Batch>> batches = this.batchDao.getByProblem(problemId);
+    for (Entity<Batch> batch : batches) {
+      batch.getContent().setTestcases(this.testcaseDao.getByBatch(batch.getId()));
+      problem.getContent().getBatches().add(batch);
+    }
+    return problem;
   }
 
   private void validateProblem(long adminId, long problemId)
@@ -413,6 +419,10 @@ public class AdminService {
     } catch (RecordNotFoundException e) {
       System.out.println("testcase does not exist");
     }
+  }
+
+  public ArrayList<Entity<Testcase>> getTestcasesByBatch(long batchId) {
+    return this.testcaseDao.getByBatch(batchId);
   }
 
   public long createTestcase(
