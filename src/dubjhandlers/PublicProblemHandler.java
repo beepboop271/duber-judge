@@ -89,14 +89,12 @@ public class PublicProblemHandler implements RouteTarget {
    * @return a response to the retrieval request.
    */
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
-    switch (req.getEndResource()) {
-      case "problems":
-        return this.getAllProblems(req, hasBody);
-      case "leaderboard":
-        return this.getProblemLeaderboard(req, hasBody);
-      default:
-        return this.getProblem(req, hasBody);
+    if (req.getParam("problemId") != null) {
+      return this.getProblem(req, hasBody);
+    } else if (req.getParam("leaderboard") != null) {
+      return this.getProblemLeaderboard(req, hasBody);
     }
+    return this.getAllProblems(req, hasBody);
   }
 
   /**

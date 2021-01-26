@@ -140,3 +140,7 @@ a.btn-outline-dark:hover {
   width: 50%;
   height: 50vh;
 }
+
+.submissions-list {
+  width: 100%;
+}

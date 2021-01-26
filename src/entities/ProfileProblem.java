@@ -239,12 +239,15 @@ public class ProfileProblem {
    *
    * @return this problem's clear rate.
    */
-  public int getClearRate() {
+  public String getClearRate() {
     if (this.numSubmissions == 0) {
-      return 0;
+      return "0.00";
     }
 
-    return (this.clearedSubmissions/this.numSubmissions)*100;
+    return String.format(
+      "%.2f",
+      (this.clearedSubmissions/(double)this.numSubmissions)*100
+    );
   }
 
   /**

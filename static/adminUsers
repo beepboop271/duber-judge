@@ -59,7 +59,7 @@ html(lang="en") {
             div.d-flex.justify-content-between {
               div.admin-profile-text {
                 h5.card-title {
-                  ${username}
+                  ${user.getUsername}
                 }
                 p.card-text {
                   "Admin"
@@ -94,6 +94,9 @@ html(lang="en") {
                     h5.mb-1 {
                       ${otherUser.getUsername}
                     }
+                  }
+                  small.text-muted.mr-4 {
+                    ${otherUser.getUserType}
                   }
                   small.text-muted.mr-4 {
                     "Points: "${otherUser.getPoints}

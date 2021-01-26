@@ -121,12 +121,14 @@ public class Main {
       Templater.prepareTemplate("adminUsers", Paths.get("static/adminUsers"));
       Templater.prepareTemplate("submitSolution", Paths.get("static/submit-solution"));
       Templater
+        .prepareTemplate("viewProbSubmissions", Paths.get("static/view-problem-submissions"));
+      Templater
         .prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
       Templater
         .prepareTemplate("problems", Paths.get("static/viewAllProblems"));
       Templater
         .prepareTemplate("adminProblems", Paths.get("static/adminProblems"));
-        Templater
+      Templater
         .prepareTemplate("addProblemDetails", Paths.get("static/add-problem-details"));
       Templater
         .prepareTemplate("addTestcases", Paths.get("static/add-testcases"));
@@ -173,7 +175,7 @@ public class Main {
     // TODO route /problem to /problems
     server.route("/problems", publicProblem);
     server.route("/problem/:problemId", publicProblem);
-    server.route("/problem/:problemId/leaderboard", publicProblem);
+    server.route("/problem/:problemId/:leaderboard(leaderboard)", publicProblem);
 
     server.route("/contest/:contestId/problem/:problemId", contestProblem);
 

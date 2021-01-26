@@ -1,14 +1,15 @@
 package dubjhandlers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import dal.dao.RecordNotFoundException;
 import entities.Entity;
-import entities.ExecutionStatus;
 import entities.Language;
 import entities.Problem;
+import entities.ProfileProbSubmission;
+import entities.ProfileProblem;
 import entities.Session;
-import entities.Submission;
 import entities.SubmissionResult;
 import entities.User;
 import services.InsufficientPermissionException;
@@ -34,8 +35,7 @@ import webserver.RouteTarget;
  * <p>
  * Created <b> 2020-01-25 </b>.
  *
- * @since 0.0.7
- * @version1.0.0
+ * @since 0.0.7 @version1.0.0
  * @author Shari Sun, Joseph Wang
  */
 public class PracticeSubmissionHandler implements RouteTarget {
@@ -200,7 +200,68 @@ public class PracticeSubmissionHandler implements RouteTarget {
    * @return a response with the problem's submissions.
    */
   private Response getProblemSubmissions(Request req, boolean hasBody) {
-    return Response.internalError();
+    Session currentSession = this.getActiveSession(req);
+    // Verify session and data
+    if (currentSession == null || !currentSession.isLoggedIn()) {
+      return Response.temporaryRedirect("/login");
+    }
+    long uid = currentSession.getUserId();
+    String username;
+
+    try {
+      Entity<User> user = this.us.getUser(uid);
+      username = user.getContent().getUsername();
+    } catch (RecordNotFoundException e) {
+      return Response.internalError();
+    }
+    String probStr = req.getParam("problemId");
+    if (!probStr.matches("^\\d+$")) {
+      return Response.badRequest();
+    }
+    long pid = Long.parseLong(probStr);
+
+    ArrayList<ProfileProbSubmission> submissions = new ArrayList<>();
+    ArrayList<Entity<SubmissionResult>> subs = this.prs.getAllSubmissions(pid, 0, 500);
+
+    Problem prob;
+
+    try {
+      prob = this.prs.getProblem(pid).getContent();
+    } catch (RecordNotFoundException e) {
+      return Response.internalError();
+    }
+
+    // Get a list of all submissions for template
+    for (Entity<SubmissionResult> entity : subs) {
+      SubmissionResult result = entity.getContent();
+      String user;
+      try {
+        user = this.us.getUser(uid).getContent().getUsername();
+      } catch (RecordNotFoundException e) {
+        user = "Unknown";
+      }
+
+      String link = "/problem/"+pid+"/submissions/"+entity.getId();
+      submissions.add(new ProfileProbSubmission(
+        link,
+        prob.getPoints(),
+        result.getScore(),
+        result.getSubmission().getLanguage(),
+        result.getStatus(),
+        result.getRunDurationMillis()/1000.0,
+        result.getMemoryUsageBytes()/1024.0,
+        user
+        )
+      );
+    }
+    // Load template names
+    HashMap<String, Object> templateParams = new HashMap<>();
+    templateParams.put("username", username);
+    templateParams.put("submissions", submissions);
+    templateParams.put("problem", prob);
+
+    return Response
+      .okNoCacheHtml(Templater.fillTemplate("viewProbSubmissions", templateParams));
   }
 
   /**
@@ -242,17 +303,12 @@ public class PracticeSubmissionHandler implements RouteTarget {
       Entity<SubmissionResult> subEntity =
         this.prs.getSubmission(Long.parseLong(subStr));
       SubmissionResult sub = subEntity.getContent();
-      ExecutionStatus stat = sub.getStatus();
 
       HashMap<String, Object> templateParams = new HashMap<>();
       templateParams.put("username", username);
       templateParams.put("problemName", probName);
       templateParams.put("language", sub.getSubmission().getLanguage());
-      if (stat == null) {
-        templateParams.put("submissionStatus", "N/A");
-      } else {
-        templateParams.put("submissionStatus", sub.getStatus());
-      }
+      templateParams.put("submissionStatus", sub.getStatus());
       templateParams.put("points", sub.getScore()+"/"+prob.getPoints());
       templateParams.put("runDuration", sub.getRunDurationMillis());
       templateParams.put("memoryUsed", sub.getMemoryUsageBytes());

@@ -109,7 +109,8 @@ public class AdminHandler implements RouteTarget {
         "/profile/"+userInfo.getUsername(),
         userInfo.getUsername(),
         this.us.getPoints(u.getId()),
-        this.us.getProblems(u.getId(), 0, 500).size()
+        this.us.getProblems(u.getId(), 0, 500).size(),
+        userInfo.getUserType()
       ));
     }
 

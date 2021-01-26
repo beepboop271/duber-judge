@@ -7,13 +7,13 @@ html(lang="en") {
     title {
       "Duber Judge"
     }
-    script(src="/vendored/marked-1.2.7.min.js") {}
-    script(src="/vendored/purify-2.2.6.min.js") {}
-    script(defer="" src="/vendored/mathjax-tex-chtml-3.1.2.js") {}
+    script(src="/static/vendored/marked-1.2.7.min.js") {}
+    script(src="/static/vendored/purify-2.2.6.min.js") {}
+    script(defer="" src="/static/vendored/mathjax-tex-chtml-3.1.2.js") {}
 
-    link(rel="stylesheet" href="/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
-    link(rel="stylesheet" href="/styles.css");
+    link(rel="stylesheet" href="/static/styles.css");
 
   }
   body {
@@ -63,7 +63,7 @@ html(lang="en") {
           a.list-group-item.list-group-item-action(href=${submitLink}) {
             "Submit"
           }
-          a.list-group-item.list-group-item-action.disabled(href=${allSubmissionsLink}) {
+          a.list-group-item.list-group-item-action(href=${allSubmissionsLink}) {
             "View submissions"
           }
           a.list-group-item.list-group-item-action.disabled(href="#") {
@@ -72,9 +72,9 @@ html(lang="en") {
         }
       }
     }
-    script(src="/vendored/jquery-3.4.1.slim.min.js") {}
-    script(src="/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
-    script(src="/problem-viewing-script.js") {}
-    script(src="/scripts.js") {}
+    script(src="/static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="/static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="/static/problem-viewing-script.js") {}
+    script(src="/static/scripts.js") {}
   }
 }
