@@ -15,8 +15,6 @@ import entities.Testcase;
 import entities.User;
 import services.AdminService;
 import services.InsufficientPermissionException;
-import services.ProblemService;
-import services.PublicService;
 import services.SessionService;
 import services.UserService;
 import templater.Templater;
@@ -47,16 +45,6 @@ public class AdminTestcaseHandler implements RouteTarget {
    */
   private AdminService as;
   /**
-   * The problem service that this handler uses for db
-   * interaction.
-   */
-  private ProblemService prs;
-  /**
-   * The public service that this handler uses for db
-   * interaction.
-   */
-  private PublicService ps;
-  /**
    * The user service that this handler uses for db
    * interaction.
    */
@@ -68,9 +56,7 @@ public class AdminTestcaseHandler implements RouteTarget {
   public AdminTestcaseHandler() {
     this.ss = new SessionService();
     this.as = new AdminService();
-    this.prs = new ProblemService();
     this.us = new UserService();
-    this.ps = new PublicService();
   }
 
   /**

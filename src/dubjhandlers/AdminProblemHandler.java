@@ -14,7 +14,6 @@ import entities.Session;
 import entities.User;
 import services.AdminService;
 import services.InsufficientPermissionException;
-import services.ProblemService;
 import services.PublicService;
 import services.SessionService;
 import services.UserService;
@@ -46,11 +45,6 @@ public class AdminProblemHandler implements RouteTarget {
    */
   private AdminService as;
   /**
-   * The problem service that this handler uses for db
-   * interaction.
-   */
-  private ProblemService prs;
-  /**
    * The public service that this handler uses for db
    * interaction.
    */
@@ -67,7 +61,6 @@ public class AdminProblemHandler implements RouteTarget {
   public AdminProblemHandler() {
     this.ss = new SessionService();
     this.as = new AdminService();
-    this.prs = new ProblemService();
     this.us = new UserService();
     this.ps = new PublicService();
   }
