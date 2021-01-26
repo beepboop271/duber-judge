@@ -154,7 +154,7 @@ public class PracticeSubmissionHandler implements RouteTarget {
    */
   private Response getSubmitPage(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
-    String username = "Profile";
+    String username = "Sign In";
     Entity<User> user;
 
     if (currentSession == null || !currentSession.isLoggedIn()) {
@@ -243,7 +243,7 @@ public class PracticeSubmissionHandler implements RouteTarget {
         this.prs.getSubmission(Long.parseLong(subStr));
       SubmissionResult sub = subEntity.getContent();
       ExecutionStatus stat = sub.getStatus();
-      
+
       HashMap<String, Object> templateParams = new HashMap<>();
       templateParams.put("username", username);
       templateParams.put("problemName", probName);

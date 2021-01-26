@@ -146,7 +146,7 @@ public class PublicProblemHandler implements RouteTarget {
    */
   private Response getAllProblems(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
-    String username = "Profile";
+    String username = "Sign In";
     User user;
 
     if (currentSession != null) {
@@ -217,7 +217,7 @@ public class PublicProblemHandler implements RouteTarget {
    */
   private Response getProblem(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
-    String username = "Profile";
+    String username = "Sign In";
     User user;
 
     if (currentSession != null) {

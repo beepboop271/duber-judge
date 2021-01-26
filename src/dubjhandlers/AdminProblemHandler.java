@@ -185,7 +185,7 @@ public class AdminProblemHandler implements RouteTarget {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
-    String username = "Profile";
+    String username = "Sign In";
     try {
       User user = this.getAdminUser(currentSession.getUserId());
       if (user == null) {
@@ -246,7 +246,7 @@ public class AdminProblemHandler implements RouteTarget {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
-    String username = "Profile";
+    String username = "Sign In";
     try {
       User user = this.getAdminUser(uid);
       if (user == null) {
