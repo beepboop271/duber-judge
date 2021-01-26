@@ -260,7 +260,7 @@ public class AdminTestcaseHandler implements RouteTarget {
       templateParams.put("batchPostUrl", "/admin/problem/"+probId+"/testcases");
 
       return Response
-        .okHtml(Templater.fillTemplate("addTestcases", templateParams));
+        .okNoCacheHtml(Templater.fillTemplate("addTestcases", templateParams));
     } catch (RecordNotFoundException e) {
       return Response.notFoundHtml(req.getPath());
     }
