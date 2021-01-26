@@ -16,13 +16,7 @@ import dubjhandlers.ProfileHandler;
 import dubjhandlers.PublicProblemHandler;
 import dubjhandlers.StaticHandler;
 import judge.ChildProcesses;
-import entities.Category;
-import entities.PublishingState;
-import entities.entity_fields.ContestField;
-import entities.entity_fields.ProblemField;
-import services.AdminService;
 import services.InvalidArguments;
-import services.ProblemService;
 import services.SessionCleaner;
 import services.UserService;
 import templater.Templater;
@@ -30,6 +24,13 @@ import templater.compiler.tokeniser.UnknownTokenException;
 import webserver.WebServer;
 
 public class Main {
+
+  public static void main(String[] args) {
+    Main.initialize();
+    promptCreateAdmin();
+    Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
+    Main.startWebServer(5000);
+  }
 
   public static void initialize() {
     ChildProcesses.initialize();
@@ -219,13 +220,5 @@ public class Main {
     server.route("/problem-viewing-script.js", staticHandler);
 
     server.run();
-  }
-
-
-  public static void main(String[] args) {
-    Main.initialize();
-    promptCreateAdmin();
-    Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
-    Main.startWebServer(5000);
   }
 }
