@@ -20,7 +20,7 @@ import templater.language.TokenKind;
  *
  * <pre>
  * Element = ElementName, [{ClassAttribute}], [IdAttribute], [AttributeList], (';' | Body);
- * ElementName = (Identifier - Keyword), [{Identifier | TemplateLiteral}];
+ * ElementName = (Identifier - Keyword), [AnyContentList];
  * Keyword = 'for';
  * </pre>
  */
@@ -46,14 +46,13 @@ class ElementMatcher extends TokenMatchable<Element> {
     ) {
       return null;
     }
-    // like AttributeContentList, except there must be an
-    // identifier as the start
     List<Token> nameList = new ArrayList<>();
     nameList.add(nameStart);
     nameList.addAll(
       new MatchUtils.ZeroOrMore<>(
         new MatchUtils.OneOf<>(
           new TokenMatcher(TokenKind.IDENTIFIER),
+          new TokenMatcher(TokenKind.STRING_LITERAL),
           new TokenMatcher(TokenKind.TEMPLATE_LITERAL)
         )
       ).tryMatch(input)
