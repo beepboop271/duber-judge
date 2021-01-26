@@ -77,7 +77,7 @@ html(lang="en") {
             for (batch : batches) {
               div.tab-pane.fade.show.active#batch-${batch.getSequence}(role="tabpanel" aria-labelledby="batch-"${batch.getSequence}"-list") {
               div.list-group.user.problem-list {
-                for (testcase : ${batch.getTestcases}) {
+                for (testcase : "batch.getTestcases") {
                   a.list-group-item.list-group-item-action(href=${testcase.getLink}) {
                     div.d-flex.w-100.justify-content-between {
                       h5 {
@@ -97,7 +97,7 @@ html(lang="en") {
               }
             }
             div.tab-pane.fade#add-batch(role="tabpanel" aria-labelledby="add-batch-list") {
-              form.create-practice-problem.needs-validation(novalidate="" action="${batchPostUrl}" method="post") {
+              form.create-practice-problem.needs-validation(novalidate="" action=${batchPostUrl} method="post") {
                 input(name="action" type="hidden" value="createBatch");
                 div.mb-3 {
                   label(for="points") {
