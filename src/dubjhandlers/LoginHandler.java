@@ -222,7 +222,7 @@ public class LoginHandler implements RouteTarget {
       return r;
     } catch (IllegalArgumentException e) {
       // Thrown if login failed
-      return this.loadPage("./static/login.html", true);
+      return this.loadPage("./static/invalid-login.html", true);
     }
 
   }
@@ -272,7 +272,7 @@ public class LoginHandler implements RouteTarget {
       return r;
     } catch (IllegalArgumentException e) {
       // Thrown if sign up failed
-      return this.loadPage("./static/signup.html", true);
+      return this.loadPage("./static/invalid-signup.html", true);
     }
   }
 
