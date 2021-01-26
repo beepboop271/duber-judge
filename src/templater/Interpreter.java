@@ -20,7 +20,10 @@ import templater.language.StringResolvables;
  * @version 1.0
  */
 public class Interpreter {
-  /** The namespace map whence template-mentioned objects are retrieved. */
+  /**
+   * The namespace map whence template-mentioned objects are
+   * retrieved.
+   */
   private Map<String, Object> namespace;
 
   /**
@@ -47,17 +50,28 @@ public class Interpreter {
     while (itr.hasNext()) {
       StringResolvable toResolve = itr.next();
       if (toResolve.isTemplate()) {
-        String[] content = toResolve.getContent().split("\\.");
-        Object o = this.namespace.get(content[0]);
-        if (content.length > 1) {
-          o = resolveAttributes(o, content);
-        }
-        sb.append(o.toString());
+        sb.append(this.resolveObject(toResolve.getContent()).toString());
       } else {
         sb.append(toResolve.getContent());
       }
     }
     return sb.toString();
+  }
+
+  /**
+   * Gets the appropriate object from namespace and fetches
+   * the necessary attribute based on its templated string.
+   *
+   * @param s The templated string
+   * @return Object, the required attribute
+   */
+  public Object resolveObject(String s) {
+    String[] content = s.split("\\.");
+    Object o = this.namespace.get(content[0]);
+    if (content.length > 1) {
+      o = this.resolveAttributes(o, content);
+    }
+    return o;
   }
 
   /**
@@ -205,12 +219,13 @@ public class Interpreter {
   }
 
   /**
-   * Creates the HTML string associated with the given {@code Template}
-   * through a helper method. The wrapping exists to eliminate unnecessary
-   * concerns for the user.
+   * Creates the HTML string associated with the given
+   * {@code Template} through a helper method. The wrapping
+   * exists to eliminate unnecessary concerns for the user.
    *
    * @param syntaxTree The {@code Template} to translate.
-   * @return String, the HTML string derived from this template.
+   * @return String, the HTML string derived from this
+   *         template.
    */
   public String interpret(Template syntaxTree) {
     return interpretHelper(syntaxTree.getSyntaxTree(), new StringBuilder())
@@ -218,12 +233,14 @@ public class Interpreter {
   }
 
   /**
-   * Appends to the given HTML string associated with the {@code Template}
-   * by recursively walking through the syntax tree and translating each
-   * {@code LanguageElement}.
+   * Appends to the given HTML string associated with the
+   * {@code Template} by recursively walking through the
+   * syntax tree and translating each {@code LanguageElement}.
    *
-   * @param curElem The {@code LanguageElement} the walk is currently on.
-   * @param interpreted The {@code StringBuilder} being added to.
+   * @param curElem     The {@code LanguageElement} the walk
+   *                    is currently on.
+   * @param interpreted The {@code StringBuilder} being added
+   *                    to.
    */
   public StringBuilder interpretHelper(
     LanguageElement curElem,
@@ -243,8 +260,9 @@ public class Interpreter {
 
     if (curElem instanceof Loop) {
       Loop loop = (Loop)curElem;
-      Object loopTarget = this.namespace.get(resolveStrings(loop.getTarget()));
-      return handleLoop(loopTarget, loop, interpreted);
+      Object loopTarget =
+        this.resolveObject(this.resolveStrings(loop.getTarget()));
+          return handleLoop(loopTarget, loop, interpreted);
     }
 
     // only option left is element
@@ -252,7 +270,8 @@ public class Interpreter {
     interpreted.append("<");
     interpreted.append(resolveStrings(elem.getName()));
     if (elem.getId() != null) {
-      interpreted.append(" id=\"");
+      interpreted.append(
+         id=\"");
       interpreted.append(resolveStrings(elem.getId()));
       interpreted.append("\"");
     }

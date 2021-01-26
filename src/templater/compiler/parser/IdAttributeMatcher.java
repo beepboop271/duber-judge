@@ -11,7 +11,10 @@ class IdAttributeMatcher extends TokenMatchable<StringResolvables> {
       return null;
     }
 
-    StringResolvables content = new AttributeContentListMatcher().tryMatch(input);
+    StringResolvables content = ContentListMatcher.any().tryMatch(input);
+    if (content == null) {
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
+    }
     return content;
   }
 }

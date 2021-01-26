@@ -16,14 +16,14 @@ class BlockMatcher extends TokenMatchable<List<LanguageElement>> {
     List<LanguageElement> content = new MatchUtils.ZeroOrMore<>(
       new MatchUtils.OneOf<>(
         new ElementMatcher(),
-        new ContentListMatcher(),
+        ContentListMatcher.noIdentifier(),
         new LoopMatcher()
       )
     ).tryMatch(input);
 
     brace = new TokenMatcher('}').tryMatch(input);
     if (brace == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     return content;

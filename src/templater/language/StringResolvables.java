@@ -4,17 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class representing a series of
- * {@code StringResolvables}--items with string content,
- * whether that content be a literal string or a variable
- * with a string value.
+ * A class representing a series of {@code StringResolvable}s
+ * that can be resolved into a single String by processing
+ * each StringResolvable.
  *
  * @author Kevin Qiao
  * @version 1.0
  */
 public class StringResolvables extends LanguageElement implements
   Iterable<StringResolvable> {
-  private final List<Token> tokens;
+  /**
+   * The sequence of {@code StringResolvable}s holding the
+   * content of this StringResolvables.
+   */
+  private final List<StringResolvable> resolvables;
 
   /**
    * Creates a new {@code StringResolvables}, given a list of
@@ -25,29 +28,14 @@ public class StringResolvables extends LanguageElement implements
    *               derived from.
    */
   public StringResolvables(List<Token> tokens) {
-    this.tokens = new ArrayList<>(tokens);
+    this.resolvables = new ArrayList<>();
+    for (Token t : tokens) {
+      this.resolvables.add(new StringResolvable(t));
+    }
   }
 
   @Override
-  public Iterator iterator() {
-    return this.new Iterator();
-  }
-
-  public class Iterator implements java.util.Iterator<StringResolvable> {
-    private final java.util.Iterator<Token> it;
-
-    private Iterator() {
-      this.it = StringResolvables.this.tokens.iterator();
-    }
-
-    @Override
-    public boolean hasNext() {
-      return it.hasNext();
-    }
-
-    @Override
-    public StringResolvable next() {
-      return new StringResolvable(it.next());
-    }
+  public ReadOnlyIterator<StringResolvable> iterator() {
+    return new ReadOnlyIterator<>(this.resolvables.iterator());
   }
 }

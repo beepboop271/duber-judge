@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 
 import templater.compiler.ArrayListQueue;
+import templater.compiler.TextFilePosition;
 import templater.language.Token;
 
 public class TokenQueue extends ArrayListQueue<Token> {
@@ -34,6 +35,14 @@ public class TokenQueue extends ArrayListQueue<Token> {
 
     public void pop() {
       this.marks.pop();
+    }
+
+    public TextFilePosition getPosition() {
+      try {
+        return TokenQueue.this.get(this.getIndex()).getPosition();
+      } catch (IndexOutOfBoundsException e) {
+        return new TextFilePosition.Eof();
+      }
     }
   }
 }
