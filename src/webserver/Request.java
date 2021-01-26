@@ -497,13 +497,9 @@ public class Request extends HttpMessage {
     }
 
     String[] fieldTokens = this.getBodyString().split("&");
-    if (fieldTokens.length != 2) {
-      throw new HttpSyntaxException("Body malformed.");
-    }
-
     for (String s : fieldTokens) {
       String[] paramTokens = s.split("=");
-      if (fieldTokens.length != 2) {
+      if (paramTokens.length != 2) {
         throw new HttpSyntaxException("Body malformed.");
       }
       try {

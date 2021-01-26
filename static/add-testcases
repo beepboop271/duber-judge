@@ -44,7 +44,7 @@ html(lang="en") {
           }
           li.nav-item.active {
             a.nav-link(href=${profileLink}) {
-              ${user.getUsername}
+              ${username}
             }
           }
         }
@@ -52,7 +52,7 @@ html(lang="en") {
     }
     div.create-problem-container {
       h3 {
-        ${problem.getTitle}
+        ${problemTitle}
       }
 
       div.row {

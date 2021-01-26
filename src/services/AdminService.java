@@ -312,6 +312,10 @@ public class AdminService {
     }
   }
 
+  public Entity<Problem> getNestedProblem(long problemId) throws RecordNotFoundException {
+    return this.problemDao.getNested(problemId);
+  }
+
   private void validateProblem(long adminId, long problemId)
     throws InsufficientPermissionException {
     try {
