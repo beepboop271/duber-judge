@@ -286,7 +286,6 @@ public class Tester {
         }
       }
       testcaseRun.setOutput(programOutput);
-      Judger.display(testcaseRun);
       return testcaseRun;
     }
 
