@@ -105,18 +105,16 @@ public class Main {
     sessCleaner.start();
 
     try {
-      Templater
-        .prepareTemplate("viewProblem", Paths.get("static/view-problem"));
+      Templater.prepareTemplate("viewProblem", Paths.get("static/view-problem"));
       Templater.prepareTemplate("leaderboard", Paths.get("static/leaderboard"));
       Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
+      Templater.prepareTemplate("userProfileProblem", Paths.get("static/userProfileProblem"));
       Templater.prepareTemplate("adminUsers", Paths.get("static/adminUsers"));
       Templater.prepareTemplate("submitSolution", Paths.get("static/submit-solution"));
-      Templater
-        .prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
-      Templater
-        .prepareTemplate("problems", Paths.get("static/viewAllProblems"));
-      Templater
-        .prepareTemplate("adminProblems", Paths.get("static/adminProblems"));
+      Templater.prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
+      Templater.prepareTemplate("adminProfileProblem", Paths.get("static/adminProfileProblem"));
+      Templater.prepareTemplate("problems", Paths.get("static/viewAllProblems"));
+      Templater.prepareTemplate("adminProblems", Paths.get("static/adminProblems"));
       // Templater
       //   .prepareTemplate("addTestcases", Paths.get("static/add-testcases"));
       Templater

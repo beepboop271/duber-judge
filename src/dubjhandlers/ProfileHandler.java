@@ -167,9 +167,18 @@ public class ProfileHandler implements RouteTarget {
 
     // Load information for template
     long uid = user.getId();
+    String data = req.getQuery("data");
+    if (data == null) {
+      data = "submissions";
+    }
     try {
-      ArrayList<Entity<SubmissionResult>> results =
-        us.getSubmissions(uid, 0, 500);
+      ArrayList<Entity<SubmissionResult>> results = null;
+      if (data.equals("submissions")) {
+        results = us.getSubmissions(uid, 0, 500);
+      } else {
+        results = us.getProblems(uid, 0, 500);
+      }
+
       ArrayList<ProfileProblem> problems = new ArrayList<>();
 
       // Get a list of all submissions for template
@@ -182,7 +191,7 @@ public class ProfileHandler implements RouteTarget {
         // is okay
         problems.add(
           new ProfileProblem(
-            "/problem/"+entity.getId(),
+            "/problem/"+result.getSubmission().getProblemId(),
             prob.getCategory(),
             prob.getTitle(),
             prob.getPoints(),
@@ -205,7 +214,7 @@ public class ProfileHandler implements RouteTarget {
       templateParams.put("problemsLink", "/problems");
       templateParams.put("profileLink", "/profile/"+curUser);
       templateParams.put("username", curUser);
-      templateParams.put("submissionsCount", submissionsCount);
+      templateParams.put("submissionsCount", this.us.getSubmissions(uid, 0, 500).size());
       templateParams.put("problemsSolved", problemsSolved);
       templateParams.put("currentPoints", currentPoints);
       templateParams
@@ -218,9 +227,17 @@ public class ProfileHandler implements RouteTarget {
 
       String body;
       if (us.isAdmin(uid)) {
-        body = Templater.fillTemplate("adminProfile", templateParams);
+        if (data.equals("submissions")) {
+          body = Templater.fillTemplate("adminProfile", templateParams);
+        } else {
+          body = Templater.fillTemplate("adminProfileProblem", templateParams);
+        }
       } else {
-        body = Templater.fillTemplate("userProfile", templateParams);
+        if (data.equals("submissions")) {
+          body = Templater.fillTemplate("userProfile", templateParams);
+        } else {
+          body = Templater.fillTemplate("userProfileProblem", templateParams);
+        }
       }
 
       return Response.okHtml(body, hasBody);

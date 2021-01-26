@@ -86,7 +86,7 @@ html(lang="en") {
                 }
               }
               li.nav-item {
-                a.nav-link.text-dark(href=${userContestsLink}) {
+                a.nav-link.text-dark.disabled(href=${userContestsLink}) {
                   "Contests"
                 }
               }
