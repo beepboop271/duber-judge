@@ -217,9 +217,6 @@ public class Tester {
       // memory limit exceeded
       } else if (result.getMemoryUsageBytes() > this.memoryLimitKb*1024) {
         result.setStatus(ExecutionStatus.MEMORY_LIMIT_EXCEEDED);
-      // output limit exceeded
-      } else if (result.getOutput().getBytes().length > this.outputLimitKb*1024) {
-        result.setStatus(ExecutionStatus.OUTPUT_LIMIT_EXCEEDED);
       // invalid return code
       } else if (program.exitValue() != 0) {
         result.setStatus(ExecutionStatus.INVALID_RETURN);
@@ -234,6 +231,12 @@ public class Tester {
         stdout.close();
       } catch (IOException e) {
         e.printStackTrace();
+      }
+
+      // if the testcase run still has not received a status,
+      // some internal error must have occurred
+      if (result.getStatus() == ExecutionStatus.PENDING) {
+        result.setStatus(ExecutionStatus.INTERNAL_ERROR);
       }
 
       return result;
