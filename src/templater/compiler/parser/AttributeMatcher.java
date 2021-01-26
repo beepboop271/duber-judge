@@ -5,6 +5,13 @@ import templater.language.StringResolvables;
 import templater.language.Token;
 import templater.language.TokenKind;
 
+/**
+ * Matches a single attribute declaration.
+ *
+ * <pre>
+ * Attribute = Identifier, '=', NoIdentContentList, [','];
+ * </pre>
+ */
 class AttributeMatcher extends TokenMatchable<AttributeElement> {
   @Override
   protected AttributeElement tryMatchInternal(TokenQueue.Iterator input) {

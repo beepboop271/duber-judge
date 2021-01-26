@@ -15,19 +15,20 @@ import templater.language.StringResolvables;
 import templater.language.Token;
 import templater.language.TokenKind;
 
+/**
+ * Matches an entire element: header and body.
+ *
+ * <pre>
+ * Element = ElementName, [{ClassAttribute}], [IdAttribute], [AttributeList], (';' | Body);
+ * ElementName = Identifier, [{Identifier | TemplateLiteral}];
+ * </pre>
+ */
 class ElementMatcher extends TokenMatchable<Element> {
-  private static final Set<String> keywords = new HashSet<>(
-    Arrays.asList("for")
-  );
-
   @Override
   @SuppressWarnings("unchecked")
   protected Element tryMatchInternal(TokenQueue.Iterator input) {
     Token nameStart = new TokenMatcher(TokenKind.IDENTIFIER).tryMatch(input);
-    if (
-      (nameStart == null)
-        || (ElementMatcher.keywords.contains(nameStart.getContent()))
-    ) {
+    if (nameStart == null) {
       return null;
     }
     // like AttributeContentList, except there must be an
@@ -65,7 +66,7 @@ class ElementMatcher extends TokenMatchable<Element> {
     // be either Token | List<LanguageElement>
     Object terminator = new MatchUtils.OneOf<>(
       new TokenMatcher(';'),
-      new BlockMatcher()
+      new BodyMatcher()
     ).tryMatch(input);
     if (terminator == null) {
       throw new UnknownSyntaxException(input.getPosition().toDisplayString());

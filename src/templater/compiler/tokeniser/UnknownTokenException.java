@@ -6,12 +6,14 @@ package templater.compiler.tokeniser;
  * Token, meaning the template has some invalid character or
  * String.
  */
-public class UnknownTokenException extends Exception {
+public class UnknownTokenException extends RuntimeException {
   private static final long serialVersionUID = 0L;
 
   /**
    * Creates a new UnknownTokenException with the given
    * message.
+   *
+   * @param message The message.
    */
   public UnknownTokenException(String message) {
     super(message);
