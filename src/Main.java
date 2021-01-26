@@ -46,8 +46,8 @@ public class Main {
         .prepareTemplate("problems", Paths.get("static/viewAllProblems"));
       Templater
         .prepareTemplate("adminProblems", Paths.get("static/adminProblems"));
-      Templater
-        .prepareTemplate("addTestcases", Paths.get("static/add-testcases"));
+      // Templater
+      //   .prepareTemplate("addTestcases", Paths.get("static/add-testcases"));
       Templater
         .prepareTemplate("addTestcaseDetails", Paths.get("static/add-testcase-details"));
     } catch (IOException e) {

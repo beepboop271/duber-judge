@@ -1,7 +1,9 @@
 package webserver;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -504,8 +506,14 @@ public class Request extends HttpMessage {
       if (fieldTokens.length != 2) {
         throw new HttpSyntaxException("Body malformed.");
       }
+      try {
+        String key = URLDecoder.decode(paramTokens[0], StandardCharsets.UTF_8.name());
+        String value = URLDecoder.decode(paramTokens[1], StandardCharsets.UTF_8.name());
+        toStoreIn.put(key, value);
+      } catch (UnsupportedEncodingException e) {
+        System.out.println("this should never happen");
+      }
 
-      toStoreIn.put(paramTokens[0], paramTokens[1]);
     }
   }
 }
