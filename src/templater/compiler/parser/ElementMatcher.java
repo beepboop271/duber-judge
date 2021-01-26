@@ -25,7 +25,13 @@ import templater.language.TokenKind;
  * </pre>
  */
 class ElementMatcher extends TokenMatchable<Element> {
-  /** Reserve words that are not used as identifiers. */
+  /**
+   * Reserve words that are not used as identifiers. Keywords
+   * are not parsed in the tokeniser because they might appear
+   * as identifiers in other parts of the code e.g.
+   * label(for="element"). Thus we need to resolve them here,
+   * to differentiate between loops and elements.
+   */
   private static final Set<String> keywords = new HashSet<>(
     Arrays.asList("for")
   );
