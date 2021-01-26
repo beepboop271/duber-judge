@@ -1,6 +1,6 @@
 package templater.language;
 
-import templater.compiler.tokeniser.TextFilePosition;
+import templater.compiler.TextFilePosition;
 
 /**
  * A single token of the templating language. A program

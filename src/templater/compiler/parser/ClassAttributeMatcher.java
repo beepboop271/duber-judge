@@ -12,6 +12,9 @@ class ClassAttributeMatcher extends TokenMatchable<StringResolvables> {
     }
 
     StringResolvables content = new AttributeContentListMatcher().tryMatch(input);
+    if (content == null) {
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
+    }
     return content;
   }
 }

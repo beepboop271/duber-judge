@@ -3,6 +3,7 @@ package templater.compiler.tokeniser;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import templater.compiler.TextFilePosition;
 import templater.language.Token;
 import templater.language.TokenKind;
 

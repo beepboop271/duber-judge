@@ -20,7 +20,7 @@ class AttributeListMatcher extends TokenMatchable<List<AttributeElement>> {
 
     paren = new TokenMatcher(')').tryMatch(input);
     if (paren == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     return args;

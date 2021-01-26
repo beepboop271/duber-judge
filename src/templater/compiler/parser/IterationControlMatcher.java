@@ -15,22 +15,22 @@ class IterationControlMatcher extends TokenMatchable<AttributeElement> {
 
     Token loopingName = new TokenMatcher(TokenKind.IDENTIFIER).tryMatch(input);
     if (loopingName == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     punctuation = new TokenMatcher(':').tryMatch(input);
     if (punctuation == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     StringResolvables nameToLoop = new AttributeContentListMatcher().tryMatch(input);
     if (nameToLoop == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     punctuation = new TokenMatcher(')').tryMatch(input);
     if (punctuation == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     return new AttributeElement(loopingName.getContent(), nameToLoop);

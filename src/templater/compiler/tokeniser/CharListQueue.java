@@ -3,6 +3,7 @@ package templater.compiler.tokeniser;
 import java.util.NoSuchElementException;
 
 import templater.compiler.ArrayListQueue;
+import templater.compiler.TextFilePosition;
 
 /**
  * An ArrayListQueue of {@code Character}s that also

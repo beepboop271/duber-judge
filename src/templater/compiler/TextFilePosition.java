@@ -1,4 +1,4 @@
-package templater.compiler.tokeniser;
+package templater.compiler;
 
 /**
  * Represents a position within a text file with a line and
@@ -83,7 +83,33 @@ public class TextFilePosition implements Cloneable {
    *
    * @return The column number.
    */
-  public int getColumnn() {
+  public int getColumn() {
     return this.column;
+  }
+
+  public static class Eof extends TextFilePosition {
+    public Eof() {
+      super(-1, -1);
+    }
+
+    @Override
+    public String toString() {
+      return super.toString()+"[EOF]";
+    }
+
+    @Override
+    public String toDisplayString() {
+      return "EOF";
+    }
+
+    @Override
+    public void advanceLine() {
+      return;
+    }
+
+    @Override
+    public void advanceCharacter() {
+      return;
+    }
   }
 }

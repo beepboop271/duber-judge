@@ -1,5 +1,6 @@
 package templater.compiler.tokeniser;
 
+import templater.compiler.TextFilePosition;
 import templater.language.Token;
 import templater.language.TokenKind;
 

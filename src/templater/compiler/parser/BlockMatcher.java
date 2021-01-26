@@ -23,7 +23,7 @@ class BlockMatcher extends TokenMatchable<List<LanguageElement>> {
 
     brace = new TokenMatcher('}').tryMatch(input);
     if (brace == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     return content;
