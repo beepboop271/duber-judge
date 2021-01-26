@@ -100,13 +100,15 @@ public class AdminProblemHandler implements RouteTarget {
    * @return a response to the retrieval request.
    */
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
-    switch (req.getEndResource()) {
-      case "problems":
-        return this.getAllProblems(req, hasBody);
-      case "add":
-        return this.getAddProblemPage(req, hasBody);
-      default:
-        return this.findProblem(req, hasBody);
+    String action = req.getParam("action");
+    if (action == null) {
+      return this.getAllProblems(req, hasBody);
+    } else if (action.equals("add")) {
+      return this.getAddProblemPage(req, hasBody);
+    } else if (action.equals(req.getParam("problemId"))) {
+      return Response.temporaryRedirect("/admin/problem/"+req.getParam("problemId")+"/testcases");
+    } else {
+      return this.findProblem(req, hasBody);
     }
   }
 
@@ -121,7 +123,7 @@ public class AdminProblemHandler implements RouteTarget {
    * @return a response to the POST request provided.
    */
   private Response handlePostRequest(Request req) {
-    switch (req.getEndResource()) {
+    switch (req.getParam("action")) {
       case "add":
         return this.addProblem(req);
       default:

@@ -72,7 +72,7 @@ html(lang="en") {
       p {
         "Source code: "
       }
-      textarea {
+      textarea#source-code {
         ${source}
       }
     }

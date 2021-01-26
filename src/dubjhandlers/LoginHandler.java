@@ -81,7 +81,7 @@ public class LoginHandler implements RouteTarget {
    * @return a response to the retrieval request.
    */
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
-    switch (req.getEndResource()) {
+    switch (req.getParam("path")) {
       case "login":
         return this.getLoginPage(req, hasBody);
       case "signup":
@@ -104,7 +104,7 @@ public class LoginHandler implements RouteTarget {
    * @return a response to the POST request provided.
    */
   private Response handlePostRequest(Request req) {
-    switch (req.getEndResource()) {
+    switch (req.getParam("path")) {
       case "login":
         return this.handleLogin(req);
       case "signup":

@@ -352,7 +352,7 @@ public class WebServer {
     // make sure that if the path didn't end with /, / will be
     // matched as well
     if (charAt != '/') {
-      cleanedRoute.append("(?=/|$)");
+      cleanedRoute.append("(?:/|$)");
     }
     Pattern routePattern = Pattern.compile(cleanedRoute.toString());
 

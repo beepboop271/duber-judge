@@ -159,9 +159,7 @@ public class Main {
     server.route("/contests", home);
     server.route("/leaderboard", home);
 
-    server.route("/login", login);
-    server.route("/signup", login);
-    server.route("/logout", login);
+    server.route("/:path(login|signup|logout)", login);
 
     server.route("/profile", profile);
     server.route("/profile/:username", profile);
@@ -206,8 +204,8 @@ public class Main {
     server.route("/admin/users", admin);
     server.route("/admin/clarifications/:clarificationId", admin);
     server.route("/admin/problems", adminProblem);
-    server.route("/admin/problems/add", adminProblem);
-    server.route("/admin/problem/:problemId", adminProblem);
+    server.route("/admin/problems/:action(add)", adminProblem);
+    server.route("/admin/problem/:action(:problemId)", adminProblem);
 
     server.route("/admin/problem/:problemId/testcases", adminTestcase);
     server
