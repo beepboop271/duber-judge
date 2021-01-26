@@ -249,8 +249,6 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
 
       result = ps.executeQuery();
       while (result.next()) {
-
-        Entity<User> user = this.getUserFromResultSet(result);
         users.add(new Entity<User>(
           result.getLong("id"),
           new User(
@@ -262,7 +260,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
           )
         ));
       }
-
+      
 
 
     } catch (SQLException e) {

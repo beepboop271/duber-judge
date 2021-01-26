@@ -196,6 +196,7 @@ public class Main {
     server.route("/admin/clarifications", admin);
     server.route("/admin/restrictions", admin);
     server.route("/admin/contests", admin);
+    server.route("/admin/users", admin);
     server.route("/admin/clarifications/:clarificationId", admin);
     server.route("/admin/problems", adminProblem);
     server.route("/admin/problem/:problemId", adminProblem);
@@ -226,6 +227,7 @@ public class Main {
     Main.initialize();
     promptCreateAdmin();
     Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
+    System.out.println("Server started at 5000");
     Main.startWebServer(5000);
   }
 }

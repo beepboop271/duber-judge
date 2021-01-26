@@ -75,12 +75,10 @@ public class ProfileHandler implements RouteTarget {
    * @return a response to the retrieval request.
    */
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
-    switch (req.getEndResource()) {
-      case "profile":
-        return this.getProfileRedirect(req, hasBody);
-      default:
-        return this.loadProfile(req, hasBody);
+    if (req.getParam("username") == null) {
+      return this.getProfileRedirect(req, hasBody);
     }
+    return this.loadProfile(req, hasBody);
   }
 
   // TODO: hasSession would be nice on db
@@ -156,19 +154,20 @@ public class ProfileHandler implements RouteTarget {
     if (curSession == null) {
       return Response.temporaryRedirect("/login");
     }
+    String curUser = "";
+    String username = req.getParam("username");
+    Entity<User> user = null;
 
-    long uid = curSession.getUserId();
-    Entity<User> curUser;
-    // TODO: necessary?
     try {
-      curUser = us.getUser(uid);
+      curUser = this.us.getUser(curSession.getUserId()).getContent().getUsername();
+      user = this.us.getUser(username);
     } catch (RecordNotFoundException e) {
       return Response.notFoundHtml("profile");
     }
 
     // Load information for template
+    long uid = user.getId();
     try {
-      String username = curUser.getContent().getUsername();
       ArrayList<Entity<SubmissionResult>> results =
         us.getSubmissions(uid, 0, 500);
       ArrayList<ProfileProblem> problems = new ArrayList<>();
@@ -204,8 +203,8 @@ public class ProfileHandler implements RouteTarget {
       HashMap<String, Object> templateParams = new HashMap<>();
       templateParams.put("leaderboardLink", "/leaderboard");
       templateParams.put("problemsLink", "/problems");
-      templateParams.put("profileLink", "/profile/"+username);
-      templateParams.put("username", username);
+      templateParams.put("profileLink", "/profile/"+curUser);
+      templateParams.put("username", curUser);
       templateParams.put("submissionsCount", submissionsCount);
       templateParams.put("problemsSolved", problemsSolved);
       templateParams.put("currentPoints", currentPoints);

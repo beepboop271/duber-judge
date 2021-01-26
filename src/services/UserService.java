@@ -402,4 +402,8 @@ public class UserService {
   public Entity<User> getUser(long userId) throws RecordNotFoundException {
     return this.userDao.get(userId);
   }
+
+  public Entity<User> getUser(String username) throws RecordNotFoundException {
+    return this.userDao.getByUsername(username);
+  }
 }

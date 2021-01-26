@@ -34,17 +34,17 @@ html(lang="en") {
             }
           }
           li.nav-item {
-            a.nav-link(href=${leaderboardLink}) {
+            a.nav-link(href="/leaderboard") {
               "Leaderboard"
             }
           }
           li.nav-item {
-            a.nav-link(href=${problemsLink}) {
+            a.nav-link(href="/problems") {
               "Practice Problems"
             }
           }
           li.nav-item.active {
-            a.nav-link(href=${profileLink}) {
+            a.nav-link(href="/profile") {
               ${username}
             }
           }
@@ -57,20 +57,20 @@ html(lang="en") {
       h2 {
         "Leaderboard"
       }
-      
+
       div.list-group.user.leaderboard {
         for (user : users) {
-          a.list-group-item.list-group-item-action(href=${userPageLink}) {
+          a.list-group-item.list-group-item-action(href=${user.getLink}) {
             div.d-flex.w-100.justify-content-between {
               h5.mb-1 {
-                "Username"
+                ${user.getUsername}
               }
             }
             small.text-muted.mr-4 {
               "Points: "${user.getPoints}
             }
             small.text-muted mr-4 {
-              "Num problems: "${user.getProblemsSolved}
+              "Num problems: "${user.getProblemsCount}
             }
           }
         }

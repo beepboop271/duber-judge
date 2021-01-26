@@ -10,7 +10,7 @@ html(lang="en") {
 
     script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
 
-    link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
     link(rel="stylesheet" href="/styles.css");
 
@@ -21,7 +21,7 @@ html(lang="en") {
         "DubJ"
       }
       button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
-        span.navbar-toggler-icon{}
+        span.navbar-toggler-icon {}
       }
       div.collapse.navbar-collapse#navbarNav {
         ul.navbar-nav.ml-auto {
@@ -101,7 +101,7 @@ html(lang="en") {
                       ${problem.getTitle}
                     }
                     p {
-                      ${userScore}"/"${problem.getPoints}
+                      ${problem.getUserScore}"/"${problem.getPoints}
                     }
                   }
                   small.text-muted.mr-4 {

@@ -64,7 +64,7 @@ html(lang="en") {
                 "Admin"
               }
             }
-            a.settings-logo-wrapper text-dark(href=${problemsPageLink}) {
+            a.settings-logo-wrapper.text-dark(href=${problemsPageLink}) {
               i.fas.fa-cog{}
             }
           }
@@ -114,7 +114,7 @@ html(lang="en") {
               a.list-group-item.list-group-item-action(href="#") {
                 div.d-flex.w-100.justify-content-center {
                   p.h1 {
-                    i.fas.fa-plus-circle {} 
+                    i.fas.fa-plus-circle {}
                   }
                 }
               }

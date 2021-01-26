@@ -6,7 +6,7 @@ html(lang="en") {
     title {
       "Duber Judge"
     }
-    link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
     link(rel="stylesheet" href="/styles.css");
   }
 
