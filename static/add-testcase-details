@@ -58,7 +58,7 @@ html(lang="en") {
             label(for="testcase-input") {
               "Input:"
             }
-            textarea.form-control#testcase-input(name="input" placeholder="// Sample Input" required="") {}
+            textarea.form-control#testcase-input(name="input" placeholder="// Sample Input") {}
             div.invalid-feedback {
               "Please enter the testcase input."
             }

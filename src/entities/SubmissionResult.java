@@ -59,6 +59,7 @@ public class SubmissionResult {
     List<TestcaseRun> testcaseRuns
   ) {
     this.submission = submission;
+    this.status = status;
     this.score = score;
     this.runDurationMillis = runDurationMillis;
     this.memoryUsageBytes = memoryUsageBytes;
@@ -89,6 +90,7 @@ public class SubmissionResult {
     long memoryUsageBytes
   ) {
     this.submission = submission;
+    this.status = status;
     this.score = score;
     this.runDurationMillis = runDurationMillis;
     this.memoryUsageBytes = memoryUsageBytes;

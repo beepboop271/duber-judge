@@ -7,38 +7,79 @@ html(lang="en") {
     title {
       "Duber Judge"
     }
+    link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+
+    link(rel="stylesheet" href="/styles.css");
   }
   body {
-    a(href="/profile") {
-      "Back"
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
+      a.navbar-brand(href="#") {
+        "DubJ"
+      }
+      button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
+        span.navbar-toggler-icon{}
+      }
+      div.collapse.navbar-collapse#navbarNav {
+        ul.navbar-nav.ml-auto {
+          li.nav-item {
+            a.nav-link(href="#") {
+              "Home"
+              span.sr-only {
+                "(current)"
+              }
+            }
+          }
+          li.nav-item {
+            a.nav-link(href="/leaderboard") {
+              "Leaderboard"
+            }
+          }
+          li.nav-item {
+            a.nav-link(href="/problems") {
+              "Practice Problems"
+            }
+          }
+          li.nav-item.active {
+            a.nav-link(href="/profile") {
+              ${username}
+            }
+          }
+        }
+      }
     }
 
-    p {
-      "user: "${username}
+    div.create-problem-container {
+
+      h3 {
+        "Submission to problem "${problemName}
+      }
+
+      p {
+        "language: "${language}
+      }
+      p {
+        "status: "${submissionStatus}
+      }
+      p {
+        "points: "${points}
+      }
+      p {
+        "Run duration (ms): "${runDuration}" ms"
+      }
+      p {
+        "Memory used (bytes): "${memoryUsed}" bytes"
+      }
+      p {
+        "Source code: "
+      }
+      textarea {
+        ${source}
+      }
     }
-    p {
-      "problem: "${problemName}
-    }
-    p {
-      "language: "${language}
-    }
-    p {
-      "status: "${submissionStatus}
-    }
-    p {
-      "points: "${points}
-    } 
-    p {
-      "Run duration (ms): "${runDuration}" ms"
-    }
-    p {
-      "Memory used (bytes): "${memoryUsed}" bytes"
-    }
-    p {
-      "Source code: "
-    }
-    p {
-      ${source}
-    }
+
+
+    script(src="/static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="/scripts.js") {}
   }
 }

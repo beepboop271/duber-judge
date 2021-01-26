@@ -111,7 +111,7 @@ html(lang="en") {
                     "Category: "${problem.getCategory}
                   }
                   small.text-muted.mr-4 {
-                    "Clear rate: "${problem.getClearRate}
+                    "Clear rate: "${problem.getClearRate}"%"
                   }
                 }
               }

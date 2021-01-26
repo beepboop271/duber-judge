@@ -105,13 +105,22 @@ html(lang="en") {
                     }
                   }
                   small.text-muted.mr-4 {
-                    "Total Submissions: "${problem.getNumSubmissions}
+                    ${problem.getLanguage}
+                  }
+
+                  small.text-muted.mr-4 {
+                    ${problem.getStatus}
+                  }
+
+                  small.text-muted.mr-4 {
+                    "Submissions by user: "${problem.getUserSubmissions}
+                  }
+
+                  small.text-muted.mr-4 {
+                    "Run duration (s): "${problem.getRunDuration}
                   }
                   small.text-muted.mr-4 {
-                    "Category: "${problem.getCategory}
-                  }
-                  small.text-muted.mr-4 {
-                    "Clear rate: "${problem.getClearRate}
+                    "Memory usage (kb): "${problem.getMemoryUsage}
                   }
                 }
               }

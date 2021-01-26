@@ -190,18 +190,29 @@ public class ProfileHandler implements RouteTarget {
           ps.getProblem(result.getSubmission().getProblemId()).getContent();
         // TODO: doesn't account for contest problems, which i guess
         // is okay
+        String link;
+        if (data.equals("submissions")) {
+          link = "/problem/"
+            +result.getSubmission().getProblemId()
+            +"/submissions/"
+            +entity.getId();
+        } else {
+          link = "/problem/"+result.getSubmission().getProblemId();
+        }
         problems.add(
           new ProfileProblem(
-            "/problem/"
-              +result.getSubmission().getProblemId()
-              +"/submissions/"
-              +entity.getId(),
+            link,
             prob.getCategory(),
             prob.getTitle(),
             prob.getPoints(),
             result.getScore(),
             prob.getNumSubmissions(),
-            prob.getClearedSubmissions()
+            prob.getClearedSubmissions(),
+            result.getSubmission().getLanguage(),
+            result.getStatus(),
+            result.getRunDurationMillis()/1000.0,
+            result.getMemoryUsageBytes()/1024.0,
+            this.us.getProblemSubmissions(uid, result.getSubmission().getProblemId(), 0, 500).size()
           )
         );
       }
