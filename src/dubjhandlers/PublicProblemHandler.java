@@ -227,11 +227,40 @@ public class PublicProblemHandler implements RouteTarget {
    * @return a response with a specific problem page.
    */
   private Response getProblem(Request req, boolean hasBody) {
-    int probId = Integer.parseInt(req.getParam("problemId"));
-    try {
-      Problem prob = ps.getProblem(probId).getContent();
+    Session currentSession = this.getActiveSession(req);
+    String username = "Profile";
+    User user;
 
-      return Response.internalError();
+    if (currentSession != null) {
+      try {
+        user = this.us.getUser(currentSession.getUserId()).getContent();
+        username = user.getUsername();
+      } catch (RecordNotFoundException e) {
+        System.out.println("user not found");
+      }
+    }
+
+    String probIdStr = req.getParam("problemId");
+    try {
+      if (!probIdStr.matches("^\\d+$")) {
+        return Response.notFoundHtml(req.getPath());
+      }
+
+      int probId = Integer.parseInt(probIdStr);
+      Entity<Problem> prob = ps.getProblem(probId);
+
+      HashMap<String, Object> templateParams = new HashMap<>();
+      templateParams.put("leaderboardLink", "/leaderboard");
+      templateParams.put("problemsLink", "/problems");
+      templateParams.put("profileLink", "/profile");
+      templateParams.put("username", username);
+      templateParams.put("problem", prob.getContent());
+      templateParams.put("submitLink", "/problem/" + probId + "/submit");
+      templateParams.put("allSubmissionsLink", "/problem/" + probId + "/submissions");
+      templateParams.put("homeLink", "/problems");
+
+      String body = Templater.fillTemplate("viewProblem", templateParams);
+      return Response.okHtml(body, hasBody);
     } catch (RecordNotFoundException e) {
       return Response.notFoundHtml(req.getPath());
     }

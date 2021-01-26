@@ -32,6 +32,8 @@ public class Main {
     sessCleaner.start();
 
     try {
+      Templater.prepareTemplate("viewProblem", Paths.get("static/view-problem"));
+      Templater.prepareTemplate("leaderboard", Paths.get("static/leaderboard"));
       Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
       Templater.prepareTemplate("adminUsers",
       Paths.get("static/adminUsers"));
@@ -77,9 +79,10 @@ public class Main {
     server.route("/contest/:contestId/problems", contest);
     server.route("/contest/:contestId/leaderboard", contest);
 
+    //TODO route /problem to /problems
     server.route("/problems", publicProblem);
-    server.route("/problems/:problemId", publicProblem);
-    server.route("/problems/:problemId/leaderboard", publicProblem);
+    server.route("/problem/:problemId", publicProblem);
+    server.route("/problem/:problemId/leaderboard", publicProblem);
 
     server.route("/contest/:contestId/problem/:problemId", contestProblem);
 
@@ -121,6 +124,7 @@ public class Main {
     server.route("/vendored/*", staticHandler);
     server.route("/styles.css", staticHandler);
     server.route("/scripts.js", staticHandler);
+    server.route("/problem-viewing-script.js", staticHandler);
 
     server.run();
   }

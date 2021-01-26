@@ -118,7 +118,7 @@ public class ProblemService {
       pContent.getNumSubmissions()+1
     );
 
-    if (result.getContent().getStatus() == ExecutionStatus.ALL_CLEAR) {
+    if (result.getStatus() == ExecutionStatus.ALL_CLEAR) {
       this.problemDao.update(
         problem.getId(),
         ProblemField.CLEARED_SUBMISSIONS,
