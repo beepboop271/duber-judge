@@ -7,8 +7,6 @@ package templater.language;
 public enum TokenKind {
   /** Names like 'div', 'for', attributes like 'src'. */
   IDENTIFIER,
-  /** Language names like 'for' (current only keyword). */
-  KEYWORD,
   /** Single character symbols like ',', '(', '#'. */
   PUNCTUATION,
   /** String literals typed as '"hello"'. */

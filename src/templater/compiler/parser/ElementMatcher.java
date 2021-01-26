@@ -20,25 +20,39 @@ import templater.language.TokenKind;
  *
  * <pre>
  * Element = ElementName, [{ClassAttribute}], [IdAttribute], [AttributeList], (';' | Body);
- * ElementName = Identifier, [{Identifier | TemplateLiteral}];
+ * ElementName = (Identifier - Keyword), [AnyContentList];
+ * Keyword = 'for';
  * </pre>
  */
 class ElementMatcher extends TokenMatchable<Element> {
+  /**
+   * Reserve words that are not used as identifiers. Keywords
+   * are not parsed in the tokeniser because they might appear
+   * as identifiers in other parts of the code e.g.
+   * label(for="element"). Thus we need to resolve them here,
+   * to differentiate between loops and elements.
+   */
+  private static final Set<String> keywords = new HashSet<>(
+    Arrays.asList("for")
+  );
+
   @Override
   @SuppressWarnings("unchecked")
   protected Element tryMatchInternal(TokenQueue.Iterator input) {
     Token nameStart = new TokenMatcher(TokenKind.IDENTIFIER).tryMatch(input);
-    if (nameStart == null) {
+    if (
+      (nameStart == null)
+        || (ElementMatcher.keywords.contains(nameStart.getContent()))
+    ) {
       return null;
     }
-    // like AttributeContentList, except there must be an
-    // identifier as the start
     List<Token> nameList = new ArrayList<>();
     nameList.add(nameStart);
     nameList.addAll(
       new MatchUtils.ZeroOrMore<>(
         new MatchUtils.OneOf<>(
           new TokenMatcher(TokenKind.IDENTIFIER),
+          new TokenMatcher(TokenKind.STRING_LITERAL),
           new TokenMatcher(TokenKind.TEMPLATE_LITERAL)
         )
       ).tryMatch(input)
