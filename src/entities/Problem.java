@@ -2,6 +2,7 @@ package entities;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An entity designed to represent specific problems.

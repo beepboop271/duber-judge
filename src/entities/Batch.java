@@ -1,6 +1,7 @@
 package entities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An entity designed to represent a batch of test cases.
