@@ -54,13 +54,13 @@ html(lang="en") {
         "Submit solution to problem "${problem.getTitle}
       }
 
-      form.submit-solution.needs-validation(novalidate action="/" method="post") {
+      form.submit-solution.needs-validation(novalidate="" action="/" method="post") {
 
         div.mb-3 {
           label(for="solution") {
             "Solution code:"
           }
-          textarea.form-control#solution(name="solution" placeholder="// Code" required) {}
+          textarea.form-control#solution(name="solution" placeholder="// Code" required="") {}
           div.invalid-feedback {
             "Please enter some valid code."
           }
@@ -70,7 +70,7 @@ html(lang="en") {
           label(for="points") {
             "Language:"
           }
-          select.custom-select(name="language" required) {
+          select.custom-select(name="language" required="") {
             option(value="JAVA") {
               "Java"
             }

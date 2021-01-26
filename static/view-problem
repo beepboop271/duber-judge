@@ -9,7 +9,7 @@ html(lang="en") {
     }
     script(src="./static/vendored/marked-1.2.7.min.js") {}
     script(src="./static/vendored/purify-2.2.6.min.js") {}
-    script(defer src="./staticvendored/mathjax-tex-chtml-3.1.2.js") {}
+    script(defer="" src="./staticvendored/mathjax-tex-chtml-3.1.2.js") {}
 
     link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
