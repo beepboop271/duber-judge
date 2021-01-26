@@ -1,7 +1,7 @@
 package services;
 
 /**
- * [description]
+ * The user lacks permission to perform certain tasks.
  * <p>
  * Created on 2021.01.16.
  *
@@ -12,4 +12,8 @@ package services;
 
 public class InsufficientPermissionException extends Exception {
   private static final long serialVersionUID = 1L;
+
+  public InsufficientPermissionException() {
+    super("Insufficient permission");
+  }
 }

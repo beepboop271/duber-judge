@@ -15,7 +15,8 @@ import entities.Problem;
 import entities.entity_fields.ContestSessionField;
 
 /**
- * [description]
+ * Service that handles all contest related tasks,
+ * such as starting a contest, validating a contest session for a user, etc.
  * <p>
  * Created on 2021.01.16.
  *

@@ -1,9 +1,12 @@
 package templater.compiler.parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import templater.language.AttributeElement;
 import templater.language.Element;
@@ -13,11 +16,18 @@ import templater.language.Token;
 import templater.language.TokenKind;
 
 class ElementMatcher extends TokenMatchable<Element> {
+  private static final Set<String> keywords = new HashSet<>(
+    Arrays.asList("for")
+  );
+
   @Override
   @SuppressWarnings("unchecked")
   protected Element tryMatchInternal(TokenQueue.Iterator input) {
     Token nameStart = new TokenMatcher(TokenKind.IDENTIFIER).tryMatch(input);
-    if (nameStart == null) {
+    if (
+      (nameStart == null)
+        || (ElementMatcher.keywords.contains(nameStart.getContent()))
+    ) {
       return null;
     }
     // like AttributeContentList, except there must be an
@@ -58,7 +68,7 @@ class ElementMatcher extends TokenMatchable<Element> {
       new BlockMatcher()
     ).tryMatch(input);
     if (terminator == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     if (terminator instanceof Token) {

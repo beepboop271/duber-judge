@@ -1,5 +1,7 @@
 package templater.compiler.parser;
 
+import java.util.NoSuchElementException;
+
 import templater.language.Token;
 import templater.language.TokenKind;
 
@@ -19,7 +21,13 @@ class TokenMatcher extends TokenMatchable<Token> {
 
   @Override
   protected Token tryMatchInternal(TokenQueue.Iterator input) {
-    Token t = input.next();
+    Token t;
+    try {
+      t = input.next();
+    } catch (NoSuchElementException e) {
+      return null;
+    }
+
     if (
       (t.getKind() == this.kind)
         && ((this.kind != TokenKind.PUNCTUATION)
@@ -27,7 +35,6 @@ class TokenMatcher extends TokenMatchable<Token> {
     ) {
       return t;
     }
-
     return null;
   }
 }

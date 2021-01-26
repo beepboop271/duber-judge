@@ -2,14 +2,24 @@ package templater.language;
 
 /**
  * A class representing an item with string content, whether
- * that be a literal string or a variable with a string
- * value.
+ * that be a literal string or a variable name to be resolved
+ * into a String at interpret time.
  *
  * @author Kevin Qiao
  * @version 1.0
  */
 public class StringResolvable {
+  /**
+   * The value of this StringResolvable. Either the literal
+   * String this resolvable respresents (if isTemplate is
+   * false), or the name of a variable which will be resolved
+   * to a String (if isTemplate is true).
+   */
   private final String content;
+  /**
+   * Whether or not the content field holds a literal String
+   * or the name of a variable to be resolved into a String.
+   */
   private final boolean isTemplate;
 
   /**
@@ -24,19 +34,23 @@ public class StringResolvable {
   }
 
   /**
-   * Retrieves this {@code StringResolvable}'s content.
+   * Gets the value of this StringResolvable. Either the
+   * literal String this resolvable respresents (if isTemplate
+   * is false), or the name of a variable which will be
+   * resolved to a String (if isTemplate is true).
    *
-   * @return String, the content.
+   * @return The content.
    */
   public String getContent() {
     return this.content;
   }
 
   /**
-   * Retrieves whether this {@code StringResolvable} is
-   * templated.
+   * Gets whether or not the content field holds a literal
+   * String or the name of a variable to be resolved into a
+   * String.
    *
-   * @return boolean, whether it's templated.
+   * @return Whether or not this StringResolvable is templated.
    */
   public boolean isTemplate() {
     return this.isTemplate;

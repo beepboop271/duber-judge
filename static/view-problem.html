@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- meta tags -->
+    <meta name="dubj" content="pls work"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Duber Judge</title>
+
+    <!-- block so that page is always seen with markdown -->
+    <script src="./vendored/marked-1.2.7.min.js"></script>
+    <script src="./vendored/purify-2.2.6.min.js"></script>
+    <!-- defer to allow config loading + generation in predictable order -->
+    <script defer src="./vendored/mathjax-tex-chtml-3.1.2.js"></script>
+
+    <link rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="./styles.css"/>
+
+  </head>
+  <body>
+    <!-- same as user but with extra admin button to navigate to admin console -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+      <a class="navbar-brand" href="#">DubJ</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Leaderboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Practice Problems</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Shari09</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="problem-container">
+
+      <h1 class="problem-title mt-3">Coolest problem title</h3>
+      <div class="d-flex justify-content-between">
+
+        <textarea id="problem-viewing-latex-input">
+*this is markdown*
+#### actual problem description goes here
+##### pass in string literal as param
+        </textarea>
+        <div id="problem-viewing-latex"></div>
+        <div class="list-group" id="submission-panel">
+          <a href="./submit-solution.html" class="list-group-item list-group-item-action">Submit</a>
+          <a href="#" class="list-group-item list-group-item-action">View submissions</a>
+          <a href="#" class="list-group-item list-group-item-action">Request clarification</a>
+          <a href="#" class="list-group-item list-group-item-action disabled" tabindex="-1" aria-disabled="true">Good luck!</a>
+        </div>
+      </div>
+    </div>
+
+
+
+    <script src="./vendored/jquery-3.4.1.slim.min.js"></script>
+    <script src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js"></script>
+    <script src="./problem-viewing-script.js"></script>
+    <script src="./scripts.js"></script>
+  </body>
+</html>

@@ -40,7 +40,9 @@ import entities.entity_fields.ProblemField;
 import entities.entity_fields.TestcaseField;
 
 /**
- * [description]
+ * {@code AdminService} deals with all admin related
+ * actions, such as deleting user, creating contests,
+ * problems, etc.
  * <p>
  * Created on 2021.01.16.
  *
@@ -96,7 +98,8 @@ public class AdminService {
     Timestamp startTime,
     Timestamp endTime,
     int durationMinutes
-  ) throws InsufficientPermissionException, IllegalArgumentException {
+  ) throws InsufficientPermissionException,
+    IllegalArgumentException {
     if (durationMinutes <= 0) {
       throw new IllegalArgumentException(
         "Duration cannot be equal or less than zero."
@@ -108,7 +111,8 @@ public class AdminService {
     }
     long id = -1;
     try {
-      id = this.contestDao.add(
+      id =
+        this.contestDao.add(
           new Contest(
             adminId,
             description,
@@ -121,7 +125,9 @@ public class AdminService {
           )
         );
     } catch (IllegalArgumentException e) {
-      if (InvalidArguments.valueOf(e.getMessage()) == InvalidArguments.TITLE_TAKEN) {
+      if (
+        InvalidArguments.valueOf(e.getMessage()) == InvalidArguments.TITLE_TAKEN
+      ) {
         throw e;
       }
     }
@@ -143,11 +149,13 @@ public class AdminService {
     throws InsufficientPermissionException {
     this.validateContest(adminId, contestId);
     this.contestDao.deleteById(contestId);
-    ArrayList<Entity<Problem>> problems = this.problemDao.getAllByContest(contestId);
+    ArrayList<Entity<Problem>> problems =
+      this.problemDao.getAllByContest(contestId);
     for (Entity<Problem> problem : problems) {
       this.testcaseRunDao.deleteByProblem(problem.getId());
       this.submissionDao.deleteByProblem(problem.getId());
-      ArrayList<Entity<Batch>> batches = this.batchDao.getByProblem(problem.getId());
+      ArrayList<Entity<Batch>> batches =
+        this.batchDao.getByProblem(problem.getId());
       for (Entity<Batch> batch : batches) {
         this.testcaseDao.deleteByBatch(batch.getId());
       }
@@ -163,7 +171,8 @@ public class AdminService {
   ) throws InsufficientPermissionException {
     this.validateContest(adminId, contestId);
     try {
-      Entity<ContestSession> session = this.contestSessionDao.get(contestId, kickedUserId);
+      Entity<ContestSession> session =
+        this.contestSessionDao.get(contestId, kickedUserId);
       this.contestSessionDao.update(
         session.getId(),
         ContestSessionField.STATUS,
@@ -182,19 +191,19 @@ public class AdminService {
     Timestamp lastModifiedAt,
     String title,
     String description,
-    int points,
     int timeLimitMillis,
     int memoryLimitKb,
     int outputLimitKb,
     int numSubmissions,
     int submissionsLimit,
-    String editorial
+    String editorial,
+    PublishingState state
   ) throws InsufficientPermissionException,
     IllegalArgumentException {
     this.checkProblemCreation(
       createdAt,
       lastModifiedAt,
-      points,
+      0,
       timeLimitMillis,
       memoryLimitKb,
       outputLimitKb,
@@ -209,14 +218,14 @@ public class AdminService {
         lastModifiedAt,
         title,
         description,
-        points,
+        0,
         timeLimitMillis,
         memoryLimitKb,
         outputLimitKb,
         numSubmissions,
         0,
         editorial,
-        PublishingState.PENDING
+        state
       )
     );
   }
@@ -228,19 +237,19 @@ public class AdminService {
     Timestamp lastModifiedAt,
     String title,
     String description,
-    int points,
     int timeLimitMillis,
     int memoryLimitKb,
     int outputLimitKb,
     int numSubmissions,
     int submissionsLimit,
-    long contestId
+    long contestId,
+    PublishingState state
   ) throws InsufficientPermissionException,
     IllegalArgumentException {
     this.checkProblemCreation(
       createdAt,
       lastModifiedAt,
-      points,
+      0,
       timeLimitMillis,
       memoryLimitKb,
       outputLimitKb,
@@ -255,7 +264,7 @@ public class AdminService {
         lastModifiedAt,
         title,
         description,
-        points,
+        0,
         timeLimitMillis,
         memoryLimitKb,
         outputLimitKb,
@@ -263,7 +272,7 @@ public class AdminService {
         submissionsLimit,
         contestId,
         0,
-        PublishingState.PENDING
+        state
       )
     );
   }
@@ -301,6 +310,10 @@ public class AdminService {
     if (points < 0) {
       throw new IllegalArgumentException("Points cannot be negative.");
     }
+  }
+
+  public Entity<Problem> getNestedProblem(long problemId) throws RecordNotFoundException {
+    return this.problemDao.getNested(problemId);
   }
 
   private void validateProblem(long adminId, long problemId)
@@ -354,12 +367,21 @@ public class AdminService {
 
   public long createBatch(long adminId, long problemId, int sequence, int points)
     throws InsufficientPermissionException,
-    IllegalArgumentException {
+    IllegalArgumentException, RecordNotFoundException {
     if (points < 0) {
       throw new IllegalArgumentException("Points cannot be negative.");
     }
     long id = this.batchDao.add(new Batch(problemId, adminId, sequence, points));
+    Problem prob = this.problemDao.get(problemId).getContent();
+    this.problemDao.update(problemId, ProblemField.POINTS, prob.getPoints()+points);
     return id;
+  }
+
+  public Entity<Batch> getBatch(long adminId, long batchId)
+    throws RecordNotFoundException,
+    InsufficientPermissionException {
+    this.validateBatch(adminId, batchId);
+    return this.batchDao.get(batchId);
   }
 
   public <T> void updateBatch(
@@ -383,7 +405,9 @@ public class AdminService {
   private void validateTestcase(long adminId, long testcaseId)
     throws InsufficientPermissionException {
     try {
-      if (this.testcaseDao.get(testcaseId).getContent().getCreatorId() != adminId) {
+      if (
+        this.testcaseDao.get(testcaseId).getContent().getCreatorId() != adminId
+      ) {
         throw new InsufficientPermissionException();
       }
     } catch (RecordNotFoundException e) {
@@ -403,9 +427,9 @@ public class AdminService {
       throw new IllegalArgumentException("Sequences cannot be negative.");
     }
 
-    long id = this.testcaseDao.add(
-      new Testcase(batchId, adminId, sequence, input, output)
-    );
+    long id =
+      this.testcaseDao
+        .add(new Testcase(batchId, adminId, sequence, input, output));
     return id;
   }
 
@@ -441,7 +465,8 @@ public class AdminService {
 
   public void clarifyProblem(long clarificationId, String response)
     throws RecordNotFoundException {
-    this.clarificationDao.update(clarificationId, ClarificationField.RESPONSE, response);
+    this.clarificationDao
+      .update(clarificationId, ClarificationField.RESPONSE, response);
   }
 
   public ArrayList<Entity<Clarification>> getUnresolvedClarifications(
@@ -449,9 +474,9 @@ public class AdminService {
     int index,
     int numClarifications
   ) {
-    return this.clarificationDao.getUnresolvedClarifications(adminId, index, numClarifications);
+    return this.clarificationDao
+      .getUnresolvedClarifications(adminId, index, numClarifications);
   }
-
 
   public ArrayList<Entity<ContestSession>> getContestParticipants(
     long contestId,
@@ -460,7 +485,6 @@ public class AdminService {
   ) {
     return this.contestSessionDao.getByContest(contestId, index, numSessions);
   }
-
 
   public <T> void updateRestriction(
     long illegalCodeId,

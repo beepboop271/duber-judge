@@ -4,15 +4,26 @@ import java.util.regex.Pattern;
 
 import templater.language.TokenKind;
 
-class Identifier extends RegexMatcher {
+/**
+ * Matches an
+ * {@code templater.language.TokenKind.IDENTIFIER} using
+ * regex.
+ */
+class IdentifierMatcher extends RegexMatcher {
+  /**
+   * The regex which matches an identifier. Taken from the
+   * CSS3 grammar
+   * https://drafts.csswg.org/selectors-3/#grammar. This is a
+   * subset of valid names, this class does not allow random
+   * bytes and such (only alphanumeric+hyphen and underscore).
+   */
   private static final Pattern REGEX =
-    // identifier name from the CSS3 grammar
-    // https://drafts.csswg.org/selectors-3/#grammar
-    // this is a subset of valid names, we won't be allowing
-    // random bytes and such
     Pattern.compile("^-?[_a-zA-Z][_a-zA-Z0-9-]*");
 
-  Identifier() {
-    super(Identifier.REGEX, TokenKind.IDENTIFIER);
+  /**
+   * Creates a new IdentifierMatcher.
+   */
+  IdentifierMatcher() {
+    super(IdentifierMatcher.REGEX, TokenKind.IDENTIFIER);
   }
 }

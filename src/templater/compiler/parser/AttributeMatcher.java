@@ -14,11 +14,11 @@ class AttributeMatcher extends TokenMatchable<AttributeElement> {
     }
     Token token = new TokenMatcher('=').tryMatch(input);
     if (token == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
-    StringResolvables value = new ContentListMatcher().tryMatch(input);
+    StringResolvables value = ContentListMatcher.noIdentifier().tryMatch(input);
     if (value == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
     new TokenMatcher(',').tryMatch(input);  // optional
     return new AttributeElement(key.getContent(), value);

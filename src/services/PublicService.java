@@ -8,7 +8,6 @@ import dal.dao.ProblemDao;
 import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
 import dal.dao.UserDao;
-import dal.dao.UserPoints;
 import entities.Category;
 import entities.Contest;
 import entities.ContestSession;
@@ -16,10 +15,10 @@ import entities.ContestStatus;
 import entities.Entity;
 import entities.Problem;
 import entities.SubmissionResult;
+import entities.User;
 
 /**
- * Serves public information (client does not need to
- * login).
+ * Serves public information (client does not need to login).
  * <p>
  * Created on 2021.01.16.
  *
@@ -68,7 +67,7 @@ public class PublicService {
     return this.contestDao.getContests(index, numContests, ContestStatus.UPCOMING);
   }
 
-  public ArrayList<UserPoints> getLeaderboard(int index, int numUsers) {
+  public ArrayList<Entity<User>> getLeaderboard(int index, int numUsers) {
     return this.userDao.getByPoints(index, numUsers);
   }
 
@@ -88,11 +87,11 @@ public class PublicService {
     return this.submissionDao.getProblemLeaderboard(problemId, index, numUsers);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblems(int index, int numProblems) {
+  public ArrayList<Entity<Problem>> getPracticeProblems(int index, int numProblems) {
     return this.problemDao.getPracticeProblems(index, numProblems);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblemsByCategory(
+  public ArrayList<Entity<Problem>> getPracticeProblemsByCategory(
     Category category,
     int index,
     int numProblems
@@ -100,7 +99,7 @@ public class PublicService {
     return this.problemDao.getPracticeProblemsByCategory(category, index, numProblems);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblemsByCreator(
+  public ArrayList<Entity<Problem>> getPracticeProblemsByCreator(
     long creatorId,
     int index,
     int numProblems
@@ -108,7 +107,7 @@ public class PublicService {
     return this.problemDao.getPracticeProblemsByCreator(creatorId, index, numProblems);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblemsByPoints(
+  public ArrayList<Entity<Problem>> getPracticeProblemsByPoints(
     int min,
     int max,
     int index,
@@ -117,7 +116,7 @@ public class PublicService {
     return this.problemDao.getPracticeProblemsByPoints(min, max, index, numProblems);
   }
 
-  ArrayList<Entity<Problem>> getPracticeProblemsByNumSubmissions(
+  public ArrayList<Entity<Problem>> getPracticeProblemsByNumSubmissions(
     int min,
     int max,
     int index,

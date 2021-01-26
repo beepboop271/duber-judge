@@ -25,7 +25,7 @@ import entities.entity_fields.ProblemField;
 import services.InvalidArguments;
 
 /**
- * [description]
+ * {@code DAO} for {@link Problem}.
  * <p>
  * Created on 2021.01.10.
  *
@@ -196,7 +196,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           break;
 
         case PUBLISHING_STATE:
-          ps.setString(1, (String)value);
+          ps.setString(1, ((PublishingState)value).toString());
           break;
       }
 
@@ -218,7 +218,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
                 +"(problem_type, category, creator_id, created_at, last_modified_at,"
                 +" title, description, points, time_limit_millis, memory_limit_kb, output_limit_kb,"
                 +" num_submissions, cleared_submissions,"
-                +" contest_id, submissions_limit, editorial, pushlishing_state)"
+                +" contest_id, submissions_limit, editorial, publishing_state)"
                 +" VALUES (" + DaoHelper.getParamString(17) + ");";
     PreparedStatement ps = null;
     Connection connection = null;
@@ -274,6 +274,8 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
       if (SQLiteErrorCode.getErrorCode(e.getErrorCode())
           == SQLiteErrorCode.SQLITE_CONSTRAINT) {
         throw new IllegalArgumentException(InvalidArguments.TITLE_TAKEN.toString());
+      } else {
+        e.printStackTrace();
       }
     } finally {
       ConnectDB.close(ps);
@@ -353,6 +355,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
 
       result = ps.executeQuery();
       boolean initialized = false;
+
       while (result.next()) {
         if (!initialized) {
           problem = this.getProblemFromResultSet(result);
@@ -402,6 +405,8 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
         batch.getContent().setTestcases(testcases);
         batches.add(batch);
         problem.getContent().setBatches(batches);
+      } else {
+        problem = this.get(id);
       }
 
 

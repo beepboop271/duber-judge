@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <!-- meta tags -->
+    <meta name="dubj" content="pls work"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Duber Judge</title>
+
+    <script src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="./vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="./styles.css"/>
+
+  </head>
+  <body>
+    <!-- same as user but with extra admin button to navigate to admin console -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+      <a class="navbar-brand" href="#">DubJ</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Leaderboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Practice Problems</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Shari09</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="create-problem-container">
+
+      <h3>Problem 2984hkjewrh</h3>
+
+      <div class="row">
+        <div class="col-4">
+          <div class="list-group" id="list-tab" role="tablist">
+            <a class="list-group-item list-group-item-action active" id="batch-1-list" data-toggle="list" href="#batch-1" role="tab" aria-controls="home">Batch 1</a>
+            <a class="list-group-item list-group-item-action" id="batch-2-list" data-toggle="list" href="#batch-2" role="tab" aria-controls="profile">Batch 2</a>
+            <a class="list-group-item list-group-item-action" id="add-batch-list" data-toggle="list" href="#add-batch" role="tab" aria-controls="profile">
+              <div class="d-flex w-100 justify-content-center">
+                <p class="h3 m-0"><i class="fas fa-plus-circle"></i></p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="col-8">
+          <div class="tab-content" id="nav-tabContent">
+
+
+            <div class="tab-pane fade show active" id="batch-1" role="tabpanel" aria-labelledby="batch-1-list">
+              <div class="list-group user problem-list">
+                <a href="#" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5>Testcase 1</h5>
+                    <i class="fas fa-edit h4"></i>
+                  </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5>Testcase 2</h5>
+                    <i class="fas fa-edit h4"></i>
+                  </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5>Testcase 3</h5>
+                    <i class="fas fa-edit h4"></i>
+                  </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-center">
+                    <p class="h3"><i class="fas fa-plus-circle"></i></p>
+                  </div>
+                </a>
+
+              </div>
+            </div>
+
+
+
+            <div class="tab-pane fade" id="batch-2" role="tabpanel" aria-labelledby="batch-2-list">
+              <div class="list-group user problem-list">
+                <a href="#" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5>Testcase 1</h5>
+                    <i class="fas fa-edit h4"></i>
+                  </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5>Testcase 2</h5>
+                    <i class="fas fa-edit h4"></i>
+                  </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h5>Testcase adsf3</h5>
+                    <i class="fas fa-edit h4"></i>
+                  </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                  <div class="d-flex w-100 justify-content-center">
+                    <p class="h3"><i class="fas fa-plus-circle"></i></p>
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- add batch -->
+            <div class="tab-pane fade" id="add-batch" role="tabpanel" aria-labelledby="add-batch-list">
+              <form class="create-practice-problem needs-validation" novalidate action="./" method="post">
+                <input name="action" type="hidden" value="createBatch">
+                <div class="mb-3">
+                  <label for="points">Points:</label>
+                  <input name="points" type="number" class="form-control range" min="0" id="points" step="1" max="30" data-bind="value:points" required/>
+                </div>
+                <button type="submit" class="btn-primary btn">Create</button>
+              </form>
+            </div>
+
+
+
+          </div>
+
+
+        </div>
+      </div>
+
+
+    </div>
+
+    <script src="./vendored/jquery-3.4.1.slim.min.js"></script>
+    <script src="./vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js"></script>
+    <script src="./scripts.js"></script>
+  </body>
+</html>

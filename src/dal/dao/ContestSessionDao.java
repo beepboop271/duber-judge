@@ -18,7 +18,7 @@ import entities.PublishingState;
 import entities.entity_fields.ContestSessionField;
 
 /**
- * [description]
+ * {@code DAO} for {@link ContestSession}.
  * <p>
  * Created on 2021.01.10.
  *

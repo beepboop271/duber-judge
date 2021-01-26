@@ -3,3 +3,6 @@
 
 # Ignore violet uml files as part of the language breakdown on GitHub
 *.violet.html linguist-documentation
+
+# Vendored
+static/vendored/** linguist-vendored

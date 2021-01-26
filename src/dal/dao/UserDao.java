@@ -17,7 +17,7 @@ import entities.entity_fields.UserField;
 import services.InvalidArguments;
 
 /**
- * [description]
+ * {@code DAO} for {@link User}.
  * <p>
  * Created on 2021.01.10.
  *
@@ -223,7 +223,7 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
    * @param numUsers      the number of users to get after the index
    * @return              the list of users
    */
-  public ArrayList<UserPoints> getByPoints(int index, int numUsers) {
+  public ArrayList<Entity<User>> getByPoints(int index, int numUsers) {
     String sql = String.format(
                  "SELECT users.*, total_score\n"
                 +"FROM users\n"
@@ -242,18 +242,25 @@ public class UserDao implements Dao<User>, Updatable<UserField> {
     PreparedStatement ps = null;
     Connection connection = null;
     ResultSet result = null;
-    ArrayList<UserPoints> users = new ArrayList<>();
+    ArrayList<Entity<User>> users = new ArrayList<>();
     try {
       connection = GlobalConnectionPool.pool.getConnection();
       ps = connection.prepareStatement(sql);
 
       result = ps.executeQuery();
       while (result.next()) {
-
-        Entity<User> user = this.getUserFromResultSet(result);
-        users.add(new UserPoints(user, result.getInt("total_score")));
+        users.add(new Entity<User>(
+          result.getLong("id"),
+          new User(
+            result.getString("username"),
+            result.getString("password"),
+            UserType.valueOf(result.getString("user_type")),
+            result.getString("salt"),
+            result.getInt("total_score")
+          )
+        ));
       }
-
+      
 
 
     } catch (SQLException e) {

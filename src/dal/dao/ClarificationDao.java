@@ -15,7 +15,7 @@ import entities.Entity;
 import entities.entity_fields.ClarificationField;
 
 /**
- * [description]
+ * {@code DAO} for {@link Clarification}.
  * <p>
  * Created on 2021.01.10.
  *

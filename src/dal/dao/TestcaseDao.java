@@ -13,7 +13,7 @@ import entities.Testcase;
 import entities.entity_fields.TestcaseField;
 
 /**
- * [description]
+ * {@code DAO} for {@link Testcase}.
  * <p>
  * Created on 2021.01.10.
  *

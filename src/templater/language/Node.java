@@ -1,7 +1,6 @@
 package templater.language;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -27,7 +26,7 @@ public class Node extends LanguageElement {
    *
    * @return The children.
    */
-  public Iterator<LanguageElement> getChildren() {
-    return this.children.iterator();
+  public ReadOnlyIterator<LanguageElement> getChildren() {
+    return new ReadOnlyIterator<>(this.children.iterator());
   }
 }

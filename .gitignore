@@ -6,6 +6,20 @@
 .project
 .classpath
 queries.sql
-/src/static
 
-*.db
+# vendored files that aren't the minified versions
+static/vendored/bootstrap-4.4.1-dist/css/bootstrap.css
+static/vendored/bootstrap-4.4.1-dist/css/bootstrap.css.map
+static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css.map
+static/vendored/bootstrap-4.4.1-dist/css/bootstrap-grid.css
+static/vendored/bootstrap-4.4.1-dist/css/bootstrap-grid.css.map
+static/vendored/bootstrap-4.4.1-dist/css/bootstrap-grid.min.css.map
+static/vendored/bootstrap-4.4.1-dist/css/bootstrap-reboot.css
+static/vendored/bootstrap-4.4.1-dist/css/bootstrap-reboot.css.map
+static/vendored/bootstrap-4.4.1-dist/css/bootstrap-reboot.min.css.map
+static/vendored/bootstrap-4.4.1-dist/js/bootstrap.bundle.js
+static/vendored/bootstrap-4.4.1-dist/js/bootstrap.bundle.js.map
+static/vendored/bootstrap-4.4.1-dist/js/bootstrap.bundle.min.js.map
+static/vendored/bootstrap-4.4.1-dist/js/bootstrap.js
+static/vendored/bootstrap-4.4.1-dist/js/bootstrap.js.map
+static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js.map

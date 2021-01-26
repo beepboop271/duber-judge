@@ -18,12 +18,12 @@ class LoopMatcher extends TokenMatchable<Loop> {
 
     AttributeElement control = new IterationControlMatcher().tryMatch(input);
     if (control == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     List<LanguageElement> body = new BlockMatcher().tryMatch(input);
     if (body == null) {
-      return null;
+      throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
     return new Loop(body, control.getKey(), control.getValue());

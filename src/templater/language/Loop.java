@@ -10,7 +10,9 @@ import java.util.List;
  * @version 1.0
  */
 public class Loop extends Node {
+  /** The name of the iterable object or array to loop over. */
   private final StringResolvables target;
+  /** The name of the variable to update in each iteration. */
   private final String loopVariable;
 
   /**
@@ -20,10 +22,10 @@ public class Loop extends Node {
    *
    * @param children     The {@code List} of this loop's
    *                     children.
-   * @param loopVariable The loop variable.
-   * @param target       The {@code StringResolvables}
-   *                     associated with the item to loop
-   *                     over.
+   * @param loopVariable The name of the variable to update in
+   *                     each iteration.
+   * @param target       The name of the iterable object or
+   *                     array to loop over.
    */
   public Loop(
     List<LanguageElement> children,
@@ -36,18 +38,22 @@ public class Loop extends Node {
   }
 
   /**
-   * Retrieves the variable associated with this loop's target.
+   * Gets the name of the iterable object or array to loop
+   * over.
    *
-   * @return The target variable.
+   * @return The name of the iterable object or array to loop
+   *         over.
    */
   public StringResolvables getTarget() {
     return this.target;
   }
 
   /**
-   * Retrieves this loop's loop variable.
+   * Gets the name of the variable to update in each
+   * iteration.
    *
-   * @return The loop variable.
+   * @return The name of the variable to update in each
+   *         iteration.
    */
   public String getLoopVariable() {
     return this.loopVariable;

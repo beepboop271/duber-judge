@@ -1,0 +1,89 @@
+html(lang="en") {
+  head {
+    meta(name="dubj" content="pls work");
+    meta(charset="utf-8");
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no");
+
+    title {
+      "Duber Judge"
+    }
+
+    link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+
+    link(rel="stylesheet" href="/styles.css");
+
+  }
+  body {
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
+      a.navbar-brand(href="#") {
+        "DubJ"
+      }
+      button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
+        span.navbar-toggler-icon{}
+      }
+      div.collapse.navbar-collapse#navbarNav {
+        ul.navbar-nav.ml-auto {
+          li.nav-item {
+            a.nav-link(href="#") {
+              "Home"
+              span.sr-only {
+                "(current)"
+              }
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${leaderboardLink}) {
+              "Leaderboard"
+            }
+          }
+          li.nav-item {
+            a.nav-link(href=${problemsLink}) {
+              "Practice Problems"
+            }
+          }
+          li.nav-item.active {
+            a.nav-link(href=${profileLink}) {
+              ${username}
+            }
+          }
+        }
+      }
+    }
+    div.create-problem-container {
+
+      form.create-testcase.needs-validation(novalidate="" action=${postUrl} method="post") {
+
+        div#details {
+          div.mb-3 {
+            label(for="testcase-input") {
+              "Input:"
+            }
+            textarea.form-control#testcase-input(name="input" placeholder="// Sample Input" required="") {}
+            div.invalid-feedback {
+              "Please enter the testcase input."
+            }
+          }
+
+          div.mb-3 {
+            label(for="testcase-output") {
+              "Output:"
+            }
+            textarea.form-control#testcase-output(name="output" placeholder="// Sample output" required="") {}
+            div.invalid-feedback {
+              "Please enter the testcase output."
+            }
+          }
+        }
+
+        button.btn.btn-primary(type="submit") {
+          "Publish"
+        }
+
+      }
+
+    }
+    script(src="/static/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="/static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.css") {}
+    script(src="/scripts.js") {}
+  }
+}

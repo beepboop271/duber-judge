@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import templater.ReadOnlyIterator;
-
 /**
  * A class representing a {@code Element}, an HTML element.
  *
@@ -14,10 +12,18 @@ import templater.ReadOnlyIterator;
  * @version 1.0
  */
 public class Element extends Node {
+  /** The name of this element. */
   private final StringResolvables name;
+  /** The classes this element belongs to. */
   private final List<StringResolvables> classes;
+  /** The id of this element. */
   private final StringResolvables id;
+  /** The attributes on this element. */
   private final Map<String, StringResolvables> attributes;
+  /**
+   * Whether or not this element is an empty element, i.e if
+   * it does not need a closing tag like {@code <br>}.
+   */
   private final boolean isEmpty;
 
   /**

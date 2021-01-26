@@ -12,7 +12,7 @@ import java.util.Properties;
  * A static class used for creating new {@code Database connections}
  * and initializing the database given a {@code Connection}.
  * It also provides a method to conveniently close resources
- * such as {@code PreparedStatment, ResultSet, etc}.
+ * such as {@code PreparedStatement, ResultSet, etc}.
  * <p>
  * Created on 2021.01.07.
  *
@@ -38,7 +38,6 @@ public class ConnectDB {
       Properties properties = new Properties();
       properties.setProperty("foreign_keys", "ON");
       connection = DriverManager.getConnection(url, properties);
-      System.out.println("new connection established");
     } catch (SQLException e) {
       e.printStackTrace();
     }

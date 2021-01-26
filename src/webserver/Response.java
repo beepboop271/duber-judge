@@ -58,6 +58,16 @@ public class Response extends HttpMessage {
   }
 
   /**
+   * Generates a {@code 500 Internal Server Error} HTTP
+   * response, to indicate server failure to the client.
+   *
+   * @return a 500 HTTP response object.
+   */
+  public static Response internalError() {
+    return new Response(500);
+  }
+
+  /**
    * Generates a generic {@code 400 Bad Request} HTTP response
    * with the appropriate headers.
    *
@@ -141,6 +151,25 @@ public class Response extends HttpMessage {
     }
 
     Response response = new Response(308);
+    response.headers.put("Location", newUri);
+
+    return response;
+  }
+
+  /**
+   * Generates a {@code 308 Temporary Redirect} HTTP response
+   * with the appropriate {@code Location} header, redirecting
+   * to the provided URI temporarily.
+   *
+   * @param newUri The new URI to redirect the client to.
+   * @return a 308 HTTP response object.
+   */
+  public static Response temporaryRedirect(String newUri) {
+    if (newUri == null || newUri.equals("")) {
+      throw new IllegalArgumentException("A uri must be provided.");
+    }
+
+    Response response = new Response(307);
     response.headers.put("Location", newUri);
 
     return response;
@@ -452,6 +481,16 @@ public class Response extends HttpMessage {
     }
 
     return response;
+  }
+
+  /**
+   * Generates a generic {@code 404 Not Found} response, with
+   * no body.
+   *
+   * @return a 404 HTTP response object.
+   */
+  public static Response notFound() {
+    return new Response(404);
   }
 
   /**
