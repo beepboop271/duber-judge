@@ -5,7 +5,14 @@ import java.util.List;
 import templater.language.LanguageElement;
 import templater.language.Token;
 
-class BlockMatcher extends TokenMatchable<List<LanguageElement>> {
+/**
+ * Matches a block ie the children of an element.
+ *
+ * <pre>
+ * Body = '{', [{Element | NoIdentContentList | Loop}], '}';
+ * </pre>
+ */
+class BodyMatcher extends TokenMatchable<List<LanguageElement>> {
   @Override
   protected List<LanguageElement> tryMatchInternal(TokenQueue.Iterator input) {
     Token brace = new TokenMatcher('{').tryMatch(input);

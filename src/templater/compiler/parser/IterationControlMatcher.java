@@ -5,6 +5,14 @@ import templater.language.StringResolvables;
 import templater.language.Token;
 import templater.language.TokenKind;
 
+/**
+ * Matches the header of a loop which declares which
+ * variables are involved in the loop.
+ *
+ * <pre>
+ * IterationControl = '(', Identifier, ':', AnyContentList, ')';
+ * </pre>
+ */
 class IterationControlMatcher extends TokenMatchable<AttributeElement> {
   @Override
   protected AttributeElement tryMatchInternal(TokenQueue.Iterator input) {

@@ -5,6 +5,14 @@ import java.util.List;
 import templater.language.AttributeElement;
 import templater.language.Token;
 
+/**
+ * Matches the entire attributes declaration of an element,
+ * containing zero or more attribute declarations.
+ *
+ * <pre>
+ * AttributeList = '(', [{Attribute}], ')';
+ * </pre>
+ */
 class AttributeListMatcher extends TokenMatchable<List<AttributeElement>> {
   @Override
   protected List<AttributeElement> tryMatchInternal(TokenQueue.Iterator input) {
