@@ -44,7 +44,7 @@ import webserver.webcache.WebLruCache;
  * Created <b> 2020-12-28 </b>
  *
  * @since 0.0.4
- * @version 0.0.5
+ * @version1.0.0
  * @author Joseph Wang, Shari Sun
  */
 public class WebServer {
@@ -436,7 +436,7 @@ public class WebServer {
    * Created <b>2021-01-08</b>.
    *
    * @since 0.0.1
-   * @version 0.0.1
+   * @version1.0.0
    * @author Joseph Wang
    */
   private class ConnectionHandler implements Runnable {

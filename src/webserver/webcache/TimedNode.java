@@ -13,7 +13,7 @@ package webserver.webcache;
  * Created <b> 2021-01-19</b>.
  *
  * @since 0.0.3
- * @version 0.0.3
+ * @version1.0.0
  * @author Joseph Wang
  * @param <T> the type of the object stored.
  **/
