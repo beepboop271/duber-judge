@@ -500,13 +500,17 @@ public class Request extends HttpMessage {
     for (String s : fieldTokens) {
       String[] paramTokens = s.split("=");
       if (paramTokens.length != 2) {
-        throw new HttpSyntaxException("Body malformed.");
+        // This could happen from an empty field, malformed header..
+        // etc.
+        continue;
       }
       try {
-        String key = URLDecoder.decode(paramTokens[0], StandardCharsets.UTF_8.name());
+        String key =
+          URLDecoder.decode(paramTokens[0], StandardCharsets.UTF_8.name());
         String value;
         if (paramTokens.length > 1) {
-          value = URLDecoder.decode(paramTokens[1], StandardCharsets.UTF_8.name());
+          value =
+            URLDecoder.decode(paramTokens[1], StandardCharsets.UTF_8.name());
         } else {
           value = "";
         }

@@ -242,7 +242,7 @@ public class AdminTestcaseHandler implements RouteTarget {
               profTestcases,
               entity.getId(),
               batch.getSequence(),
-              "/admin/problem/"+probId+"/testcases/"+entity.getId()+"add"
+              "/admin/problem/"+probId+"/testcases/"+entity.getId()+"/add"
             )
           );
         }
@@ -306,7 +306,7 @@ public class AdminTestcaseHandler implements RouteTarget {
     templateParams.put("profileLink", "/profile");
     templateParams.put("username", username);
     templateParams
-      .put("postUrl", "/admin/problem/"+probId+"/testcases/"+batchIdStr+"add");
+      .put("postUrl", "/admin/problem/"+probId+"/testcases/"+batchIdStr+"/add");
 
     return Response.okNoCacheHtml(
       Templater.fillTemplate("addTestcaseDetails", templateParams)
@@ -376,8 +376,8 @@ public class AdminTestcaseHandler implements RouteTarget {
 
     // Create the actual testcase
     try {
-      String input = bodyParams.get("username");
-      String output = bodyParams.get("password");
+      String input = bodyParams.get("input");
+      String output = bodyParams.get("output");
 
       Batch batch = as.getBatch(uid, batchId).getContent();
       int sequenceNumber;
