@@ -34,6 +34,9 @@ public class Tokeniser {
    * matchers.
    */
   protected void registerTokens() {
+    // keyword must go before identifier, order doesn't matter
+    // for others
+    this.tokenMatchers.add(new KeywordMatcher());
     this.tokenMatchers.add(new IdentifierMatcher());
     this.tokenMatchers.add(new PunctuationMatcher());
     this.tokenMatchers.add(new StringLiteralMatcher());

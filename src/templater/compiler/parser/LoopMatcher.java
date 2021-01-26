@@ -6,7 +6,6 @@ import templater.language.AttributeElement;
 import templater.language.LanguageElement;
 import templater.language.Loop;
 import templater.language.Token;
-import templater.language.TokenKind;
 
 /**
  * Matches an entire loop: header and body.
@@ -18,8 +17,8 @@ import templater.language.TokenKind;
 class LoopMatcher extends TokenMatchable<Loop> {
   @Override
   protected Loop tryMatchInternal(TokenQueue.Iterator input) {
-    Token name = new TokenMatcher(TokenKind.IDENTIFIER).tryMatch(input);
-    if ((name == null) || !(name.getContent().equals("for"))) {
+    Token keyword = new TokenMatcher("for").tryMatch(input);
+    if (keyword == null) {
       return null;
     }
 

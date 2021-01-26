@@ -12,10 +12,10 @@ class TokenMatcher extends TokenMatchable<Token> {
   /** The kind of Token to match. */
   private final TokenKind kind;
   /**
-   * The punctuation character to match, if kind is
-   * TokenKind.PUNCTUATION.
+   * The punctuation character or keyword string to match, if
+   * kind is TokenKind.PUNCTUATION or KEYWORD.
    */
-  private final char punctuationChar;
+  private final String content;
 
   /**
    * Creates a TokenMatcher to match a punctuation token with
@@ -25,7 +25,18 @@ class TokenMatcher extends TokenMatchable<Token> {
    */
   TokenMatcher(char c) {
     this.kind = TokenKind.PUNCTUATION;
-    this.punctuationChar = c;
+    this.content = ""+c;
+  }
+
+  /**
+   * Creates a TokenMatcher to match a keyword token with the
+   * given keyword.
+   *
+   * @param s The keyword character to match.
+   */
+  TokenMatcher(String s) {
+    this.kind = TokenKind.KEYWORD;
+    this.content = s;
   }
 
   /**
@@ -36,7 +47,7 @@ class TokenMatcher extends TokenMatchable<Token> {
    */
   TokenMatcher(TokenKind kind) {
     this.kind = kind;
-    this.punctuationChar = 0;
+    this.content = "";
   }
 
   @Override
@@ -48,12 +59,14 @@ class TokenMatcher extends TokenMatchable<Token> {
       return null;
     }
 
-    if (
-      (t.getKind() == this.kind)
-        && ((this.kind != TokenKind.PUNCTUATION)
-          || (t.getContent().charAt(0) == this.punctuationChar))
-    ) {
-      return t;
+    if (t.getKind() == this.kind) {
+      if ((this.kind == TokenKind.PUNCTUATION) || (this.kind == TokenKind.KEYWORD)) {
+        if (this.content.equals(t.getContent())) {
+          return t;
+        }
+      } else {
+        return t;
+      }
     }
     return null;
   }
