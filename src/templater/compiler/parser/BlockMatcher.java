@@ -16,7 +16,7 @@ class BlockMatcher extends TokenMatchable<List<LanguageElement>> {
     List<LanguageElement> content = new MatchUtils.ZeroOrMore<>(
       new MatchUtils.OneOf<>(
         new ElementMatcher(),
-        new ContentListMatcher(),
+        ContentListMatcher.noIdentifier(),
         new LoopMatcher()
       )
     ).tryMatch(input);

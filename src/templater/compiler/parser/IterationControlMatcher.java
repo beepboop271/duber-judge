@@ -23,7 +23,7 @@ class IterationControlMatcher extends TokenMatchable<AttributeElement> {
       throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
 
-    StringResolvables nameToLoop = new AttributeContentListMatcher().tryMatch(input);
+    StringResolvables nameToLoop = ContentListMatcher.any().tryMatch(input);
     if (nameToLoop == null) {
       throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }

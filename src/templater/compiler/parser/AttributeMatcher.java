@@ -16,7 +16,7 @@ class AttributeMatcher extends TokenMatchable<AttributeElement> {
     if (token == null) {
       throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
-    StringResolvables value = new ContentListMatcher().tryMatch(input);
+    StringResolvables value = ContentListMatcher.noIdentifier().tryMatch(input);
     if (value == null) {
       throw new UnknownSyntaxException(input.getPosition().toDisplayString());
     }
