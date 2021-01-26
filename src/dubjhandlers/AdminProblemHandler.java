@@ -332,12 +332,10 @@ public class AdminProblemHandler implements RouteTarget {
     if (
       !bodyParams.containsKey("title")
         || !bodyParams.containsKey("description")
-        || !bodyParams.containsKey("points")
         || !bodyParams.containsKey("category")
         || !bodyParams.containsKey("memoryLimit")
         || !bodyParams.containsKey("outputLimit")
         || !bodyParams.containsKey("timeLimit")
-        || !bodyParams.containsKey("editorial")
     ) {
       return Response.badRequest();
     }
