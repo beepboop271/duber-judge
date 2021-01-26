@@ -188,7 +188,7 @@ public class PublicProblemHandler implements RouteTarget {
     templateParams.put("page3Link", "/problems");
     templateParams.put("nextPageLink", "/problems");
 
-    return Response.okHtml(Templater.fillTemplate("problems", templateParams));
+    return Response.okNoCacheHtml(Templater.fillTemplate("problems", templateParams));
   }
 
   /**
