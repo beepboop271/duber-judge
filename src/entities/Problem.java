@@ -91,6 +91,7 @@ public abstract class Problem {
     this.numSubmissions = numSubmissions;
     this.clearedSubmissions = clearedSubmissions;
     this.state = state;
+    this.batches = new ArrayList<>();
   }
 
 

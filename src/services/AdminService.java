@@ -190,7 +190,8 @@ public class AdminService {
     int outputLimitKb,
     int numSubmissions,
     int submissionsLimit,
-    String editorial
+    String editorial,
+    PublishingState state
   ) throws InsufficientPermissionException,
     IllegalArgumentException {
     this.checkProblemCreation(
@@ -218,7 +219,7 @@ public class AdminService {
         numSubmissions,
         0,
         editorial,
-        PublishingState.PENDING
+        state
       )
     );
   }
@@ -236,7 +237,8 @@ public class AdminService {
     int outputLimitKb,
     int numSubmissions,
     int submissionsLimit,
-    long contestId
+    long contestId,
+    PublishingState state
   ) throws InsufficientPermissionException,
     IllegalArgumentException {
     this.checkProblemCreation(
@@ -265,7 +267,7 @@ public class AdminService {
         submissionsLimit,
         contestId,
         0,
-        PublishingState.PENDING
+        state
       )
     );
   }

@@ -37,6 +37,7 @@ public class Batch {
     this.creatorId = creatorId;
     this.sequence = sequence;
     this.points = points;
+    this.testcases = new ArrayList<>();
   }
 
 

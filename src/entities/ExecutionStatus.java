@@ -37,6 +37,12 @@ public enum ExecutionStatus {
   /** The submission caused a runtime exception to occur. */
   RUNTIME_ERROR,
 
-  /** The submission passed all the tests. */
-  ALL_CLEAR
+  /**
+   * The program was untested due to failure of clearing previous testcases
+   * in the same batch.
+   */
+  SKIPPED,
+
+  /** The testcase run / submission passed all required testing. */
+  ALL_CLEAR,
 }
