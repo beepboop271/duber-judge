@@ -18,7 +18,7 @@ html(lang="en") {
       button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
         span.navbar-toggler-icon {}
       }
-      div.collapse navbar-collapse#navbarNav {
+      div.collapse.navbar-collapse#navbarNav {
         ul.navbar-nav.ml-auto {
           li.nav-item {
             a.nav-link(href="#") {
@@ -72,17 +72,17 @@ html(lang="en") {
           div.card-header {
             ul.nav.nav-tabs.card-header-tabs {
               li.nav-item {
-                a.nav-link.test-dark.active(href=${userSubmissionsLink}) {
+                a.nav-link.text-dark.active(href=${userSubmissionsLink}) {
                   "Submissions"
                 }
               }
               li.nav-item {
-                a.nav-link.test-dark(href=${userProblemsLink}) {
+                a.nav-link.text-dark(href=${userProblemsLink}) {
                   "Problems"
                 }
               }
               li.nav-item {
-                a.nav-link.test-dark.active(href=${userContestsLink}) {
+                a.nav-link.text-dark(href=${userContestsLink}) {
                   "Contests"
                 }
               }

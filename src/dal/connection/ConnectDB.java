@@ -38,7 +38,6 @@ public class ConnectDB {
       Properties properties = new Properties();
       properties.setProperty("foreign_keys", "ON");
       connection = DriverManager.getConnection(url, properties);
-      System.out.println("new connection established");
     } catch (SQLException e) {
       e.printStackTrace();
     }

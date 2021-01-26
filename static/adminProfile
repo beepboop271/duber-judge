@@ -64,7 +64,7 @@ html(lang="en") {
                 "Admin"
               }
             }
-            a.settings-logo-wrapper text-dark(href="/admin/problems") {
+            a.settings-logo-wrapper.text-dark(href="/admin/problems") {
               i.fas.fa-cog{}
             }
           }
@@ -76,17 +76,17 @@ html(lang="en") {
           div.card-header {
             ul.nav.nav-tabs.card-header-tabs {
               li.nav-item {
-                a.nav-link.test-dark.active(href=${userSubmissionsLink}) {
+                a.nav-link.text-dark.active(href=${userSubmissionsLink}) {
                   "Submissions"
                 }
               }
               li.nav-item {
-                a.nav-link.test-dark(href=${userProblemsLink}) {
+                a.nav-link.text-dark(href=${userProblemsLink}) {
                   "Problems"
                 }
               }
               li.nav-item {
-                a.nav-link.test-dark.active(href=${userContestsLink}) {
+                a.nav-link.text-dark(href=${userContestsLink}) {
                   "Contests"
                 }
               }

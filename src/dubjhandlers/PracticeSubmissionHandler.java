@@ -17,11 +17,23 @@ import webserver.Request;
 import webserver.Response;
 import webserver.RouteTarget;
 
+
 /**
- * - /problem/:problemId/submit -
- * /problem/:problemId/submissions -
- * /problem/:problemId/submissions/:submissionId -
- * /problem/:problemId/submissions?userid=id
+ * The class that handles requests to anything related to
+ * submission pages.
+ * <p>
+ * Paths:
+ * <p>
+ * {@code /problem/:problemId/submit}
+ * {@code /problem/:problemId/submissions}
+ * {@code /problem/:problemId/submissions/:submissionId}
+ * {@code /problem/:problemId/submissions?userid=id}
+ * <p>
+ * Created <b> 2020-01-25 </b>.
+ *
+ * @since 0.0.7
+ * @version 0.0.7
+ * @author Joseph Wang, Shari Sun
  */
 public class PracticeSubmissionHandler implements RouteTarget {
   /**

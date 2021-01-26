@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 import dubjhandlers.AdminHandler;
 import dubjhandlers.AdminProblemHandler;
@@ -20,23 +21,90 @@ import entities.PublishingState;
 import entities.entity_fields.ContestField;
 import entities.entity_fields.ProblemField;
 import services.AdminService;
+import services.InvalidArguments;
 import services.ProblemService;
 import services.SessionCleaner;
+import services.UserService;
 import templater.Templater;
 import templater.compiler.tokeniser.UnknownTokenException;
 import webserver.WebServer;
 
 public class Main {
-  public static void main(String[] args) {
-    Main.initialize();
-    Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
-    Main.startWebServer(5000);
-  }
 
   public static void initialize() {
     ChildProcesses.initialize();
   }
 
+  /**
+   * Prompts for relevant info and creates an admin user.
+   *
+   * @param input The Scanner used for CLI input.
+   */
+  public static void createAdmin(Scanner input) {
+    UserService us = new UserService();
+
+    boolean prompt = true;
+    while (prompt) {
+      try {
+        System.out.print("Username: ");
+        String username = input.nextLine();
+        System.out.print("Password: ");
+        String password = input.nextLine();
+
+        us.createAdmin(username, password);
+        System.out.println("You may now log in with your admin account at localhost:5000/login");
+        prompt = false;
+      } catch (IllegalArgumentException e) {
+        switch (InvalidArguments.valueOf(e.getMessage())) {
+          case BAD_USERNAME:
+            System.out.println(
+              "Please make sure your username is 3-20 characters long"
+              +"and contains letters, numbers, underscore, or dash only."
+            );
+            break;
+          case INSECURE_PASSWORD:
+            System.out.println(
+              "Please make sure your password is 6-25 characters long"
+              +"and contains at least one letter and number."
+            );
+            break;
+          case USERNAME_TAKEN:
+            System.out.println("Username taken, please try a different username.");
+            break;
+          default:
+            break;
+        }
+      }
+    }
+  }
+
+  /**
+   * Prompts the user to see if they wish to create an admin account.
+   */
+  public static void promptCreateAdmin() {
+    Scanner input = new Scanner(System.in);
+    System.out.println("\n\n");
+    System.out.println("An admin account is required to add problems.");
+    System.out.println("So if you do not already have one already, you should create one.");
+    System.out.print("Do you wish to create a new admin account (y/n): ");
+    String answer = input.nextLine();
+    while (!answer.equals("y") && !answer.equals("n")) {
+      System.out.println("Please enter a valid option and try again.");
+      System.out.print("Do you wish to create a new admin account (y/n): ");
+      answer = input.nextLine();
+    }
+    if (answer.equals("y")) {
+      createAdmin(input);
+    }
+
+    input.close();
+  }
+
+  /**
+   * Starts the web server and add necessary routes.
+   *
+   * @param port The port at which to start the server at.
+   */
   public static void startWebServer(int port) {
     WebServer server = new WebServer(port);
     SessionCleaner sessCleaner = new SessionCleaner();
@@ -151,5 +219,13 @@ public class Main {
     server.route("/problem-viewing-script.js", staticHandler);
 
     server.run();
+  }
+
+
+  public static void main(String[] args) {
+    Main.initialize();
+    promptCreateAdmin();
+    Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
+    Main.startWebServer(5000);
   }
 }
