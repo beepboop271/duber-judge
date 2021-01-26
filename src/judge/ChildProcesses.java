@@ -180,7 +180,6 @@ public class ChildProcesses {
     } else {
       for (OSProcess p : newProcesses) {
         String processName = p.getName();
-        // System.out.println(processName + " " + targetProcessName + " " + activeChildProcesses.containsKey(p.getProcessID()));
         if (processName.equals(targetProcessName)) {
           return p.getProcessID();
         }
@@ -254,6 +253,5 @@ public class ChildProcesses {
     public void stop() {
       this.running = false;
     }
-
   }
 }

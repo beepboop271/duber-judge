@@ -201,9 +201,6 @@ public class ProfileHandler implements RouteTarget {
           )
         );
       }
-
-      // TODO: we need total amount of submissions from db
-      int submissionsCount = results.size();
       // TODO: problems solved from db needed
       int problemsSolved = us.getProblems(uid, 0, 500).size();
       int currentPoints = us.getPoints(uid);

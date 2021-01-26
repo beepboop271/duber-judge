@@ -317,26 +317,26 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
 
   public Entity<Problem> getNested(long id) throws RecordNotFoundException {
     String sql =
-       "SELECT\n"
+      "SELECT\n"
       +"  a.*,\n"
-      +"  testcases.id t_id,\n"
-      +"  testcases.batch_id t_bid,\n"
-      +"  testcases.creator_id t_cid,\n"
-      +"  testcases.sequence t_seq,\n"
-      +"  testcases.input t_in,\n"
-      +"  testcases.output t_out\n"
-      +"FROM testcases\n"
-      +"  INNER JOIN (\n"
+      +"  problems.*\n"
+      +"FROM problems\n"
+      +"  LEFT JOIN (\n"
       +"    SELECT\n"
-      +"      problems.*,\n"
+      +"      testcases.id t_id,\n"
+      +"      testcases.batch_id t_bid,\n"
+      +"      testcases.creator_id t_cid,\n"
+      +"      testcases.sequence t_seq,\n"
+      +"      testcases.input t_in,\n"
+      +"      testcases.output t_out,\n"
       +"      batches.id b_id,\n"
       +"      batches.creator_id b_cid,\n"
       +"      batches.sequence b_seq,\n"
       +"      batches.points b_points,\n"
       +"      batches.problem_id b_pid\n"
-      +"    FROM problems INNER JOIN batches ON problems.id = batches.problem_id\n"
-      +"    WHERE problems.id = ?\n"
-      +"  ) AS a ON testcases.batch_id = a.b_id\n"
+      +"    FROM batches LEFT JOIN testcases ON testcases.id = b_id\n"
+      +"  ) AS a ON a.b_pid = problems.id\n"
+      +"WHERE problems.id = ?\n"
       +"ORDER BY a.b_id;";
 
     PreparedStatement ps = null;
@@ -360,14 +360,17 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
         if (!initialized) {
           problem = this.getProblemFromResultSet(result);
           batchId = result.getLong("b_id");
-          batch = new Entity<Batch>(
-            batchId,
-            new Batch(
-              result.getLong("b_pid"),
-              result.getLong("b_cid"),
-              result.getInt("b_seq"),
-              result.getInt("b_points")
-          ));
+          if (batchId != 0) {
+
+            batch = new Entity<Batch>(
+              batchId,
+              new Batch(
+                result.getLong("b_pid"),
+                result.getLong("b_cid"),
+                result.getInt("b_seq"),
+                result.getInt("b_points")
+            ));
+          }
           initialized = true;
         }
         //new batch
@@ -375,27 +378,32 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
           batch.getContent().setTestcases(testcases);
           batches.add(batch);
           batchId = result.getLong("b_id");
-          batch = new Entity<Batch>(
-            batchId,
-            new Batch(
-              result.getLong("b_pid"),
-              result.getLong("b_cid"),
-              result.getInt("b_seq"),
-              result.getInt("b_points")
-          ));
+          if (batchId != 0) {
+            batch = new Entity<Batch>(
+              batchId,
+              new Batch(
+                result.getLong("b_pid"),
+                result.getLong("b_cid"),
+                result.getInt("b_seq"),
+                result.getInt("b_points")
+            ));
+          }
           testcases = new ArrayList<>();
         }
 
-        testcases.add(new Entity<Testcase>(
-          result.getLong("t_id"),
-          new Testcase(
-            result.getLong("t_bid"),
-            result.getLong("t_cid"),
-            result.getInt("t_seq"),
-            result.getString("t_in"),
-            result.getString("t_out")
-          ))
-        );
+        //if testcases match
+        if (result.getLong("t_id") != 0) {
+          testcases.add(new Entity<Testcase>(
+            result.getLong("t_id"),
+            new Testcase(
+              result.getLong("t_bid"),
+              result.getLong("t_cid"),
+              result.getInt("t_seq"),
+              result.getString("t_in"),
+              result.getString("t_out")
+            ))
+          );
+        }
 
 
       }
@@ -406,7 +414,7 @@ public class ProblemDao implements Dao<Problem>, Updatable<ProblemField> {
         batches.add(batch);
         problem.getContent().setBatches(batches);
       } else {
-        problem = this.get(id);
+        throw new RecordNotFoundException();
       }
 
 

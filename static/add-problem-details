@@ -168,7 +168,7 @@ and so any of these pairs could have also been used in output. There is no pairs
           }
           input.form-control.range#output(name="outputLimit" type="number" min="0" max="9999999" data-bind="value:points" required="");
         }
-		
+
 		div.mb-3 {
           label(for="time") {
             "Time limit (ms):"
