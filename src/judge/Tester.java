@@ -188,16 +188,16 @@ public class Tester {
 
       } catch (InternalErrorException e) {
         return this.fail(ExecutionStatus.INTERNAL_ERROR, e, true, result);
-      } catch (ProcessNotFoundException e) {
-        return this.fail(ExecutionStatus.WRONG_ANSWER, e, false, result);
       }
 
       int runDurationMillis = 0;
       // write input, wait for output, and read output
       try {
-        BufferedOutputStream bufferedStdin = new BufferedOutputStream(stdin);
-        bufferedStdin.write(input.getBytes());
-        bufferedStdin.flush();
+        if (input.trim().length() > 0) {
+          BufferedOutputStream bufferedStdin = new BufferedOutputStream(stdin);
+          bufferedStdin.write(input.getBytes());
+          bufferedStdin.flush();
+        }
         long start = System.currentTimeMillis();
         program.waitFor(this.timeLimitMillis, TimeUnit.MILLISECONDS);
         long end = System.currentTimeMillis();
@@ -286,6 +286,7 @@ public class Tester {
         }
       }
       testcaseRun.setOutput(programOutput);
+      Judger.display(testcaseRun);
       return testcaseRun;
     }
 
