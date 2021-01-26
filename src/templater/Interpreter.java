@@ -19,7 +19,7 @@ import templater.language.StringResolvables;
  * @author Paula Yuan
  * @version 1.0
  */
-class Interpreter {
+public class Interpreter {
   /** The namespace map whence template-mentioned objects are retrieved. */
   private Map<String, Object> namespace;
 
@@ -47,17 +47,28 @@ class Interpreter {
     while (itr.hasNext()) {
       StringResolvable toResolve = itr.next();
       if (toResolve.isTemplate()) {
-        String[] content = toResolve.getContent().split("\\.");
-        Object o = this.namespace.get(content[0]);
-        if (content.length > 1) {
-          o = resolveAttributes(o, content);
-        }
-        sb.append(o.toString());
+        sb.append(this.resolveObject(toResolve.getContent()).toString());
       } else {
         sb.append(toResolve.getContent());
       }
     }
     return sb.toString();
+  }
+
+  /**
+   * Gets the appropriate object from namespace and fetches
+   * the necessary attribute based on its templated string.
+   *
+   * @param s The templated string 
+   * @return Object, the required attribute
+   */
+  public Object resolveObject(String s) {
+    String[] content = s.split("\\.");
+    Object o = this.namespace.get(content[0]);
+    if (content.length > 1) {
+      o = resolveAttributes(o, content);
+    }
+    return o;
   }
 
   /**
@@ -243,7 +254,7 @@ class Interpreter {
 
     if (curElem instanceof Loop) {
       Loop loop = (Loop)curElem;
-      Object loopTarget = this.namespace.get(resolveStrings(loop.getTarget()));
+      Object loopTarget = this.resolveObject(this.resolveStrings(loop.getTarget()));
       return handleLoop(loopTarget, loop, interpreted);
     }
 
