@@ -1,0 +1,44 @@
+html(lang="en") {
+  head {
+    meta(name="dubj" content="pls work");
+    meta(charset="utf-8");
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no");
+
+    title {
+      "Duber Judge"
+    }
+  }
+  body {
+    a(href="/profile") {
+      "Back"
+    }
+
+    p {
+      "user: "${username}
+    }
+    p {
+      "problem: "${problemName}
+    }
+    p {
+      "language: "${language}
+    }
+    p {
+      "status: "${submissionStatus}
+    }
+    p {
+      "points: "${points}
+    } 
+    p {
+      "Run duration (ms): "${runDuration}" ms"
+    }
+    p {
+      "Memory used (bytes): "${memoryUsed}" bytes"
+    }
+    p {
+      "Source code: "
+    }
+    p {
+      ${source}
+    }
+  }
+}

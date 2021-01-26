@@ -37,10 +37,6 @@ public class PublicProblemHandler implements RouteTarget {
    */
   private PublicService ps;
   /**
-   * The problem service this handler uses for db interaction.
-   */
-  private ProblemService prs;
-  /**
    * The session service this handler uses for db interaction.
    */
   private SessionService ss;
@@ -54,7 +50,6 @@ public class PublicProblemHandler implements RouteTarget {
    */
   public PublicProblemHandler() {
     this.ps = new PublicService();
-    this.prs = new ProblemService();
     this.ss = new SessionService();
     this.us = new UserService();
   }

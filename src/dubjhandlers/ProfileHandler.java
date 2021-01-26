@@ -159,7 +159,8 @@ public class ProfileHandler implements RouteTarget {
     Entity<User> user = null;
 
     try {
-      curUser = this.us.getUser(curSession.getUserId()).getContent().getUsername();
+      curUser =
+        this.us.getUser(curSession.getUserId()).getContent().getUsername();
       user = this.us.getUser(username);
     } catch (RecordNotFoundException e) {
       return Response.notFoundHtml("profile");
@@ -191,7 +192,10 @@ public class ProfileHandler implements RouteTarget {
         // is okay
         problems.add(
           new ProfileProblem(
-            "/problem/"+result.getSubmission().getProblemId(),
+            "/problem/"
+              +result.getSubmission().getProblemId()
+              +"/submissions/"
+              +entity.getId(),
             prob.getCategory(),
             prob.getTitle(),
             prob.getPoints(),
@@ -211,7 +215,8 @@ public class ProfileHandler implements RouteTarget {
       templateParams.put("problemsLink", "/problems");
       templateParams.put("profileLink", "/profile/"+curUser);
       templateParams.put("username", curUser);
-      templateParams.put("submissionsCount", this.us.getSubmissions(uid, 0, 500).size());
+      templateParams
+        .put("submissionsCount", this.us.getSubmissions(uid, 0, 500).size());
       templateParams.put("problemsSolved", problemsSolved);
       templateParams.put("currentPoints", currentPoints);
       templateParams

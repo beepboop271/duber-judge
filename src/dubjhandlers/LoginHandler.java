@@ -195,7 +195,7 @@ public class LoginHandler implements RouteTarget {
       String token = ss.createSession(uid);
 
       Response r = Response.seeOther("/profile/"+username);
-      r.addCookie("token", token, 300);
+      r.addCookie("token", token, 60*30);
 
       return r;
     } catch (IllegalArgumentException e) {

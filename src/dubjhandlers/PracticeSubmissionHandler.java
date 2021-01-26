@@ -4,8 +4,12 @@ import java.util.HashMap;
 
 import dal.dao.RecordNotFoundException;
 import entities.Entity;
+import entities.ExecutionStatus;
 import entities.Language;
+import entities.Problem;
 import entities.Session;
+import entities.Submission;
+import entities.SubmissionResult;
 import entities.User;
 import services.InsufficientPermissionException;
 import services.ProblemService;
@@ -16,7 +20,6 @@ import webserver.HttpSyntaxException;
 import webserver.Request;
 import webserver.Response;
 import webserver.RouteTarget;
-
 
 /**
  * The class that handles requests to anything related to
@@ -44,7 +47,9 @@ public class PracticeSubmissionHandler implements RouteTarget {
    * The session service this handler uses for db interaction.
    */
   private SessionService ss;
-  /** The user service this handler uses for db interaction. */
+  /**
+   * The user service this handler uses for db interaction.
+   */
   private UserService us;
 
   /**
@@ -165,8 +170,10 @@ public class PracticeSubmissionHandler implements RouteTarget {
 
     String title = "";
     try {
-      title = this.prs.getProblem(Long.parseLong(req.getParam("problemId")))
-        .getContent().getTitle();
+      title =
+        this.prs.getProblem(Long.parseLong(req.getParam("problemId")))
+          .getContent()
+          .getTitle();
     } catch (RecordNotFoundException e) {
       System.out.println("problem doesn't exist");
     }
@@ -179,7 +186,8 @@ public class PracticeSubmissionHandler implements RouteTarget {
     templateParams.put("username", username);
 
     templateParams.put("problemTitle", title);
-    return Response.okHtml(Templater.fillTemplate("submitSolution", templateParams));
+    return Response
+      .okHtml(Templater.fillTemplate("submitSolution", templateParams));
   }
 
   /**
@@ -192,9 +200,6 @@ public class PracticeSubmissionHandler implements RouteTarget {
    * @return a response with the problem's submissions.
    */
   private Response getProblemSubmissions(Request req, boolean hasBody) {
-    if (this.getActiveSession(req) == null) {
-      return Response.temporaryRedirect("/login");
-    }
     return Response.internalError();
   }
 
@@ -208,10 +213,56 @@ public class PracticeSubmissionHandler implements RouteTarget {
    * @return a response with a specific submission page.
    */
   private Response getSubmission(Request req, boolean hasBody) {
-    if (this.getActiveSession(req) == null) {
+    Session currentSession = this.getActiveSession(req);
+    // Verify session and data
+    if (currentSession == null) {
       return Response.temporaryRedirect("/login");
     }
-    return Response.internalError();
+    long uid = currentSession.getUserId();
+    String username;
+
+    try {
+      Entity<User> user = this.us.getUser(uid);
+      username = user.getContent().getUsername();
+    } catch (RecordNotFoundException e) {
+      return Response.internalError();
+    }
+
+    String probStr = req.getParam("problemId");
+    String subStr = req.getParam("submissionId");
+    if (!probStr.matches("^\\d+$")) {
+      return Response.badRequest();
+    }
+
+    try {
+      // load template params
+      Problem prob = this.prs.getProblem(Long.parseLong(probStr)).getContent();
+      String probName = prob.getTitle();
+
+      Entity<SubmissionResult> subEntity =
+        this.prs.getSubmission(Long.parseLong(subStr));
+      SubmissionResult sub = subEntity.getContent();
+      ExecutionStatus stat = sub.getStatus();
+      
+      HashMap<String, Object> templateParams = new HashMap<>();
+      templateParams.put("username", username);
+      templateParams.put("problemName", probName);
+      templateParams.put("language", sub.getSubmission().getLanguage());
+      if (stat == null) {
+        templateParams.put("submissionStatus", "N/A");
+      } else {
+        templateParams.put("submissionStatus", sub.getStatus());
+      }
+      templateParams.put("points", sub.getScore()+"/"+prob.getPoints());
+      templateParams.put("runDuration", sub.getRunDurationMillis());
+      templateParams.put("memoryUsed", sub.getMemoryUsageBytes());
+      templateParams.put("source", sub.getSubmission().getCode());
+
+      return Response
+        .okHtml(Templater.fillTemplate("submission", templateParams));
+    } catch (RecordNotFoundException e) {
+      return Response.notFound();
+    }
   }
 
   /**

@@ -108,6 +108,7 @@ public class Main {
       Templater.prepareTemplate("viewProblem", Paths.get("static/view-problem"));
       Templater.prepareTemplate("leaderboard", Paths.get("static/leaderboard"));
       Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
+      Templater.prepareTemplate("submission", Paths.get("static/submission"));
       Templater.prepareTemplate("userProfileProblem", Paths.get("static/userProfileProblem"));
       Templater.prepareTemplate("adminUsers", Paths.get("static/adminUsers"));
       Templater.prepareTemplate("submitSolution", Paths.get("static/submit-solution"));
