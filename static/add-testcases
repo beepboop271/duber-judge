@@ -43,8 +43,8 @@ html(lang="en") {
             }
           }
           li.nav-item.active {
-            a.nva-link(href=${profileLink}) {
-              ${username}
+            a.nav-link(href=${profileLink}) {
+              ${user.getUsername}
             }
           }
         }
@@ -80,7 +80,7 @@ html(lang="en") {
                 for (testcase : ${batch.getTestcases}) {
                   a.list-group-item.list-group-item-action(href=${testcase.getLink}) {
                     div.d-flex.w-100.justify-content-between {
-                      h5 { 
+                      h5 {
                         "Testcase "${testcase.getSequence}
                       }
                       i.fas.fa-edit.h4 {}

@@ -45,7 +45,7 @@ html(lang="en") {
             }
           }
           li.nav-item.active {
-            a.nva-link(href=${profileLink}) {
+            a.nav-link(href=${profileLink}) {
               ${username}
             }
           }
@@ -57,7 +57,7 @@ html(lang="en") {
         ${problem.getTitle}
       }
       div.d-flex.justify-content-between {
-        textarea#problem-viewing-latex-input {${description}}
+        textarea#problem-viewing-latex-input {${problem.getDescription}}
         div#problem-viewing-latex {}
         div.list-group#submission-panel {
           a.list-group-item.list-group-item-action(href=${submitLink}) {
