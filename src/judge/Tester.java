@@ -233,6 +233,12 @@ public class Tester {
         e.printStackTrace();
       }
 
+      // if the testcase run still has not received a status,
+      // some internal error must have occurred
+      if (result.getStatus() == ExecutionStatus.PENDING) {
+        result.setStatus(ExecutionStatus.INTERNAL_ERROR);
+      }
+
       return result;
     }
 
