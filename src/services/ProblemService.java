@@ -9,6 +9,7 @@ import dal.dao.ContestSessionDao;
 import dal.dao.ProblemDao;
 import dal.dao.RecordNotFoundException;
 import dal.dao.SubmissionDao;
+import dal.dao.TestcaseRunDao;
 import entities.Clarification;
 import entities.ContestProblem;
 import entities.Entity;
@@ -18,6 +19,7 @@ import entities.PracticeProblem;
 import entities.Problem;
 import entities.Submission;
 import entities.SubmissionResult;
+import entities.TestcaseRun;
 import entities.entity_fields.ProblemField;
 import judge.Judger;
 
@@ -32,13 +34,14 @@ import judge.Judger;
  * @since 1.0.0
  */
 public class ProblemService {
-  private static final File tempFileDirectory = new File("temp/judge/");
+  private static final File TEMP_FILE_DIRECTORY = new File("temp/judge/");
 
   private ProblemDao problemDao;
   private ClarificationDao clarificationDao;
   private UserService userService;
   private SubmissionDao submissionDao;
   private ContestSessionDao contestSessionDao;
+  private TestcaseRunDao testcaseRunDao;
   private Judger judger;
 
   public ProblemService() {
@@ -47,9 +50,10 @@ public class ProblemService {
     this.userService = new UserService();
     this.submissionDao = new SubmissionDao();
     this.contestSessionDao = new ContestSessionDao();
+    this.testcaseRunDao = new TestcaseRunDao();
     this.judger = new Judger(
       Runtime.getRuntime().availableProcessors(),
-      ProblemService.tempFileDirectory
+      ProblemService.TEMP_FILE_DIRECTORY
     );
   }
 
@@ -102,6 +106,9 @@ public class ProblemService {
     Entity<Problem> problem = this.problemDao.getNested(problemId);
     SubmissionResult result = judger.judge(submissionEntity, problem);
     this.submissionDao.updateResult(submissionId, result);
+    for (TestcaseRun run : result.getTestcaseRuns()) {
+      this.testcaseRunDao.add(run);
+    }
 
     Problem pContent = problem.getContent();
     if (pContent instanceof ContestProblem) {

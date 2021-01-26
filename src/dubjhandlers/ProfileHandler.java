@@ -75,12 +75,10 @@ public class ProfileHandler implements RouteTarget {
    * @return a response to the retrieval request.
    */
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
-    switch (req.getEndResource()) {
-      case "profile":
-        return this.getProfileRedirect(req, hasBody);
-      default:
-        return this.loadProfile(req, hasBody);
+    if (req.getParam("username") == null) {
+      return this.getProfileRedirect(req, hasBody);
     }
+    return this.loadProfile(req, hasBody);
   }
 
   // TODO: hasSession would be nice on db
@@ -156,21 +154,31 @@ public class ProfileHandler implements RouteTarget {
     if (curSession == null) {
       return Response.temporaryRedirect("/login");
     }
+    String curUser = "";
+    String username = req.getParam("username");
+    Entity<User> user = null;
 
-    long uid = curSession.getUserId();
-    Entity<User> curUser;
-    // TODO: necessary?
     try {
-      curUser = us.getUser(uid);
+      curUser = this.us.getUser(curSession.getUserId()).getContent().getUsername();
+      user = this.us.getUser(username);
     } catch (RecordNotFoundException e) {
       return Response.notFoundHtml("profile");
     }
 
     // Load information for template
+    long uid = user.getId();
+    String data = req.getQuery("data");
+    if (data == null) {
+      data = "submissions";
+    }
     try {
-      String username = curUser.getContent().getUsername();
-      ArrayList<Entity<SubmissionResult>> results =
-        us.getSubmissions(uid, 0, 500);
+      ArrayList<Entity<SubmissionResult>> results = null;
+      if (data.equals("submissions")) {
+        results = us.getSubmissions(uid, 0, 500);
+      } else {
+        results = us.getProblems(uid, 0, 500);
+      }
+
       ArrayList<ProfileProblem> problems = new ArrayList<>();
 
       // Get a list of all submissions for template
@@ -183,7 +191,7 @@ public class ProfileHandler implements RouteTarget {
         // is okay
         problems.add(
           new ProfileProblem(
-            "/problem/"+entity.getId(),
+            "/problem/"+result.getSubmission().getProblemId(),
             prob.getCategory(),
             prob.getTitle(),
             prob.getPoints(),
@@ -204,9 +212,9 @@ public class ProfileHandler implements RouteTarget {
       HashMap<String, Object> templateParams = new HashMap<>();
       templateParams.put("leaderboardLink", "/leaderboard");
       templateParams.put("problemsLink", "/problems");
-      templateParams.put("profileLink", "/profile/"+username);
-      templateParams.put("username", username);
-      templateParams.put("submissionsCount", submissionsCount);
+      templateParams.put("profileLink", "/profile/"+curUser);
+      templateParams.put("username", curUser);
+      templateParams.put("submissionsCount", this.us.getSubmissions(uid, 0, 500).size());
       templateParams.put("problemsSolved", problemsSolved);
       templateParams.put("currentPoints", currentPoints);
       templateParams
@@ -219,9 +227,17 @@ public class ProfileHandler implements RouteTarget {
 
       String body;
       if (us.isAdmin(uid)) {
-        body = Templater.fillTemplate("adminProfile", templateParams);
+        if (data.equals("submissions")) {
+          body = Templater.fillTemplate("adminProfile", templateParams);
+        } else {
+          body = Templater.fillTemplate("adminProfileProblem", templateParams);
+        }
       } else {
-        body = Templater.fillTemplate("userProfile", templateParams);
+        if (data.equals("submissions")) {
+          body = Templater.fillTemplate("userProfile", templateParams);
+        } else {
+          body = Templater.fillTemplate("userProfileProblem", templateParams);
+        }
       }
 
       return Response.okNoCacheHtml(body, hasBody);

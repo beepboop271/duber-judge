@@ -504,7 +504,12 @@ public class Request extends HttpMessage {
       }
       try {
         String key = URLDecoder.decode(paramTokens[0], StandardCharsets.UTF_8.name());
-        String value = URLDecoder.decode(paramTokens[1], StandardCharsets.UTF_8.name());
+        String value;
+        if (paramTokens.length > 1) {
+          value = URLDecoder.decode(paramTokens[1], StandardCharsets.UTF_8.name());
+        } else {
+          value = "";
+        }
         toStoreIn.put(key, value);
       } catch (UnsupportedEncodingException e) {
         System.out.println("this should never happen");

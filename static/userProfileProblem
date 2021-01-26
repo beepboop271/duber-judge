@@ -72,12 +72,12 @@ html(lang="en") {
           div.card-header {
             ul.nav.nav-tabs.card-header-tabs {
               li.nav-item {
-                a.nav-link.text-dark.active(href=${userSubmissionsLink}) {
+                a.nav-link.text-dark(href=${userSubmissionsLink}) {
                   "Submissions"
                 }
               }
               li.nav-item {
-                a.nav-link.text-dark(href=${userProblemsLink}) {
+                a.nav-link.text-dark.active(href=${userProblemsLink}) {
                   "Problems"
                 }
               }

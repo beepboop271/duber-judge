@@ -16,13 +16,7 @@ import dubjhandlers.ProfileHandler;
 import dubjhandlers.PublicProblemHandler;
 import dubjhandlers.StaticHandler;
 import judge.ChildProcesses;
-import entities.Category;
-import entities.PublishingState;
-import entities.entity_fields.ContestField;
-import entities.entity_fields.ProblemField;
-import services.AdminService;
 import services.InvalidArguments;
-import services.ProblemService;
 import services.SessionCleaner;
 import services.UserService;
 import templater.Templater;
@@ -111,10 +105,10 @@ public class Main {
     sessCleaner.start();
 
     try {
-      Templater
-        .prepareTemplate("viewProblem", Paths.get("static/view-problem"));
+      Templater.prepareTemplate("viewProblem", Paths.get("static/view-problem"));
       Templater.prepareTemplate("leaderboard", Paths.get("static/leaderboard"));
       Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
+      Templater.prepareTemplate("userProfileProblem", Paths.get("static/userProfileProblem"));
       Templater.prepareTemplate("adminUsers", Paths.get("static/adminUsers"));
       Templater.prepareTemplate("submitSolution", Paths.get("static/submit-solution"));
       Templater
@@ -127,6 +121,7 @@ public class Main {
         .prepareTemplate("addProblemDetails", Paths.get("static/add-problem-details"));
       Templater
         .prepareTemplate("addTestcases", Paths.get("static/add-testcases"));
+      Templater.prepareTemplate("adminProfileProblem", Paths.get("static/adminProfileProblem"));
       Templater
         .prepareTemplate("addTestcaseDetails", Paths.get("static/add-testcase-details"));
     } catch (IOException e) {
@@ -198,6 +193,7 @@ public class Main {
     server.route("/admin/clarifications", admin);
     server.route("/admin/restrictions", admin);
     server.route("/admin/contests", admin);
+    server.route("/admin/users", admin);
     server.route("/admin/clarifications/:clarificationId", admin);
     server.route("/admin/problems", adminProblem);
     server.route("/admin/problems/add", adminProblem);
@@ -230,6 +226,7 @@ public class Main {
     Main.initialize();
     promptCreateAdmin();
     Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
+    System.out.println("Server started at 5000");
     Main.startWebServer(5000);
   }
 }

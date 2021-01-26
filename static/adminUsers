@@ -10,9 +10,9 @@ html(lang="en") {
 
     script(src="https://kit.fontawesome.com/0bb4fefb30.js" crossorigin="anonymous") {}
 
-    link(rel="stylesheet" href="./static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
+    link(rel="stylesheet" href="/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
-    link(rel="stylesheet" href="./styles.css");
+    link(rel="stylesheet" href="/styles.css");
 
   }
   body {
@@ -34,17 +34,17 @@ html(lang="en") {
             }
           }
           li.nav-item {
-            a.nav-link(href=${leaderboardLink}) {
+            a.nav-link(href="/leaderboard") {
               "Leaderboard"
             }
           }
           li.nav-item {
-            a.nav-link(href=${problemsLink}) {
+            a.nav-link(href="/problems") {
               "Practice Problems"
             }
           }
           li.nav-item.active {
-            a.nav-link(href=${profileLink}) {
+            a.nav-link(href="/profile") {
               ${user.getUsername}
             }
           }
@@ -64,7 +64,7 @@ html(lang="en") {
                 "Admin"
               }
             }
-            a.settings-logo-wrapper text-dark(href="/") {
+            a.settings-logo-wrapper.text-dark(href="/") {
               i.fas.fa-cog{}
             }
           }
@@ -76,27 +76,27 @@ html(lang="en") {
           div.card-header {
             ul.nav.nav-tabs.card-header-tabs {
               li.nav-item {
-                a.nav-link.text-dark.active(href=${adminUsersLink}){}
+                a.nav-link.text-dark.active(href="/admin/users"){"Users"}
               }
               li.nav-item {
-                a.nav-link.text-dark(href=${adminProblemsLink}){}
+                a.nav-link.text-dark(href="/admin/problems"){"Problems"}
               }
             }
           }
           div.card-body {
             div.list-group.user.problem-list {
-              for (user : users) {
-                a.list-group-item.list-group-item-action(href=${user.getLink}){
+              for (otherUser : users) {
+                a.list-group-item.list-group-item-action(href=${otherUser.getLink}){
                   div.d-flex.w-100.justify-content-between {
                     h5.mb-1 {
-                      ${user.getUsername}
+                      ${otherUser.getUsername}
                     }
                   }
                   small.text-muted.mr-4 {
-                    "Points: "${user.getPoints}
+                    "Points: "${otherUser.getPoints}
                   }
                   small.text-muted.mr-4 {
-                    "Num Problems: "${user.getProblemsSolved}
+                    "Num Problems: "${otherUser.getProblemsCount}
                   }
                 }
               }
@@ -105,8 +105,8 @@ html(lang="en") {
         }
       }
     }
-    script(src="./static/vendored/jquery-3.4.1.slim.min.js") {}
-    script(src="./static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
-    script(src="./scripts.js") {}
+    script(src="/vendored/jquery-3.4.1.slim.min.js") {}
+    script(src="/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="/scripts.js") {}
   }
 }
