@@ -66,7 +66,7 @@ public class Interpreter {
     String[] content = s.split("\\.");
     Object o = this.namespace.get(content[0]);
     if (content.length > 1) {
-      o = resolveAttributes(o, content);
+      o = this.resolveAttributes(o, content);
     }
     return o;
   }
