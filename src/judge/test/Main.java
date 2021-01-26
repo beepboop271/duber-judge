@@ -148,28 +148,48 @@ public class Main {
       directory
     );
     ArrayList<Submitter> submitters = new ArrayList<>();
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s1, p1, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s2, p1, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s3, p1, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s4, p1, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s5, p1, judger));
-    }
-    for (int i = 0; i < 3; i++) {
-      submitters.add(new Submitter(s6, p1, judger));
-    }
-    submitters.add(new Submitter(s7, p1, judger));
-    submitters.add(new Submitter(s8, p1, judger));
-    submitters.add(new Submitter(s1, p1, judger));
-    submitters.add(new Submitter(s9, p1, judger));
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s1, p1, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s2, p1, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s3, p1, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s4, p1, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s5, p1, judger));
+    // }
+    // for (int i = 0; i < 3; i++) {
+    //   submitters.add(new Submitter(s6, p1, judger));
+    // }
+    // submitters.add(new Submitter(s7, p1, judger));
+    // submitters.add(new Submitter(s8, p1, judger));
+    // submitters.add(new Submitter(s1, p1, judger));
+    // submitters.add(new Submitter(s9, p1, judger));
+
+    Problem p2 =
+      new ContestProblem(
+        null, 0L, null, null, null, null, 10, 5000, 100*1024, 1, 0, 5, 0L, 0,
+        Arrays.asList(
+          new Entity<>(0, new Batch(
+            0L, 0L, 1, 5,
+            Arrays.asList(
+              new Entity<>(0, new Testcase(0, "", "hello world"))
+            )
+          ))
+        ),
+        null
+      );
+    Submission s10 = new Submission(
+      "print('hello world')",
+      Language.PYTHON,
+      new Timestamp(System.currentTimeMillis())
+    );
+    submitters.add(new Submitter(s10, p2, judger));
     System.out.println("starting to judge");
     ArrayList<Thread> threads = new ArrayList<>();
     for (Submitter s : submitters) {

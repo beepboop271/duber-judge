@@ -257,13 +257,13 @@ public class Judger {
     System.out.println();
   }
 
-  // public static void display(TestcaseRun run) {
-  //   System.out.println("Testcase: " + run.getTestcase() + " of submission " + run.getSubmission());
-  //   System.out.println("Status: " + run.getStatus());
-  //   System.out.println("Run duration (milliseconds): " + run.getRunDurationMillis());
-  //   System.out.println("Memory used (bytes): " + run.getMemoryUsedBytes());
-  //   System.out.println("Output: " + run.getOutput());
-  //   System.out.println();
-  // }
+  public static void display(TestcaseRun run) {
+    System.out.println("Testcase run: " + run + " of batch " + run.getBatchId());
+    System.out.println("Status: " + run.getStatus());
+    System.out.println("Run duration (milliseconds): " + run.getRunDurationMillis());
+    System.out.println("Memory used (bytes): " + run.getMemoryUsageBytes());
+    System.out.println("Output: " + run.getOutput());
+    System.out.println();
+  }
 
 }
