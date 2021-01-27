@@ -8,7 +8,7 @@ package entities;
  * Created <b>2021-01-25</b>.
  *
  * @since 0.0.7
- * @version1.0.0
+ * @version 1.0.0
  * @author Joseph Wang, Shari Sun
  */
 public class ProfileProblem {

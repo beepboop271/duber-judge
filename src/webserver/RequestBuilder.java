@@ -40,7 +40,7 @@ import java.util.HashMap;
  * will yield a different request.
  *
  * @since 0.0.4
- * @version1.0.0
+ * @version 1.0.0
  * @author Joseph Wang
  * @see Request
  */
