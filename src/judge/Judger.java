@@ -20,11 +20,12 @@ import judge.launcher.SourceLauncher;
 import judge.launcher.SourceLauncherService;
 
 /**
- * A {@code Judger} judges submissions and returns {@code SubmissionResult}.
- * It contains a fixed thread pool to submit its tasks, and a file directory
- * for all temporary files and folders generated during the judging process.
- * After a submission is processed, all related resources, files, and directories
- * will be removed.
+ * A {@code Judger} judges submissions and returns
+ * {@code SubmissionResult}. It contains a fixed thread pool
+ * to submit its tasks, and a file directory for all
+ * temporary files and folders generated during the judging
+ * process. After a submission is processed, all related
+ * resources, files, and directories will be removed.
  * <p>
  * Created on 2021.01.08.
  *
@@ -37,19 +38,24 @@ public class Judger {
   /** An {@code ExecutorService} to submit its tasks. */
   private ExecutorService pool;
   /**
-   * A {@code File} object representing the file directory for all temporary files
-   * and folders generated during the judging process.
+   * A {@code File} object representing the file directory for
+   * all temporary files and folders generated during the
+   * judging process.
    */
   private File tempFileDirectory;
 
   /**
-   * Creates a new {@code Judger} instance with the size of the fixed thread pool
-   * and a file directory for all temporary files and folders generated during
-   * the judging process.
+   * Creates a new {@code Judger} instance with the size of
+   * the fixed thread pool and a file directory for all
+   * temporary files and folders generated during the judging
+   * process.
    *
-   * @param poolSize          The size of the fixed thread pool to submit its tasks.
-   * @param tempFileDirectory A file directory for all temporary files and folders
-   *                          generated during the judging process.
+   * @param poolSize          The size of the fixed thread
+   *                          pool to submit its tasks.
+   * @param tempFileDirectory A file directory for all
+   *                          temporary files and folders
+   *                          generated during the judging
+   *                          process.
    */
   public Judger(int poolSize, File tempFileDirectory) {
     this.pool = Executors.newFixedThreadPool(poolSize);
@@ -57,16 +63,19 @@ public class Judger {
   }
 
   /**
-   * Judges a {@code Submission} according to the {@code Problem} given,
-   * and returns a {@code SubmissionResult} containing the information of the
-   * judge result.
+   * Judges a {@code Submission} according to the
+   * {@code Problem} given, and returns a
+   * {@code SubmissionResult} containing the information of
+   * the judge result.
    *
-   * @param submission  The submission {@code Entity} to be judged.
-   * @param problem     The problem used for judging the submission, containing
-   *                    necessary information such as batches and
-   *                    time/memory/output limits.
-   * @return            A {@code SubmissionResult} containing the information of
-   *                    the judge result.
+   * @param submission The submission {@code Entity} to be
+   *                   judged.
+   * @param problem    The problem used for judging the
+   *                   submission, containing necessary
+   *                   information such as batches and
+   *                   time/memory/output limits.
+   * @return A {@code SubmissionResult} containing the
+   *         information of the judge result.
    */
   public SubmissionResult judge(Entity<Submission> submission, Entity<Problem> problem) {
     SubmissionResult result = new SubmissionResult(submission.getContent());
@@ -117,14 +126,18 @@ public class Judger {
   }
 
   /**
-   * Tests the given submission against all batches of testcases in the given
-   * problem, updates and returns the {@code SubmissionResult}.
+   * Tests the given submission against all batches of
+   * testcases in the given problem, updates and returns the
+   * {@code SubmissionResult}.
    *
-   * @param submission  The {@code Submission} to test.
-   * @param problem     The {@code Problem} that contains batches of testcases.
-   * @param launcher    The {@code SourceLauncher} to launch the submitted program.
-   * @param result      The {@code SubmissionResult} to be updated.
-   * @return            The updated {@code SubmissionResult}.
+   * @param submission The {@code Submission} to test.
+   * @param problem    The {@code Problem} that contains
+   *                   batches of testcases.
+   * @param launcher   The {@code SourceLauncher} to launch
+   *                   the submitted program.
+   * @param result     The {@code SubmissionResult} to be
+   *                   updated.
+   * @return The updated {@code SubmissionResult}.
    */
   @SuppressWarnings("unchecked")
   private SubmissionResult testSubmission(
@@ -171,17 +184,21 @@ public class Judger {
   }
 
   /**
-   * Grades and updates the {@code SubmissionResult} according to the testcase runs
-   * of a batch. If all runs are cleared successfully, the {@code SubmissionResult}
-   * receives the points of the batch. Otherwise, no points will be added. The
-   * {@code SubmissionResult}'s status, run duration, and memory usage will also
-   * be updated according to the testcase runs.
+   * Grades and updates the {@code SubmissionResult} according
+   * to the testcase runs of a batch. If all runs are cleared
+   * successfully, the {@code SubmissionResult} receives the
+   * points of the batch. Otherwise, no points will be added.
+   * The {@code SubmissionResult}'s status, run duration, and
+   * memory usage will also be updated according to the
+   * testcase runs.
    *
-   * @param points        The points this batch worth.
-   * @param testcaseRuns  An array of {@code TestcaseRun}, representing the
-   *                      submission's test results of the batch's testcases.
-   * @param result        The {@code SubmissionResult} to be updated.
-   * @return              The updated {@code SubmissionResult}.
+   * @param points       The points this batch worth.
+   * @param testcaseRuns An array of {@code TestcaseRun},
+   *                     representing the submission's test
+   *                     results of the batch's testcases.
+   * @param result       The {@code SubmissionResult} to be
+   *                     updated.
+   * @return The updated {@code SubmissionResult}.
    */
   private SubmissionResult gradeBatch(
     int points,
@@ -211,20 +228,25 @@ public class Judger {
   }
 
   /**
-   * Updates and returns the given {@code SubmissionResult} object upon the fail
-   * of the judging process (can be caused either by the judge or the submitted
-   * program). If the submission used a {@code SourceLauncher}, the launcher will
-   * be closed as well.
+   * Updates and returns the given {@code SubmissionResult}
+   * object upon the fail of the judging process (can be
+   * caused either by the judge or the submitted program). If
+   * the submission used a {@code SourceLauncher}, the
+   * launcher will be closed as well.
    *
-   * @param status          The status of the {@code SubmissionResult}.
-   * @param exception       The exception that caused the failing.
-   * @param printStackTrace Whether or not the stack trace of the exception
-   *                        should be printed.
-   * @param launcher        The {@code SourceLauncher} used for this submission,
-   *                        or null if the submission has not received a
+   * @param status          The status of the
+   *                        {@code SubmissionResult}.
+   * @param exception       The exception that caused the
+   *                        failing.
+   * @param printStackTrace Whether or not the stack trace of
+   *                        the exception should be printed.
+   * @param launcher        The {@code SourceLauncher} used
+   *                        for this submission, or null if
+   *                        the submission has not received a
    *                        {@code SourceLauncher} yet.
-   * @param result          The {@code SubmissionResult} to be updated.
-   * @return                The updated {@code SubmissionResult}.
+   * @param result          The {@code SubmissionResult} to be
+   *                        updated.
+   * @return The updated {@code SubmissionResult}.
    */
   private SubmissionResult fail(
     ExecutionStatus status,
@@ -242,28 +264,4 @@ public class Judger {
     }
     return result;
   }
-
-
-  // // ------temp methods
-
-  public static void display(SubmissionResult submission) {
-    System.out.println("Submission: " + submission);
-    System.out.println("Language: " + submission.getSubmission().getLanguage());
-    System.out.println("Status: " + submission.getStatus());
-    System.out.println("Score: " + submission.getScore());
-    System.out.println("Run duration (milliseconds): " + submission.getRunDurationMillis());
-    System.out.println("Memory used (bytes): " + submission.getMemoryUsageBytes());
-    System.out.println("Source Code:\n" + submission.getSubmission().getCode());
-    System.out.println();
-  }
-
-  public static void display(TestcaseRun run) {
-    System.out.println("Testcase run: " + run + " of batch " + run.getBatchId());
-    System.out.println("Status: " + run.getStatus());
-    System.out.println("Run duration (milliseconds): " + run.getRunDurationMillis());
-    System.out.println("Memory used (bytes): " + run.getMemoryUsageBytes());
-    System.out.println("Output: " + run.getOutput());
-    System.out.println();
-  }
-
 }

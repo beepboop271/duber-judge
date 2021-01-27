@@ -15,14 +15,18 @@ public class UnknownLanguageException extends Exception {
   /** The serial version ID used for serialization. */
   private static final long serialVersionUID = 1L;
 
-  /** The {@code Language} that is not recognized by the judge. */
+  /**
+   * The {@code Language} that is not recognized by the judge.
+   */
   private final Language language;
 
   /**
-   * Creates a new instance of {@code UnknownLanguageException} with the
+   * Creates a new instance of
+   * {@code UnknownLanguageException} with the
    * {@code Language} that is not recognized by the judge.
    *
-   * @param language The {@code Language} that is not recognized by the judge.
+   * @param language The {@code Language} that is not
+   *                 recognized by the judge.
    */
   public UnknownLanguageException(Language language) {
     this.language = language;
