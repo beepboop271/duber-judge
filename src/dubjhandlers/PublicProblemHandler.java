@@ -9,7 +9,6 @@ import entities.Problem;
 import entities.ProfileProblem;
 import entities.Session;
 import entities.User;
-import services.ProblemService;
 import services.PublicService;
 import services.SessionService;
 import services.UserService;
@@ -28,7 +27,7 @@ import webserver.RouteTarget;
  * Created <b> 2020-01-25 </b>.
  *
  * @since 0.0.7
- * @version1.0.0
+ * @version 1.0.0
  * @author Joseph Wang, Shari Sun
  */
 public class PublicProblemHandler implements RouteTarget {

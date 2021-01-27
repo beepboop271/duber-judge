@@ -1,4 +1,3 @@
-import dal.connection.GlobalConnectionPool;
 import judge.ChildProcesses;
 
 /**

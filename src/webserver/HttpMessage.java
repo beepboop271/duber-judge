@@ -23,7 +23,7 @@ import java.util.Map;
  * Created <b> 2021-01-01 </b>
  *
  * @since 0.0.1
- * @version1.0.0
+ * @version 1.0.0
  * @author Joseph Wang
  */
 abstract class HttpMessage {

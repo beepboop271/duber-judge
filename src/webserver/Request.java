@@ -31,7 +31,7 @@ import java.util.Set;
  * Created <b> 2020-12-28 </b>
  *
  * @since 0.0.1
- * @version1.0.0
+ * @version 1.0.0
  * @author Joseph Wang, Shari Sun
  * @see <a href=
  *      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#HTTP_Requests">More
