@@ -19,8 +19,9 @@ import entities.TestcaseRun;
 import judge.launcher.SourceLauncher;
 
 /**
- * Contains a static method that tests a batch of testcases and returns a
- * {@code CompletableFuture} of the testcase runs.
+ * Contains a static method that tests a batch of testcases
+ * and returns a {@code CompletableFuture} of the testcase
+ * runs.
  * <p>
  * Created on 2021.01.08.
  *
@@ -73,8 +74,9 @@ public class Tester {
   }
 
   /**
-   * A {@Runnable} object that tests a batch of testcases and completes the given
-   * {@code CompletableFuture} with testcase runs.
+   * A {@Runnable} object that tests a batch of testcases and
+   * completes the given {@code CompletableFuture} with
+   * testcase runs.
    */
   private static class BatchRunner implements Runnable {
     private static final int BUF_SIZE = 8192;
@@ -133,8 +135,8 @@ public class Tester {
     }
 
     /**
-     * Tests each of the testcase in the batch, and completes the given
-     * {@code CompletableFuture} with testcase runs.
+     * Tests each of the testcase in the batch, and completes
+     * the given {@code CompletableFuture} with testcase runs.
      */
     @Override
     public void run() {
@@ -243,16 +245,20 @@ public class Tester {
     }
 
     /**
-     * Compares the output of the program's process to the expected output
-     * and updates the {@code TestcaseRun} result accordingly.
+     * Compares the output of the program's process to the
+     * expected output and updates the {@code TestcaseRun}
+     * result accordingly.
      * <p>
-     * Note: while judging the output, leading and trailing whitespaces are
-     * not significant, but whitespace between is.
+     * Note: while judging the output, leading and trailing
+     * whitespaces are not significant, but whitespace between
+     * is.
      *
-     * @param stdout          The {@code InputStream} of the program's process.
-     * @param expectedOutput  The expected output of the program.
-     * @param testcaseRun     The {@code TestcaseRun} to be updated.
-     * @return                The updated {@code TestcaseRun}.
+     * @param stdout         The {@code InputStream} of the
+     *                       program's process.
+     * @param expectedOutput The expected output of the program.
+     * @param testcaseRun    The {@code TestcaseRun} to be
+     *                       updated.
+     * @return The updated {@code TestcaseRun}.
      */
     private TestcaseRun judgeOutput(
       InputStream stdout,
@@ -296,16 +302,19 @@ public class Tester {
     }
 
     /**
-     * Updates and returns the given {@code TestcaseRun} object upon the fail of
-     * the judging process (can be caused either by the judge or the submitted
-     * program).
+     * Updates and returns the given {@code TestcaseRun} object
+     * upon the fail of the judging process (can be caused
+     * either by the judge or the submitted program).
      *
-     * @param status          The status of the {@code TestcaseRun}.
-     * @param exception       The exception that caused the failing.
-     * @param printStackTrace Whether or not the stack trace of the exception
-     *                        should be printed.
-     * @param run             The {@code TestcaseRun} to be updated.
-     * @return                The updated {@code TestcaseRun}.
+     * @param status          The status of the
+     *                        {@code TestcaseRun}.
+     * @param exception       The exception that caused the
+     *                        failing.
+     * @param printStackTrace Whether or not the stack trace of
+     *                        the exception should be printed.
+     * @param run             The {@code TestcaseRun} to be
+     *                        updated.
+     * @return The updated {@code TestcaseRun}.
      */
     private TestcaseRun fail(
       ExecutionStatus status,

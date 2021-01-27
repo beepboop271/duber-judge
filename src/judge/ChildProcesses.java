@@ -83,8 +83,8 @@ public class ChildProcesses {
    * @param memoryLimitKb   The maximum amount of memory the
    *                        process is allowed to use, in
    *                        kilobytes.
-   * @throws InternalErrorException   if an internal error
-   *                                  occurs.
+   * @throws InternalErrorException if an internal error
+   *                                occurs.
    */
   public static synchronized ChildProcess launchChildProcess(
     SourceLauncher launcher,
