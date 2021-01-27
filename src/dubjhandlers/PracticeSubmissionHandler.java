@@ -8,7 +8,6 @@ import entities.Entity;
 import entities.Language;
 import entities.Problem;
 import entities.ProfileProbSubmission;
-import entities.ProfileProblem;
 import entities.Session;
 import entities.SubmissionResult;
 import entities.User;

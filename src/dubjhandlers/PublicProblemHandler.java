@@ -9,7 +9,6 @@ import entities.Problem;
 import entities.ProfileProblem;
 import entities.Session;
 import entities.User;
-import services.ProblemService;
 import services.PublicService;
 import services.SessionService;
 import services.UserService;
