@@ -195,7 +195,7 @@ public class Tester {
       int runDurationMillis = 0;
       // write input, wait for output, and read output
       try {
-        if (input.trim().length() > 0) {
+        if ((input.trim().length() > 0) && (program.isAlive())) {
           BufferedOutputStream bufferedStdin = new BufferedOutputStream(stdin);
           bufferedStdin.write(input.getBytes());
           bufferedStdin.flush();
