@@ -34,7 +34,8 @@ import webserver.RouteTarget;
  * <p>
  * Created <b> 2020-01-25 </b>.
  *
- * @since 0.0.7 @version1.0.0
+ * @since 1.0.0
+ * @version 1.0.0
  * @author Shari Sun, Joseph Wang
  */
 public class PracticeSubmissionHandler implements RouteTarget {
