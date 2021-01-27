@@ -1,7 +1,8 @@
 package judge;
 
 /**
- * Thrown when a child process cannot be found when searching by its process id.
+ * Thrown when a child process cannot be found when
+ * searching by its process id.
  * <p>
  * Created on 2021.01.22.
  *
@@ -20,7 +21,8 @@ public class ProcessNotFoundException extends Exception {
   }
 
   /**
-   * Creates a new instance of {@code ProcessNotFoundException} with an error message.
+   * Creates a new instance of
+   * {@code ProcessNotFoundException} with an error message.
    *
    * @param message The error message.
    */

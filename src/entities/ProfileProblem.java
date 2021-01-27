@@ -8,8 +8,8 @@ package entities;
  * Created <b>2021-01-25</b>.
  *
  * @since 0.0.7
- * @version 0.0.7
- * @author Joseph Wang
+ * @version 1.0.0
+ * @author Joseph Wang, Shari Sun
  */
 public class ProfileProblem {
   /** The link to this problem. */
@@ -29,8 +29,16 @@ public class ProfileProblem {
   /** This problem's publishing state. */
   private PublishingState publishingState;
 
-  // TODO: potentially reformat to simply accepting a problem
-  // and associated fields
+  private Language language;
+
+  private ExecutionStatus status;
+
+  private double runDuration;
+
+  private double memoryUsage;
+
+  private int userSubmissions;
+
   /**
    * Constructs a new ProfileProblem. Assumes all problems
    * made using this constructor is published.
@@ -66,6 +74,53 @@ public class ProfileProblem {
     this.publishingState = PublishingState.PUBLISHED;
   }
 
+  // TODO: potentially reformat to simply accepting a problem
+  // and associated fields
+  /**
+   * Constructs a new ProfileProblem. Assumes all problems
+   * made using this constructor is published.
+   *
+   * @param link               The link to this problem.
+   * @param category           This problem's category.
+   * @param title              This problem's title.
+   * @param points             The amount of points this
+   *                           problem is worth.
+   * @param userScore          The amount of points the user
+   *                           scored on this problem.
+   * @param numSubmissions     This problem's number of total
+   *                           submissions.
+   * @param clearedSubmissions This problem's number of
+   *                           cleared submissions.
+   */
+  public ProfileProblem(
+    String link,
+    Category category,
+    String title,
+    int points,
+    int userScore,
+    int numSubmissions,
+    int clearedSubmissions,
+    Language language,
+    ExecutionStatus status,
+    double runDuration,
+    double memoryUsage,
+    int userSubmissions
+  ) {
+    this.link = link;
+    this.category = category;
+    this.title = title;
+    this.points = points;
+    this.userScore = userScore;
+    this.numSubmissions = numSubmissions;
+    this.clearedSubmissions = clearedSubmissions;
+    this.publishingState = PublishingState.PUBLISHED;
+    this.language = language;
+    this.status = status;
+    this.runDuration = runDuration;
+    this.memoryUsage = memoryUsage;
+    this.userSubmissions = userSubmissions;
+  }
+
   /**
    * Constructs a new ProfileProblem.
    *
@@ -91,6 +146,11 @@ public class ProfileProblem {
     int userScore,
     int numSubmissions,
     int clearedSubmissions,
+    Language language,
+    ExecutionStatus status,
+    double runDuration,
+    double memoryUsage,
+    int userSubmissions,
     PublishingState publishingState
   ) {
     this.link = link;
@@ -101,6 +161,11 @@ public class ProfileProblem {
     this.numSubmissions = numSubmissions;
     this.clearedSubmissions = clearedSubmissions;
     this.publishingState = publishingState;
+    this.language = language;
+    this.status = status;
+    this.runDuration = runDuration;
+    this.memoryUsage = memoryUsage;
+    this.userSubmissions = userSubmissions;
   }
 
   /**
@@ -174,12 +239,15 @@ public class ProfileProblem {
    *
    * @return this problem's clear rate.
    */
-  public int getClearRate() {
+  public String getClearRate() {
     if (this.numSubmissions == 0) {
-      return 0;
+      return "0.00";
     }
 
-    return (this.clearedSubmissions/this.numSubmissions)*100;
+    return String.format(
+      "%.2f",
+      (this.clearedSubmissions/(double)this.numSubmissions)*100
+    );
   }
 
   /**
@@ -190,4 +258,30 @@ public class ProfileProblem {
   public PublishingState getState() {
     return this.publishingState;
   }
+
+
+  public Language getLanguage() {
+    return this.language;
+  }
+
+  public ExecutionStatus getStatus() {
+    return this.status;
+  }
+
+  public double getRunDuration() {
+    return this.runDuration;
+  }
+
+  public double getMemoryUsage() {
+    return this.memoryUsage;
+  }
+
+
+
+  public int getUserSubmissions() {
+    return this.userSubmissions;
+  }
+
+
+
 }

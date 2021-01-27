@@ -25,8 +25,8 @@ import webserver.RouteTarget;
  * Created <b> 2020-01-25 </b>.
  *
  * @since 0.0.7
- * @version 0.0.7
- * @author Joseph Wang
+ * @version 1.0.0
+ * @author Joseph Wang, Shari Sun
  */
 public class ProfileHandler implements RouteTarget {
   UserService us = new UserService();
@@ -119,7 +119,7 @@ public class ProfileHandler implements RouteTarget {
   private Response getProfileRedirect(Request req, boolean hasBody) {
     // Redirect to login if no session
     Session curSession = this.getActiveSession(req);
-    if (curSession == null) {
+    if (curSession == null || !curSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
 
@@ -151,7 +151,7 @@ public class ProfileHandler implements RouteTarget {
   private Response loadProfile(Request req, boolean hasBody) {
     // Redirect to login if no session
     Session curSession = this.getActiveSession(req);
-    if (curSession == null) {
+    if (curSession == null || !curSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     String curUser = "";
@@ -159,7 +159,8 @@ public class ProfileHandler implements RouteTarget {
     Entity<User> user = null;
 
     try {
-      curUser = this.us.getUser(curSession.getUserId()).getContent().getUsername();
+      curUser =
+        this.us.getUser(curSession.getUserId()).getContent().getUsername();
       user = this.us.getUser(username);
     } catch (RecordNotFoundException e) {
       return Response.notFoundHtml("profile");
@@ -189,21 +190,32 @@ public class ProfileHandler implements RouteTarget {
           ps.getProblem(result.getSubmission().getProblemId()).getContent();
         // TODO: doesn't account for contest problems, which i guess
         // is okay
+        String link;
+        if (data.equals("submissions")) {
+          link = "/problem/"
+            +result.getSubmission().getProblemId()
+            +"/submissions/"
+            +entity.getId();
+        } else {
+          link = "/problem/"+result.getSubmission().getProblemId();
+        }
         problems.add(
           new ProfileProblem(
-            "/problem/"+result.getSubmission().getProblemId(),
+            link,
             prob.getCategory(),
             prob.getTitle(),
             prob.getPoints(),
             result.getScore(),
             prob.getNumSubmissions(),
-            prob.getClearedSubmissions()
+            prob.getClearedSubmissions(),
+            result.getSubmission().getLanguage(),
+            result.getStatus(),
+            result.getRunDurationMillis()/1000.0,
+            result.getMemoryUsageBytes()/1024.0,
+            this.us.getProblemSubmissions(uid, result.getSubmission().getProblemId(), 0, 500).size()
           )
         );
       }
-
-      // TODO: we need total amount of submissions from db
-      int submissionsCount = results.size();
       // TODO: problems solved from db needed
       int problemsSolved = us.getProblems(uid, 0, 500).size();
       int currentPoints = us.getPoints(uid);
@@ -214,7 +226,8 @@ public class ProfileHandler implements RouteTarget {
       templateParams.put("problemsLink", "/problems");
       templateParams.put("profileLink", "/profile/"+curUser);
       templateParams.put("username", curUser);
-      templateParams.put("submissionsCount", this.us.getSubmissions(uid, 0, 500).size());
+      templateParams
+        .put("submissionsCount", this.us.getSubmissions(uid, 0, 500).size());
       templateParams.put("problemsSolved", problemsSolved);
       templateParams.put("currentPoints", currentPoints);
       templateParams

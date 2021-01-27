@@ -1,7 +1,8 @@
 package judge;
 
 /**
- * An {@code Exception} thrown when a submitted program fails to compile.
+ * An {@code Exception} thrown when a submitted program
+ * fails to compile.
  * <p>
  * Created on 2021.01.08.
  *
@@ -14,7 +15,8 @@ public class CompileErrorException extends Exception {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Creates a new {@code CompileErrorException} instance with an error message.
+   * Creates a new {@code CompileErrorException} instance with
+   * an error message.
    *
    * @param message The error message.
    */

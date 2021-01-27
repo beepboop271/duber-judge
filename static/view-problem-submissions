@@ -34,12 +34,12 @@ html(lang="en") {
             }
           }
           li.nav-item {
-            a.nav-link.active(href="/leaderboard") {
+            a.nav-link(href="/leaderboard") {
               "Leaderboard"
             }
           }
           li.nav-item {
-            a.nav-link(href="/problems") {
+            a.nav-link.active(href="/problems") {
               "Practice Problems"
             }
           }
@@ -55,22 +55,31 @@ html(lang="en") {
     div.page-container {
 
       h2 {
-        "Leaderboard"
+        "Submissions for "${problem.getTitle}
       }
 
-      div.list-group.user.leaderboard {
-        for (user : users) {
-          a.list-group-item.list-group-item-action(href=${user.getLink}) {
+      div.list-group.user.submissions-list {
+        for (submission : submissions) {
+          a.list-group-item.list-group-item-action(href=${submission.getLink}) {
             div.d-flex.w-100.justify-content-between {
               h5.mb-1 {
-                ${user.getUsername}
+                ${submission.getStatus}
+              }
+              p {
+                ${submission.getUserScore}"/"${submission.getPoints}
               }
             }
             small.text-muted.mr-4 {
-              "Points: "${user.getPoints}
+              ${submission.getLanguage}
             }
-            small.text-muted mr-4 {
-              "Num problems: "${user.getProblemsCount}
+            small.text-muted.mr-4 {
+              "Submitted by: "${submission.getUser}
+            }
+            small.text-muted.mr-4 {
+              "Run duration (s): "${submission.getRunDuration}
+            }
+            small.text-muted.mr-4 {
+              "Memory usage (kb): "${submission.getMemoryUsage}
             }
           }
         }

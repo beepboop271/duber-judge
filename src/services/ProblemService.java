@@ -39,6 +39,7 @@ public class ProblemService {
   private ProblemDao problemDao;
   private ClarificationDao clarificationDao;
   private UserService userService;
+  private AdminService adminService;
   private SubmissionDao submissionDao;
   private ContestSessionDao contestSessionDao;
   private TestcaseRunDao testcaseRunDao;
@@ -51,6 +52,7 @@ public class ProblemService {
     this.submissionDao = new SubmissionDao();
     this.contestSessionDao = new ContestSessionDao();
     this.testcaseRunDao = new TestcaseRunDao();
+    this.adminService = new AdminService();
     this.judger = new Judger(
       Runtime.getRuntime().availableProcessors(),
       ProblemService.TEMP_FILE_DIRECTORY
@@ -103,7 +105,7 @@ public class ProblemService {
     long submissionId = this.submissionDao.add(submission);
     Entity<Submission> submissionEntity = new Entity<Submission>(submissionId, submission);
 
-    Entity<Problem> problem = this.problemDao.getNested(problemId);
+    Entity<Problem> problem = this.adminService.getNestedProblem(problemId);
     SubmissionResult result = judger.judge(submissionEntity, problem);
     this.submissionDao.updateResult(submissionId, result);
     for (TestcaseRun run : result.getTestcaseRuns()) {

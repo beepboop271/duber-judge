@@ -15,8 +15,6 @@ import entities.Testcase;
 import entities.User;
 import services.AdminService;
 import services.InsufficientPermissionException;
-import services.ProblemService;
-import services.PublicService;
 import services.SessionService;
 import services.UserService;
 import templater.Templater;
@@ -32,8 +30,8 @@ import webserver.RouteTarget;
  * Created <b> 2020-01-25 </b>.
  *
  * @since 0.0.7
- * @version 0.0.7
- * @author Joseph Wang
+ * @version 1.0.0
+ * @author Joseph Wang, Shari Sun
  */
 public class AdminTestcaseHandler implements RouteTarget {
   /**
@@ -47,16 +45,6 @@ public class AdminTestcaseHandler implements RouteTarget {
    */
   private AdminService as;
   /**
-   * The problem service that this handler uses for db
-   * interaction.
-   */
-  private ProblemService prs;
-  /**
-   * The public service that this handler uses for db
-   * interaction.
-   */
-  private PublicService ps;
-  /**
    * The user service that this handler uses for db
    * interaction.
    */
@@ -68,9 +56,7 @@ public class AdminTestcaseHandler implements RouteTarget {
   public AdminTestcaseHandler() {
     this.ss = new SessionService();
     this.as = new AdminService();
-    this.prs = new ProblemService();
     this.us = new UserService();
-    this.ps = new PublicService();
   }
 
   /**
@@ -190,10 +176,10 @@ public class AdminTestcaseHandler implements RouteTarget {
   private Response getAllTestcases(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
-    String username = "Profile";
+    String username = "Sign In";
     long uid = currentSession.getUserId();
     try {
       User user = this.getAdminUser(uid);
@@ -242,7 +228,7 @@ public class AdminTestcaseHandler implements RouteTarget {
               profTestcases,
               entity.getId(),
               batch.getSequence(),
-              "/admin/problem/"+probId+"/testcases/"+entity.getId()+"add"
+              "/admin/problem/"+probId+"/testcases/"+entity.getId()+"/add"
             )
           );
         }
@@ -260,7 +246,7 @@ public class AdminTestcaseHandler implements RouteTarget {
       templateParams.put("batchPostUrl", "/admin/problem/"+probId+"/testcases");
 
       return Response
-        .okHtml(Templater.fillTemplate("addTestcases", templateParams));
+        .okNoCacheHtml(Templater.fillTemplate("addTestcases", templateParams));
     } catch (RecordNotFoundException e) {
       return Response.notFoundHtml(req.getPath());
     }
@@ -277,11 +263,11 @@ public class AdminTestcaseHandler implements RouteTarget {
   private Response getAddTestcasePage(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
-    String username = "Profile";
+    String username = "Sign In";
     try {
       User user = this.getAdminUser(uid);
       if (user == null) {
@@ -305,8 +291,7 @@ public class AdminTestcaseHandler implements RouteTarget {
     templateParams.put("problemsLink", "/problems");
     templateParams.put("profileLink", "/profile");
     templateParams.put("username", username);
-    templateParams
-      .put("postUrl", "/admin/problem/"+probId+"/testcases/"+batchIdStr+"add");
+    templateParams.put("postUrl", "/admin/problem/"+probId+"/testcases/"+batchIdStr+"/add");
 
     return Response.okNoCacheHtml(
       Templater.fillTemplate("addTestcaseDetails", templateParams)
@@ -338,7 +323,7 @@ public class AdminTestcaseHandler implements RouteTarget {
   private Response addTestcase(Request req) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
@@ -361,8 +346,8 @@ public class AdminTestcaseHandler implements RouteTarget {
       return Response.badRequest();
     }
 
-    // If body doesn't match expected, reject
-    if (!bodyParams.containsKey("input") || !bodyParams.containsKey("output")) {
+    // input can be an empty string but output can not
+    if (!bodyParams.containsKey("output")) {
       return Response.badRequest();
     }
 
@@ -376,20 +361,15 @@ public class AdminTestcaseHandler implements RouteTarget {
 
     // Create the actual testcase
     try {
-      String input = bodyParams.get("username");
-      String output = bodyParams.get("password");
-
-      Batch batch = as.getBatch(uid, batchId).getContent();
-      int sequenceNumber;
-      if (batch.getTestcases() == null) {
-        sequenceNumber = 1;
-      } else {
-        sequenceNumber = batch.getTestcases().size()+1;
+      String input = "";
+      String output = bodyParams.get("output");
+      if (bodyParams.containsKey("input")) {
+        input = bodyParams.get("input");
       }
+
+      ArrayList<Entity<Testcase>> testcases = as.getTestcasesByBatch(batchId);
+      int sequenceNumber = testcases.size()+1;
       as.createTestcase(uid, batchId, sequenceNumber, input, output);
-    } catch (RecordNotFoundException e) {
-      // Not found, return not found html
-      return Response.notFoundHtml(req.getPath());
     } catch (InsufficientPermissionException e) {
       // Forbid them from posting if they cannot
       return Response.forbidden();
@@ -411,7 +391,7 @@ public class AdminTestcaseHandler implements RouteTarget {
   private Response addBatch(Request req) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
@@ -449,7 +429,7 @@ public class AdminTestcaseHandler implements RouteTarget {
     // Create the actual testcase
     try {
       int points = Integer.parseInt(bodyParams.get("points"));
-      Problem prob = this.prs.getProblem(probId).getContent();
+      Problem prob = this.as.getNestedProblem(probId).getContent();
       int sequenceNumber;
       if (prob.getBatches() == null) {
         sequenceNumber = 1;

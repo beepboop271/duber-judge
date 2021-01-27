@@ -74,6 +74,7 @@ public class SessionService {
 
   /**
    * Updates the session data.
+   * Set userId = -1 logs them out.
    *
    * @param <T>         The type of the value that is being updated.
    * @param token       The session token.
@@ -87,7 +88,8 @@ public class SessionService {
     }
     switch (field) {
       case USER_ID:
-        Sessions.tokenToSessions.get(token).setUserId((long)value);;
+        Sessions.tokenToSessions.get(token).setUserId((Long)value);
+        break;
     }
   }
 

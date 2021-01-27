@@ -63,6 +63,7 @@ html(lang="en") {
             p.card-text {
               "Points: "${currentPoints}
             }
+            a.btn.btn-outline-dark.mt-2#logout-button(role="button" href="/logout") {"Logout"}
           }
         }
       }
@@ -101,13 +102,19 @@ html(lang="en") {
                     }
                   }
                   small.text-muted.mr-4 {
-                    "Attempted by: "${problem.getNumSubmissions}
+                    ${problem.getLanguage}
                   }
                   small.text-muted.mr-4 {
-                    "Category: "${problem.getCategory}
+                    ${problem.getStatus}
                   }
                   small.text-muted.mr-4 {
-                    "Clear rate: "${problem.getClearRate}
+                    "Submissions by user: "${problem.getUserSubmissions}
+                  }
+                  small.text-muted.mr-4 {
+                    "Run duration (s): "${problem.getRunDuration}
+                  }
+                  small.text-muted.mr-4 {
+                    "Memory usage (kb): "${problem.getMemoryUsage}
                   }
                 }
               }

@@ -15,7 +15,23 @@ import templater.language.StringResolvables;
 import templater.language.Token;
 import templater.language.TokenKind;
 
+/**
+ * Matches an entire element: header and body.
+ *
+ * <pre>
+ * Element = ElementName, [{ClassAttribute}], [IdAttribute], [AttributeList], (';' | Body);
+ * ElementName = (Identifier - Keyword), [AnyContentList];
+ * Keyword = 'for';
+ * </pre>
+ */
 class ElementMatcher extends TokenMatchable<Element> {
+  /**
+   * Reserve words that are not used as identifiers. Keywords
+   * are not parsed in the tokeniser because they might appear
+   * as identifiers in other parts of the code e.g.
+   * label(for="element"). Thus we need to resolve them here,
+   * to differentiate between loops and elements.
+   */
   private static final Set<String> keywords = new HashSet<>(
     Arrays.asList("for")
   );
@@ -30,14 +46,13 @@ class ElementMatcher extends TokenMatchable<Element> {
     ) {
       return null;
     }
-    // like AttributeContentList, except there must be an
-    // identifier as the start
     List<Token> nameList = new ArrayList<>();
     nameList.add(nameStart);
     nameList.addAll(
       new MatchUtils.ZeroOrMore<>(
         new MatchUtils.OneOf<>(
           new TokenMatcher(TokenKind.IDENTIFIER),
+          new TokenMatcher(TokenKind.STRING_LITERAL),
           new TokenMatcher(TokenKind.TEMPLATE_LITERAL)
         )
       ).tryMatch(input)
@@ -65,7 +80,7 @@ class ElementMatcher extends TokenMatchable<Element> {
     // be either Token | List<LanguageElement>
     Object terminator = new MatchUtils.OneOf<>(
       new TokenMatcher(';'),
-      new BlockMatcher()
+      new BodyMatcher()
     ).tryMatch(input);
     if (terminator == null) {
       throw new UnknownSyntaxException(input.getPosition().toDisplayString());

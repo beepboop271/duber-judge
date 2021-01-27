@@ -3,6 +3,7 @@ package templater;
 import java.util.Arrays;
 
 import templater.compiler.parser.Parser;
+import templater.compiler.parser.UnknownSyntaxException;
 import templater.compiler.tokeniser.Tokeniser;
 import templater.compiler.tokeniser.UnknownTokenException;
 import templater.language.Root;
@@ -24,8 +25,13 @@ class Template {
    *
    * @param source The string in template language that
    *               details this template.
+   * @throws UnknownTokenException  When an unknown string is
+   *                                found in the source.
+   * @throws UnknownSyntaxException When tokens cannot be
+   *                                parsed into a program.
    */
-  public Template(String source) throws UnknownTokenException {
+  public Template(String source)
+    throws UnknownTokenException, UnknownSyntaxException {
     this.syntaxTree = new Root(Arrays.asList(
       new Parser(new Tokeniser(source).tokenise()).parse()
     ));

@@ -55,18 +55,21 @@ html(lang="en") {
       div.user.sidebar {
         div.card.mb-3(style="max-width: 540px;") {
           img.card-img-top(src="https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png" alt="pfp");
-          div.card-body.d-flex.justify-content-between {
-            div.admin-profile-text {
-              h5.card-title {
-                ${username}
+          div.card-body {
+            div.d-flex.justify-content-between {
+              div.admin-profile-text {
+                h5.card-title {
+                  ${username}
+                }
+                p.card-text {
+                  "Admin"
+                }
               }
-              p.card-text {
-                "Admin"
+              a.settings-logo-wrapper.text-dark(href="/admin/problems") {
+                i.fas.fa-cog{}
               }
             }
-            a.settings-logo-wrapper.text-dark(href=${problemsPageLink}) {
-              i.fas.fa-cog{}
-            }
+            a.btn.btn-outline-dark.mt-2#logout-button(role="button" href="/logout") {"Logout"}
           }
         }
       }
@@ -98,13 +101,13 @@ html(lang="en") {
                     i.fas.fa-edit.h4 {}
                   }
                   small.text-muted.mr-4 {
-                    "Attempted by: "${problem.getNumSubmissions}
+                    "Total Submissions: "${problem.getNumSubmissions}
                   }
                   small.text-muted.mr-4 {
                     "Category: "${problem.getCategory}
                   }
                   small.text-muted.mr-4 {
-                    "Clear rate: "${problem.getClearRate}
+                    "Clear rate: "${problem.getClearRate}"%"
                   }
                   small.text-muted.mr-4 {
                     "Publishing status: "${problem.getState}

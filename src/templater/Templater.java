@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import templater.compiler.parser.UnknownSyntaxException;
 import templater.compiler.tokeniser.UnknownTokenException;
 
 /**
@@ -29,11 +30,13 @@ public class Templater {
    *
    * @param name   The name to store the template with.
    * @param source The source code of the template.
-   * @throws UnknownTokenException When an unknown string is
-   *                               found in the source.
+   * @throws UnknownTokenException  When an unknown string is
+   *                                found in the source.
+   * @throws UnknownSyntaxException When tokens cannot be
+   *                                parsed into a program.
    */
   public static void prepareTemplate(String name, String source)
-    throws UnknownTokenException {
+    throws UnknownTokenException, UnknownSyntaxException {
     Templater.templates.put(name, new Template(source));
   }
 
@@ -46,13 +49,15 @@ public class Templater {
    * @param name The name to store the template with.
    * @param path The path to read a string containing template
    *             source code from.
-   * @throws IOException           When an error occurs
-   *                               reading the file.
-   * @throws UnknownTokenException When an unknown string is
-   *                               found in the source.
+   * @throws IOException            When an error occurs
+   *                                reading the file.
+   * @throws UnknownTokenException  When an unknown string is
+   *                                found in the source.
+   * @throws UnknownSyntaxException When tokens cannot be
+   *                                parsed into a program.
    */
   public static void prepareTemplate(String name, Path path)
-    throws IOException, UnknownTokenException {
+    throws IOException, UnknownTokenException, UnknownSyntaxException {
     String s = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
     Templater.templates.put(name, new Template(s));
   }

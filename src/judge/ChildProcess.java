@@ -12,7 +12,10 @@ package judge;
  */
 
 public class ChildProcess {
-  /** The process id of the {@code Process}. */
+  /**
+   * The process id of the {@code Process}, or -1 if the
+   * process cannot be tracked.
+   */
   private final int pid;
   /**
    * The running child {@code Process} to wrap and store run
@@ -41,7 +44,8 @@ public class ChildProcess {
    * limit, and the maximum amount of memory it has used.
    *
    * @param pid              The process id of the
-   *                         {@code Process}.
+   *                         {@code Process}, or -1 if the
+   *                         process cannot be tracked.
    * @param process          The running child {@code Process}
    *                         to wrap and store run information
    *                         for.
@@ -82,9 +86,12 @@ public class ChildProcess {
   }
 
   /**
-   * Returns the process id of the running child {@code Process}.
+   * Returns the process id of the running child
+   * {@code Process}.
    *
-   * @return The process id of the running child {@code Process}.
+   * @return The process id of the running child
+   *         {@code Process}, or -1 if the process cannot be
+   *         tracked.
    */
   public int getPid() {
     return this.pid;

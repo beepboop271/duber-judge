@@ -12,7 +12,7 @@ html(lang="en") {
 
     link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
-    link(rel="stylesheet" href="/styles.css");
+    link(rel="stylesheet" href="/static/styles.css");
   }
   body {
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
@@ -59,11 +59,11 @@ html(lang="en") {
         div.col-4 {
           div.list-group#list-tab(role="tablist") {
             for (batch : batches) {
-              a.list-group-item.list-group-item-action.active#batch-${batch.getSequence}-list(data-toggle="list" href="#batch-"${batch.getSequence} role="tab" aria-controls="home") {
+              a.list-group-item.list-group-item-action.batch-item#batch-${batch.getSequence}-list(data-toggle="list" href="#batch-"${batch.getSequence} role="tab" aria-controls="home") {
                 "Batch "${batch.getSequence}
               }
             }
-            a.list-group-item.list-group-item-action#add-batch-list(data-toggle="list" href="#add-batch" role="tab" aria-controls="profile") {
+            a.list-group-item.list-group-item-action.batch-item#add-batch-list(data-toggle="list" href="#add-batch" role="tab" aria-controls="profile") {
               div.d-flex.w-100.justify-content-center {
                 p.h3.m-0 {
                   i.fas.fa-plus-circle {}
@@ -75,10 +75,10 @@ html(lang="en") {
         div.col-8 {
           div.tab-content#nav-tabContent {
             for (batch : batches) {
-              div.tab-pane.fade.show.active#batch-${batch.getSequence}(role="tabpanel" aria-labelledby="batch-"${batch.getSequence}"-list") { 
+              div.tab-pane.fade.testcases#batch-${batch.getSequence}(role="tabpanel" aria-labelledby="batch-"${batch.getSequence}"-list") {
                 div.list-group.user.problem-list {
                   for (testcase : "batch.getTestcases") {
-                    a.list-group-item.list-group-item-action(href=${testcase.getLink}) {
+                    a.list-group-item.list-group-item-action.disabled(href=${testcase.getLink}) {
                       div.d-flex.w-100.justify-content-between {
                         h5 {
                           "Testcase "${testcase.getSequence}
@@ -118,6 +118,7 @@ html(lang="en") {
 
     script(src="/static/vendored/jquery-3.4.1.slim.min.js") {}
     script(src="/static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
-    script(src="/scripts.js") {}
+    script(src="/static/scripts.js") {}
+    script(src="/static/batches.js") {}
   }
 }

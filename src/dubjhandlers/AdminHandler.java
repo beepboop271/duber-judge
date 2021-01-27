@@ -16,6 +16,16 @@ import webserver.Request;
 import webserver.Response;
 import webserver.RouteTarget;
 
+/**
+ * The class that handles requests to anything regarding the
+ * admin side of problems, like editing.
+ * <p>
+ * Created <b> 2020-01-25 </b>.
+ *
+ * @since 1.0.0
+ * @version 1.0.0
+ * @author Joseph Wang, Shari Sun
+ */
 public class AdminHandler implements RouteTarget {
 
   /**
@@ -78,7 +88,7 @@ public class AdminHandler implements RouteTarget {
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     User user = null;
@@ -99,7 +109,8 @@ public class AdminHandler implements RouteTarget {
         "/profile/"+userInfo.getUsername(),
         userInfo.getUsername(),
         this.us.getPoints(u.getId()),
-        this.us.getProblems(u.getId(), 0, 500).size()
+        this.us.getProblems(u.getId(), 0, 500).size(),
+        userInfo.getUserType()
       ));
     }
 

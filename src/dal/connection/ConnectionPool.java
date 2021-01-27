@@ -139,7 +139,7 @@ public class ConnectionPool {
    */
   public void close() throws IllegalStateException {
     if (!this.waitingThreads.isEmpty()) {
-      throw new IllegalStateException("WaitingThreads not empty");
+      throw new IllegalStateException("Waiting Threads not empty");
     }
     this.isClosed = true;
     for (Connection connection : this.availableConnections) {

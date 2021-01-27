@@ -14,7 +14,7 @@ import webserver.RouteTarget;
  * Created <b> 2020-01-25 </b>.
  *
  * @since 0.0.7
- * @version 0.0.7
+ * @version 1.0.0
  * @author Joseph Wang
  */
 public class ContestProblemHandler implements RouteTarget {

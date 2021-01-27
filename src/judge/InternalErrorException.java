@@ -1,7 +1,8 @@
 package judge;
 
 /**
- * An {@code Exception} thrown when the judge encounters an error.
+ * An {@code Exception} thrown when the judge encounters an
+ * error.
  * <p>
  * Created on 2021.01.08.
  *
@@ -14,8 +15,8 @@ public class InternalErrorException extends Exception {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Creates a new {@code InternalErrorException} with a {@code Throwable} object
-   * as the cause.
+   * Creates a new {@code InternalErrorException} with a
+   * {@code Throwable} object as the cause.
    *
    * @param cause The cause of the exception.
    */
@@ -24,7 +25,8 @@ public class InternalErrorException extends Exception {
   }
 
   /**
-   * Creates a new {@code InternalErrorException} with an error message.
+   * Creates a new {@code InternalErrorException} with an
+   * error message.
    *
    * @param message The error message.
    */

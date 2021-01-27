@@ -14,7 +14,6 @@ import entities.Session;
 import entities.User;
 import services.AdminService;
 import services.InsufficientPermissionException;
-import services.ProblemService;
 import services.PublicService;
 import services.SessionService;
 import services.UserService;
@@ -31,8 +30,8 @@ import webserver.RouteTarget;
  * Created <b> 2020-01-25 </b>.
  *
  * @since 0.0.7
- * @version 0.0.7
- * @author Joseph Wang
+ * @version 1.0.0
+ * @author Joseph Wang, Shari Sun
  */
 public class AdminProblemHandler implements RouteTarget {
   /**
@@ -45,11 +44,6 @@ public class AdminProblemHandler implements RouteTarget {
    * interaction.
    */
   private AdminService as;
-  /**
-   * The problem service that this handler uses for db
-   * interaction.
-   */
-  private ProblemService prs;
   /**
    * The public service that this handler uses for db
    * interaction.
@@ -67,7 +61,6 @@ public class AdminProblemHandler implements RouteTarget {
   public AdminProblemHandler() {
     this.ss = new SessionService();
     this.as = new AdminService();
-    this.prs = new ProblemService();
     this.us = new UserService();
     this.ps = new PublicService();
   }
@@ -107,13 +100,15 @@ public class AdminProblemHandler implements RouteTarget {
    * @return a response to the retrieval request.
    */
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
-    switch (req.getEndResource()) {
-      case "problems":
-        return this.getAllProblems(req, hasBody);
-      case "add":
-        return this.getAddProblemPage(req, hasBody);
-      default:
-        return this.findProblem(req, hasBody);
+    String action = req.getParam("action");
+    if (action == null) {
+      return this.getAllProblems(req, hasBody);
+    } else if (action.equals("add")) {
+      return this.getAddProblemPage(req, hasBody);
+    } else if (action.equals(req.getParam("problemId"))) {
+      return Response.temporaryRedirect("/admin/problem/"+req.getParam("problemId")+"/testcases");
+    } else {
+      return this.findProblem(req, hasBody);
     }
   }
 
@@ -128,7 +123,7 @@ public class AdminProblemHandler implements RouteTarget {
    * @return a response to the POST request provided.
    */
   private Response handlePostRequest(Request req) {
-    switch (req.getEndResource()) {
+    switch (req.getParam("action")) {
       case "add":
         return this.addProblem(req);
       default:
@@ -188,11 +183,11 @@ public class AdminProblemHandler implements RouteTarget {
   private Response getAllProblems(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
-    String username = "Profile";
+    String username = "Sign In";
     try {
       User user = this.getAdminUser(currentSession.getUserId());
       if (user == null) {
@@ -249,11 +244,11 @@ public class AdminProblemHandler implements RouteTarget {
   private Response getAddProblemPage(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
-    String username = "Profile";
+    String username = "Sign In";
     try {
       User user = this.getAdminUser(uid);
       if (user == null) {
@@ -305,7 +300,7 @@ public class AdminProblemHandler implements RouteTarget {
   private Response addProblem(Request req) {
     Session currentSession = this.getActiveSession(req);
     // verify and load admin information
-    if (currentSession == null) {
+    if (currentSession == null || !currentSession.isLoggedIn()) {
       return Response.temporaryRedirect("/login");
     }
     long uid = currentSession.getUserId();
@@ -332,12 +327,10 @@ public class AdminProblemHandler implements RouteTarget {
     if (
       !bodyParams.containsKey("title")
         || !bodyParams.containsKey("description")
-        || !bodyParams.containsKey("points")
         || !bodyParams.containsKey("category")
         || !bodyParams.containsKey("memoryLimit")
         || !bodyParams.containsKey("outputLimit")
         || !bodyParams.containsKey("timeLimit")
-        || !bodyParams.containsKey("editorial")
     ) {
       return Response.badRequest();
     }
@@ -355,6 +348,11 @@ public class AdminProblemHandler implements RouteTarget {
       return Response.badRequest();
     }
 
+    String editorial = "";
+    if (bodyParams.containsKey("editorial")) {
+      editorial = bodyParams.get("editorial");
+    }
+
     // Create the actual testcase
     try {
       this.as.createPracticeProblem(
@@ -369,7 +367,7 @@ public class AdminProblemHandler implements RouteTarget {
         Integer.parseInt(outputLimit),
         0,
         1,
-        bodyParams.get("editorial"),
+        editorial,
         PublishingState.PUBLISHED
       );
     } catch (InsufficientPermissionException e) {

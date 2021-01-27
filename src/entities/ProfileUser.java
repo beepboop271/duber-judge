@@ -6,7 +6,7 @@ package entities;
  * <p>
  * Created <b>2021-01-25</b>.
  *
- * @since   1.0.0
+ * @since 1.0.0
  * @version 1.0.0
  * @author Shari Sun
  */
@@ -15,12 +15,20 @@ public class ProfileUser {
   private String username;
   private int points;
   private int getProblemsCount;
+  private UserType userType;
 
-  public ProfileUser(String link, String username, int points, int getProblemsCount) {
+  public ProfileUser(
+    String link,
+    String username,
+    int points,
+    int getProblemsCount,
+    UserType userType
+  ) {
     this.link = link;
     this.username = username;
     this.points = points;
     this.getProblemsCount = getProblemsCount;
+    this.userType = userType;
   }
 
   public String getLink() {
@@ -39,6 +47,8 @@ public class ProfileUser {
     return this.getProblemsCount;
   }
 
-
+  public UserType getUserType() {
+    return this.userType;
+  }
 
 }

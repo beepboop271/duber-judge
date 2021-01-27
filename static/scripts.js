@@ -51,8 +51,10 @@ $(document).ready(function() {
     }
   });
 
+  $("textarea").each(function(textarea) {
+      $(this).height( $(this)[0].scrollHeight );
+      $(this).maxHeight( $(this)[0].scrollHeight );
+      $(this).minHeight( $(this)[0].scrollHeight );
+  });
 
 });
-
-
-

@@ -44,7 +44,7 @@ import webserver.webcache.WebLruCache;
  * Created <b> 2020-12-28 </b>
  *
  * @since 0.0.4
- * @version 0.0.5
+ * @version 1.0.0
  * @author Joseph Wang, Shari Sun
  */
 public class WebServer {
@@ -352,7 +352,7 @@ public class WebServer {
     // make sure that if the path didn't end with /, / will be
     // matched as well
     if (charAt != '/') {
-      cleanedRoute.append("(?=/|$)");
+      cleanedRoute.append("(?:/|$)");
     }
     Pattern routePattern = Pattern.compile(cleanedRoute.toString());
 
@@ -436,7 +436,7 @@ public class WebServer {
    * Created <b>2021-01-08</b>.
    *
    * @since 0.0.1
-   * @version 0.0.1
+   * @version 1.0.0
    * @author Joseph Wang
    */
   private class ConnectionHandler implements Runnable {
@@ -732,7 +732,7 @@ public class WebServer {
       // TODO check if the request is a HEAD, and if so, dont
       // actually use the body
       if (!cache.checkCache(fullPath)) {
-        cache.putCache(response.getBody(), fullPath, 5);
+        cache.putCache(response.getBody(), fullPath, 60);
       }
     }
 

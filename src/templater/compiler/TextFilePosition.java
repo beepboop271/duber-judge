@@ -87,7 +87,15 @@ public class TextFilePosition implements Cloneable {
     return this.column;
   }
 
+  /**
+   * Represents an end of file position. Attempting to advance
+   * will do nothing, position numbers are both -1, and
+   * toString returns EOF.
+   */
   public static class Eof extends TextFilePosition {
+    /**
+     * Creates a TextFilePosition at -1, -1 to signal EOF.
+     */
     public Eof() {
       super(-1, -1);
     }

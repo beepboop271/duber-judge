@@ -63,6 +63,7 @@ html(lang="en") {
             p.card-text {
               "Points: "${currentPoints}
             }
+            a.btn.btn-outline-dark.mt-2#logout-button(role="button" href="/logout") {"Logout"}
           }
         }
       }
@@ -101,13 +102,13 @@ html(lang="en") {
                     }
                   }
                   small.text-muted.mr-4 {
-                    "Attempted by: "${problem.getNumSubmissions}
+                    "Total Submissions: "${problem.getNumSubmissions}
                   }
                   small.text-muted.mr-4 {
                     "Category: "${problem.getCategory}
                   }
                   small.text-muted.mr-4 {
-                    "Clear rate: "${problem.getClearRate}
+                    "Clear rate: "${problem.getClearRate}"%"
                   }
                 }
               }

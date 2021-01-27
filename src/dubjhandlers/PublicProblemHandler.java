@@ -8,9 +8,7 @@ import entities.Entity;
 import entities.Problem;
 import entities.ProfileProblem;
 import entities.Session;
-import entities.SubmissionResult;
 import entities.User;
-import services.ProblemService;
 import services.PublicService;
 import services.SessionService;
 import services.UserService;
@@ -29,18 +27,14 @@ import webserver.RouteTarget;
  * Created <b> 2020-01-25 </b>.
  *
  * @since 0.0.7
- * @version 0.0.7
- * @author Joseph Wang
+ * @version 1.0.0
+ * @author Joseph Wang, Shari Sun
  */
 public class PublicProblemHandler implements RouteTarget {
   /**
    * The public service this handler uses for db interaction.
    */
   private PublicService ps;
-  /**
-   * The problem service this handler uses for db interaction.
-   */
-  private ProblemService prs;
   /**
    * The session service this handler uses for db interaction.
    */
@@ -55,7 +49,6 @@ public class PublicProblemHandler implements RouteTarget {
    */
   public PublicProblemHandler() {
     this.ps = new PublicService();
-    this.prs = new ProblemService();
     this.ss = new SessionService();
     this.us = new UserService();
   }
@@ -95,14 +88,12 @@ public class PublicProblemHandler implements RouteTarget {
    * @return a response to the retrieval request.
    */
   private Response handleRetrievalRequest(Request req, boolean hasBody) {
-    switch (req.getEndResource()) {
-      case "problems":
-        return this.getAllProblems(req, hasBody);
-      case "leaderboard":
-        return this.getProblemLeaderboard(req, hasBody);
-      default:
-        return this.getProblem(req, hasBody);
+    if (req.getParam("problemId") != null) {
+      return this.getProblem(req, hasBody);
+    } else if (req.getParam("leaderboard") != null) {
+      return this.getProblemLeaderboard(req, hasBody);
     }
+    return this.getAllProblems(req, hasBody);
   }
 
   /**
@@ -116,8 +107,6 @@ public class PublicProblemHandler implements RouteTarget {
    * @return a response to the POST request provided.
    */
   private Response handlePostRequest(Request req) {
-    String probName = req.getParam("problemId");
-
     return Response.internalError();
   }
 
@@ -154,10 +143,10 @@ public class PublicProblemHandler implements RouteTarget {
    */
   private Response getAllProblems(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
-    String username = "Profile";
+    String username = "Sign In";
     User user;
 
-    if (currentSession != null) {
+    if (currentSession != null && currentSession.isLoggedIn()) {
       try {
         user = this.us.getUser(currentSession.getUserId()).getContent();
         username = user.getUsername();
@@ -196,7 +185,7 @@ public class PublicProblemHandler implements RouteTarget {
     templateParams.put("page3Link", "/problems");
     templateParams.put("nextPageLink", "/problems");
 
-    return Response.okHtml(Templater.fillTemplate("problems", templateParams));
+    return Response.okNoCacheHtml(Templater.fillTemplate("problems", templateParams));
   }
 
   /**
@@ -210,10 +199,6 @@ public class PublicProblemHandler implements RouteTarget {
    *         problem.
    */
   private Response getProblemLeaderboard(Request req, boolean hasBody) {
-    int probId = Integer.parseInt(req.getParam("problemId"));
-    ArrayList<Entity<SubmissionResult>> leaderboard =
-      ps.getProblemLeaderboard(probId, 0, 500);
-
     return Response.internalError();
   }
 
@@ -229,10 +214,10 @@ public class PublicProblemHandler implements RouteTarget {
    */
   private Response getProblem(Request req, boolean hasBody) {
     Session currentSession = this.getActiveSession(req);
-    String username = "Profile";
+    String username = "Sign In";
     User user;
 
-    if (currentSession != null) {
+    if (currentSession != null && currentSession.isLoggedIn()) {
       try {
         user = this.us.getUser(currentSession.getUserId()).getContent();
         username = user.getUsername();

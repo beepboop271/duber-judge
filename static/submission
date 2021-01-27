@@ -7,18 +7,13 @@ html(lang="en") {
     title {
       "Duber Judge"
     }
-    script(src="/static/vendored/marked-1.2.7.min.js") {}
-    script(src="/static/vendored/purify-2.2.6.min.js") {}
-    script(defer="" src="/static/vendored/mathjax-tex-chtml-3.1.2.js") {}
-
     link(rel="stylesheet" href="/static/vendored/bootstrap-4.4.1-dist/css/bootstrap.min.css");
 
-    link(rel="stylesheet" href="/static/styles.css");
-
+    link(rel="stylesheet" href="/styles.css");
   }
   body {
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top{
-      a.navbar-brand(href=${homeLink}) {
+      a.navbar-brand(href="#") {
         "DubJ"
       }
       button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation") {
@@ -35,46 +30,56 @@ html(lang="en") {
             }
           }
           li.nav-item {
-            a.nav-link(href=${leaderboardLink}) {
+            a.nav-link(href="/leaderboard") {
               "Leaderboard"
             }
           }
           li.nav-item {
-            a.nav-link(href=${problemsLink}) {
+            a.nav-link(href="/problems") {
               "Practice Problems"
             }
           }
           li.nav-item.active {
-            a.nav-link(href=${profileLink}) {
+            a.nav-link(href="/profile") {
               ${username}
             }
           }
         }
       }
     }
-    div.problem-container {
-      h3.problem-title.mt-3 {
-        ${problem.getTitle}
+
+    div.create-problem-container {
+
+      h3 {
+        "Submission to problem "${problemName}
       }
-      div.d-flex.justify-content-between {
-        textarea#problem-viewing-latex-input {${problem.getDescription}}
-        div#problem-viewing-latex {}
-        div.list-group#submission-panel {
-          a.list-group-item.list-group-item-action(href=${submitLink}) {
-            "Submit"
-          }
-          a.list-group-item.list-group-item-action(href=${allSubmissionsLink}) {
-            "View submissions"
-          }
-          a.list-group-item.list-group-item-action.disabled(href="#") {
-            "Request clarification"
-          }
-        }
+
+      p {
+        "language: "${language}
+      }
+      p {
+        "status: "${submissionStatus}
+      }
+      p {
+        "points: "${points}
+      }
+      p {
+        "Run duration (ms): "${runDuration}" ms"
+      }
+      p {
+        "Memory used (bytes): "${memoryUsed}" bytes"
+      }
+      p {
+        "Source code: "
+      }
+      textarea#source-code(readonly="") {
+        ${source}
       }
     }
+
+
     script(src="/static/vendored/jquery-3.4.1.slim.min.js") {}
     script(src="/static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
-    script(src="/static/problem-viewing-script.js") {}
     script(src="/static/scripts.js") {}
   }
 }

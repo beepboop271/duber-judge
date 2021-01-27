@@ -27,8 +27,8 @@ import webserver.RouteTarget;
  * Created <b> 2020-01-25 </b>.
  *
  * @since 0.0.7
- * @version 0.0.7
- * @author Joseph Wang
+ * @version 1.0.0
+ * @author Joseph Wang, Shari Sun
  */
 public class HomeHandler implements RouteTarget {
   /**
@@ -170,7 +170,8 @@ public class HomeHandler implements RouteTarget {
         "/profile/"+userInfo.getUsername(),
         userInfo.getUsername(),
         this.us.getPoints(u.getId()),
-        this.us.getProblems(u.getId(), 0, 500).size()
+        this.us.getProblems(u.getId(), 0, 500).size(),
+        userInfo.getUserType()
       ));
     }
 
@@ -178,6 +179,6 @@ public class HomeHandler implements RouteTarget {
     templateParams.put("username", username);
     templateParams.put("users", users);
 
-    return Response.okHtml(Templater.fillTemplate("leaderboard", templateParams));
+    return Response.okNoCacheHtml(Templater.fillTemplate("leaderboard", templateParams));
   }
 }

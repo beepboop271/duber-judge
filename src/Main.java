@@ -24,9 +24,39 @@ import templater.compiler.tokeniser.UnknownTokenException;
 import webserver.WebServer;
 
 public class Main {
+  public static void main(String[] args) {
+    Main.initialize();
+    promptCreateAdmin();
+    Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
+    System.out.println("Server started at 5000");
+    Main.startWebServer(5000);
+  }
 
   public static void initialize() {
     ChildProcesses.initialize();
+  }
+
+  /**
+   * Prompts the user to see if they wish to create an admin
+   * account.
+   */
+  public static void promptCreateAdmin() {
+    Scanner input = new Scanner(System.in);
+    System.out.println("\n\n");
+    System.out.println("An admin account is required to add problems.");
+    System.out.println("So if you do not already have one already, you should create one.");
+    System.out.print("Do you wish to create a new admin account (y/n): ");
+    String answer = input.nextLine();
+    while (!answer.equals("y") && !answer.equals("n")) {
+      System.out.println("Please enter a valid option and try again.");
+      System.out.print("Do you wish to create a new admin account (y/n): ");
+      answer = input.nextLine();
+    }
+    if (answer.equals("y")) {
+      createAdmin(input);
+    }
+
+    input.close();
   }
 
   /**
@@ -73,28 +103,6 @@ public class Main {
   }
 
   /**
-   * Prompts the user to see if they wish to create an admin account.
-   */
-  public static void promptCreateAdmin() {
-    Scanner input = new Scanner(System.in);
-    System.out.println("\n\n");
-    System.out.println("An admin account is required to add problems.");
-    System.out.println("So if you do not already have one already, you should create one.");
-    System.out.print("Do you wish to create a new admin account (y/n): ");
-    String answer = input.nextLine();
-    while (!answer.equals("y") && !answer.equals("n")) {
-      System.out.println("Please enter a valid option and try again.");
-      System.out.print("Do you wish to create a new admin account (y/n): ");
-      answer = input.nextLine();
-    }
-    if (answer.equals("y")) {
-      createAdmin(input);
-    }
-
-    input.close();
-  }
-
-  /**
    * Starts the web server and add necessary routes.
    *
    * @param port The port at which to start the server at.
@@ -108,16 +116,19 @@ public class Main {
       Templater.prepareTemplate("viewProblem", Paths.get("static/view-problem"));
       Templater.prepareTemplate("leaderboard", Paths.get("static/leaderboard"));
       Templater.prepareTemplate("userProfile", Paths.get("static/userProfile"));
+      Templater.prepareTemplate("submission", Paths.get("static/submission"));
       Templater.prepareTemplate("userProfileProblem", Paths.get("static/userProfileProblem"));
       Templater.prepareTemplate("adminUsers", Paths.get("static/adminUsers"));
       Templater.prepareTemplate("submitSolution", Paths.get("static/submit-solution"));
+      Templater
+        .prepareTemplate("viewProbSubmissions", Paths.get("static/view-problem-submissions"));
       Templater
         .prepareTemplate("adminProfile", Paths.get("static/adminProfile"));
       Templater
         .prepareTemplate("problems", Paths.get("static/viewAllProblems"));
       Templater
         .prepareTemplate("adminProblems", Paths.get("static/adminProblems"));
-        Templater
+      Templater
         .prepareTemplate("addProblemDetails", Paths.get("static/add-problem-details"));
       Templater
         .prepareTemplate("addTestcases", Paths.get("static/add-testcases"));
@@ -150,8 +161,7 @@ public class Main {
     server.route("/contests", home);
     server.route("/leaderboard", home);
 
-    server.route("/login", login);
-    server.route("/signup", login);
+    server.route("/:path(login|signup|logout)", login);
 
     server.route("/profile", profile);
     server.route("/profile/:username", profile);
@@ -165,7 +175,7 @@ public class Main {
     // TODO route /problem to /problems
     server.route("/problems", publicProblem);
     server.route("/problem/:problemId", publicProblem);
-    server.route("/problem/:problemId/leaderboard", publicProblem);
+    server.route("/problem/:problemId/:leaderboard(leaderboard)", publicProblem);
 
     server.route("/contest/:contestId/problem/:problemId", contestProblem);
 
@@ -196,8 +206,8 @@ public class Main {
     server.route("/admin/users", admin);
     server.route("/admin/clarifications/:clarificationId", admin);
     server.route("/admin/problems", adminProblem);
-    server.route("/admin/problems/add", adminProblem);
-    server.route("/admin/problem/:problemId", adminProblem);
+    server.route("/admin/problems/:action(add)", adminProblem);
+    server.route("/admin/problem/:action(:problemId)", adminProblem);
 
     server.route("/admin/problem/:problemId/testcases", adminTestcase);
     server
@@ -219,14 +229,5 @@ public class Main {
     server.route("/editor.js", staticHandler);
 
     server.run();
-  }
-
-
-  public static void main(String[] args) {
-    Main.initialize();
-    promptCreateAdmin();
-    Runtime.getRuntime().addShutdownHook(new Thread(new ResourceCleaner()));
-    System.out.println("Server started at 5000");
-    Main.startWebServer(5000);
   }
 }

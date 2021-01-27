@@ -83,21 +83,24 @@ public class ChildProcesses {
    * @param memoryLimitKb   The maximum amount of memory the
    *                        process is allowed to use, in
    *                        kilobytes.
-   * @throws InternalErrorException   if an internal error
-   *                                  occurs.
-   * @throws ProcessNotFoundException if the process cannot be
-   *                                  found in after launching.
+   * @throws InternalErrorException if an internal error
+   *                                occurs.
    */
   public static synchronized ChildProcess launchChildProcess(
     SourceLauncher launcher,
     int timeLimitMillis,
     int memoryLimitKb
-  ) throws InternalErrorException, ProcessNotFoundException {
+  ) throws InternalErrorException {
     ChildProcesses.validateActiveChildProcesses();
     Process process = launcher.launch();
 
     // for java 9 and above: int childProcessPid = process.pid();
-    int childProcessPid = ChildProcesses.getNewPid(launcher);
+    int childProcessPid;
+    try {
+      childProcessPid = ChildProcesses.getNewPid(launcher);
+    } catch (ProcessNotFoundException e) {
+      childProcessPid = -1;
+    }
 
     ChildProcess childProcess = new ChildProcess(
       childProcessPid,
@@ -106,11 +109,15 @@ public class ChildProcesses {
       memoryLimitKb,
       0
     );
-    ChildProcesses.activeChildProcesses.put(childProcessPid, childProcess);
-    ChildProcesses.validateActiveChildProcesses();
-    synchronized (ChildProcesses.childProcessMonitor) {
-      ChildProcesses.childProcessMonitor.notify();
+
+    if (childProcessPid != -1) {
+      ChildProcesses.activeChildProcesses.put(childProcessPid, childProcess);
+      ChildProcesses.validateActiveChildProcesses();
+      synchronized (ChildProcesses.childProcessMonitor) {
+        ChildProcesses.childProcessMonitor.notify();
+      }
     }
+
     return childProcess;
   }
 

@@ -31,7 +31,7 @@ import java.util.Set;
  * Created <b> 2020-12-28 </b>
  *
  * @since 0.0.1
- * @version 0.0.1
+ * @version 1.0.0
  * @author Joseph Wang, Shari Sun
  * @see <a href=
  *      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages#HTTP_Requests">More
@@ -483,6 +483,11 @@ public class Request extends HttpMessage {
    * Parses and treats this request's body as if it were an
    * application/x-www-form-urlencoded body, and stores the
    * parsed queries in the provided map.
+   * <p>
+   * If an empty param, that is, a param with a name but no
+   * value, is provided, this method will not add the param to
+   * the map. To check if an expected param is empty, check
+   * for its presence in the provided map.
    *
    * @param toStoreIn The map to store the parsed results in.
    * @throws HttpSyntaxException if the body is badly formed.
@@ -500,13 +505,17 @@ public class Request extends HttpMessage {
     for (String s : fieldTokens) {
       String[] paramTokens = s.split("=");
       if (paramTokens.length != 2) {
-        throw new HttpSyntaxException("Body malformed.");
+        // This could happen from an empty field, malformed header..
+        // etc.
+        continue;
       }
       try {
-        String key = URLDecoder.decode(paramTokens[0], StandardCharsets.UTF_8.name());
+        String key =
+          URLDecoder.decode(paramTokens[0], StandardCharsets.UTF_8.name());
         String value;
         if (paramTokens.length > 1) {
-          value = URLDecoder.decode(paramTokens[1], StandardCharsets.UTF_8.name());
+          value =
+            URLDecoder.decode(paramTokens[1], StandardCharsets.UTF_8.name());
         } else {
           value = "";
         }

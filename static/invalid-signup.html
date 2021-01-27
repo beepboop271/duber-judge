@@ -16,42 +16,42 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
-      <a class="navbar-brand" href="/">DubJ</a>
+      <a class="navbar-brand" href="#">DubJ</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/leaderboard">Leaderboard</a>
+            <a class="nav-link" href="#">Leaderboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/problems">Practice Problems</a>
+            <a class="nav-link" href="#">Practice Problems</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="/login">Sign In</a>
+            <a class="nav-link" href="#">Sign In</a>
           </li>
         </ul>
       </div>
     </nav>
     <div class="page-container">
-      <form class="login" action="./login" method="post" id="login-form">
+      <form class="login" action="/signup" method="post" id="login-form">
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp">
+          <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp" required>
+          <small class="form-text text-muted">3-20 characters, no special symbols.</small>
         </div>
         <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" name="password">
+          <label for="password" >Password</label>
+          <input type="password" class="form-control" id="password" name="password" required>
+          <small class="form-text text-muted">5-25 characters, must contain at least one alphabet and number.</small>
+          <p class="form-text text-center text-danger">Username taken.</p>
         </div>
-        <div class="form-group error" id="error-msg">
-          <p>Please try a different username or password.</p>
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-        <a href="/signup" class="ml-3 text-decoration-none">Sign Up</button>
+        <button type="submit" class="btn btn-primary">Sign up</button>
+        <a href="./login" class="ml-3 text-decoration-none">Login</button>
       </form>
 
     </div>
