@@ -179,6 +179,6 @@ public class HomeHandler implements RouteTarget {
     templateParams.put("username", username);
     templateParams.put("users", users);
 
-    return Response.okHtml(Templater.fillTemplate("leaderboard", templateParams));
+    return Response.okNoCacheHtml(Templater.fillTemplate("leaderboard", templateParams));
   }
 }

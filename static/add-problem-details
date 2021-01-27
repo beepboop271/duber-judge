@@ -154,12 +154,12 @@ and so any of these pairs could have also been used in output. There is no pairs
             "Please enter a description."
           }
         }
-		
+
         div.mb-3 {
           label(for="memory") {
             "Memory limit (kB):"
           }
-          input.form-control.range#memory(name="memoryLimit" type="number" min="0" max="300000" data-bind="value:points" required="");
+          input.form-control.range#memory(name="memoryLimit" type="number" min="0" max="999999999" data-bind="value:points" required="");
         }
 
         div.mb-3 {

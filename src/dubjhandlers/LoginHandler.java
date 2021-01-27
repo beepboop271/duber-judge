@@ -157,7 +157,6 @@ public class LoginHandler implements RouteTarget {
   }
 
   private Response getLogoutPage(Request req, boolean hasBody) {
-    // TODO: get user from db so we can redirect them to profile
     Session curSession = this.getActiveSession(req);
     if (curSession != null && curSession.isLoggedIn()) {
       this.ss.updateSession(curSession.getToken(), SessionField.USER_ID, -1L);
@@ -175,7 +174,6 @@ public class LoginHandler implements RouteTarget {
    * @return a response with the signup page.
    */
   private Response getSignupPage(Request req, boolean hasBody) {
-    // TODO: get user from db so we can redirect them to profile
     Session curSession = this.getActiveSession(req);
     if (curSession != null && curSession.isLoggedIn()) {
       return Response.temporaryRedirect("/problems");

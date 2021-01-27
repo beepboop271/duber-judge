@@ -34,12 +34,12 @@ html(lang="en") {
             }
           }
           li.nav-item {
-            a.nav-link.active(href="/leaderboard") {
+            a.nav-link(href="/leaderboard") {
               "Leaderboard"
             }
           }
           li.nav-item {
-            a.nav-link(href="/problems") {
+            a.nav-link.active(href="/problems") {
               "Practice Problems"
             }
           }

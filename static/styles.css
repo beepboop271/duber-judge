@@ -98,10 +98,25 @@ body {
   overflow: wrap;
 }
 
+td, th {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
 #input-description {
   min-height: 20em;
   max-width: 47%;
+  min-width: 47%;
+  width: 47%;
   margin-right: 5%;
+}
+
+#output-description {
+  max-width: 47%;
+  min-width: 47%;
+  width: 47%;
 }
 
 .create-testcase #details div {
@@ -137,8 +152,10 @@ a.btn-outline-dark:hover {
 }
 
 #source-code {
-  width: 50%;
-  height: 50vh;
+  width: 80%;
+  border: 0 none white;
+  outline: none;
+  /* height: 50vh; */
 }
 
 .submissions-list {

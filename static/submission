@@ -72,14 +72,14 @@ html(lang="en") {
       p {
         "Source code: "
       }
-      textarea#source-code {
+      textarea#source-code(readonly="") {
         ${source}
       }
     }
 
 
     script(src="/static/vendored/jquery-3.4.1.slim.min.js") {}
-    script(src="/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
-    script(src="/scripts.js") {}
+    script(src="/static/vendored/bootstrap-4.4.1-dist/js/bootstrap.min.js") {}
+    script(src="/static/scripts.js") {}
   }
 }
