@@ -11,7 +11,6 @@ import entities.Entity;
 import entities.Language;
 import entities.Problem;
 import entities.Submission;
-import entities.SubmissionResult;
 import entities.Testcase;
 import judge.ChildProcesses;
 import judge.Judger;
@@ -83,48 +82,19 @@ public class Main {
       new Timestamp(System.currentTimeMillis())
     );
 
-    // should receive OUTPUT_LIMIT_EXCEEDED
-    Submission s4 = new Submission(
-      "input()\n"
-      +"input()\n"
-      +"for i in range(100):"
-      + "\tprint('hello im a very long string', end='')",
-      Language.PYTHON,
-      new Timestamp(System.currentTimeMillis())
-    );
-
     // should receive TIME_LIMIT_EXCEEDED
-    Submission s5 = new Submission(
+    Submission s4 = new Submission(
       "while True:\n\ta = 1",
       Language.PYTHON,
       new Timestamp(System.currentTimeMillis())
     );
 
     // should receive COMPILE_ERROR
-    Submission s6 = new Submission(
+    Submission s5 = new Submission(
       "char = input()\nstring = input()\nprint(string.count(char))",
       Language.JAVA,
       new Timestamp(System.currentTimeMillis())
     );
-
-    // should receive MEMORY_LIMIT_EXCEEDED
-    Submission s7 = new Submission(
-      "input()\n"
-      +"input()\n"
-      +"thing = []\n"
-      +"while True:\n"
-      +"\tthing.append('aaaaaa')",
-      Language.PYTHON,
-      new Timestamp(System.currentTimeMillis())
-    );
-
-    // should receive ILLEGAL_CODE
-    Submission s8 = new Submission(
-      "import os",
-      Language.PYTHON,
-      new Timestamp(System.currentTimeMillis())
-    );
-
 
     File directory = new File("temp/judge/");
     Judger judger = new Judger(
@@ -137,9 +107,6 @@ public class Main {
     submitters.add(new Submitter(s3, p1, judger));
     submitters.add(new Submitter(s4, p1, judger));
     submitters.add(new Submitter(s5, p1, judger));
-    submitters.add(new Submitter(s6, p1, judger));
-    submitters.add(new Submitter(s7, p1, judger));
-    submitters.add(new Submitter(s8, p1, judger));
     System.out.println("starting to judge");
     ArrayList<Thread> threads = new ArrayList<>();
     for (Submitter s : submitters) {

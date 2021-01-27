@@ -20,7 +20,6 @@ public class Submitter implements Runnable {
 
   public static synchronized void displaySubmissionResult(SubmissionResult result) {
     Submission submission = result.getSubmission();
-    System.out.println("----------------------------------");
     System.out.println("Submission: " + submission);
     System.out.println("Language: " + submission.getLanguage());
     System.out.println("Status: " + result.getStatus());
