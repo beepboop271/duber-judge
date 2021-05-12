@@ -1,7 +1,7 @@
 /.vscode
 /bin
 /lib
+/database
 .project
 .classpath
-
-*.db
+queries.sql

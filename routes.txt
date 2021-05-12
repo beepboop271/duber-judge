@@ -1,0 +1,126 @@
+/ -> /contests
+  - createSession (first time visiting the site no matter what route)
+/login
+  - login
+  - updateSession
+/signup
+  - createUser
+  - updateSession
+/leaderboard
+  - getLeaderboard
+
+
+
+/profile -> /profile/:username
+  - default user
+/profile/:username
+  - getSubmissionCount
+/profile/:username?data=submissions
+  - getAllSubmissions
+/profile/:username?data=problems
+  - getProblems
+/profile/:username?data=contests
+  - getActiveContests
+  - getParticipatedContests
+
+/profile/:username/edit
+  - isSameUser
+  - updateUserProfile
+  - updateUserPassword
+
+
+/contests
+  - getOngoingContests
+  - getUpcomingContests
+  - getActiveContests
+  - startContest
+/contest/:contestId -> /contest/:contestId/problems
+  - getContest
+/contest/:contestId/problems
+  - allowProblemViewing
+  - getProblems
+/contest/:contestId/problem/:problemId
+  - allowProblemViewing
+  - getProblem
+  - getClarifications
+/contest/:contestId/problem/:problemId/submit
+  - validateContestSession
+  - submitSolution
+/contest/:contestId/problem/:problemId/submissions
+  - allowProblemViewing
+  - getProblemSubmissions
+/contest/:contestId/problem/:problemId/submissions/:submissionId
+  - validateSubmissionId
+  - allowProblemViewing
+  - getSubmission
+
+/contest/:contestId/leaderboard
+  - getContestLeaderboard
+
+
+
+
+/problems
+  - getPracticeProblems
+/problems?category=categoryName
+  - getPracticeProblemsByCategory
+/problems?creator=creatorName
+  - getPracticeProblemsByCreator
+/problems?sort=points
+  - getPracticeProblemsByPoints
+/problems?sort=numSubmissions
+  - getPracticeProblemsByNumSubmissions
+
+/problem/:problemId
+  - requestClarification
+  - getClarifications
+  - getProblem
+/problem/:problemId/submit
+  - submitSolution
+
+
+/problem/:problemId/leaderboard
+  - getProblemLeaderboard
+/problem/:problemId/submissions
+  - getAllSubmissions
+/problem/:problemId/submissions?userid=id
+  - getProblemSubmissions
+/problem/:problemId/submissions/:submissionId
+  - validateSubmissionId
+  - getSubmission
+
+
+/admin/clarifications
+  - getUnresolvedClarifications
+/admin/clarifications/:clarificationId
+  - clarifyProblem
+
+/admin/restrictions
+  - createRestriction
+  - updateRestriction
+  - deleteRestriction
+/admin/users
+  - getUsers
+  - removeUser
+/admin/contests
+  - createContest
+  - deleteContest
+/admin/contest/:contestId
+  - updateContest
+  - deleteContest
+  - kickUserFromContest
+  - getContestParticipants
+/admin/problems
+  - createProblem
+  - deleteProblem
+/admin/problem/:problemId
+  - updateProblem
+  - deleteProblem
+/admin/problem/:problemId/testcases
+  - createBatch
+  - createTestcase
+  - deleteBatch
+  - deleteTestcase
+/admin/problem/:problemId/testcases/:testcaseId
+  - updateTestcase
+  - deleteTestcase

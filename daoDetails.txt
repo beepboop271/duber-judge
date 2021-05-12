@@ -1,0 +1,28 @@
+Unused Daos
+
+BatchDao - AC
+
+ClarificationDao - AC
+
+ContestDao - AC
+
+ContestSessionDao
+  x updateByUser
+  x getNumSessions
+  x getNumContests
+  x getByContest
+  x getByUser
+
+ProblemDao - AC
+
+SubmissionDao
+  x getByProblemAndStatus
+
+TestcaseDao
+  - getByBatch
+
+TestcaseRunDao
+  - getByBatch
+  - deleteBySubmission
+
+UserDao - AC
